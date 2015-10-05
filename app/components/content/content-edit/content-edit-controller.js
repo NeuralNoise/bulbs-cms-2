@@ -7,8 +7,8 @@ angular.module('content.edit.controller', [
   'confirmationModal.factory'
 ])
   .controller('ContentEdit', function (
-      $, $scope, $routeParams, $window, $location, $timeout, $q, $modal, _, moment,
-      keypress, PNotify, VersionStorageApi, ContentFactory, FirebaseApi,
+      $, $scope, $rootScope, $routeParams, $window, $location, $timeout, $q, $modal,
+      _, moment, PNotify, VersionStorageApi, ContentFactory, FirebaseApi,
       FirebaseArticleFactory, LinkBrowser, VersionBrowserModalOpener, PARTIALS_URL,
       MEDIA_ITEM_PARTIALS_URL, CMS_NAMESPACE, ConfirmationModal) {
 
@@ -16,15 +16,6 @@ angular.module('content.edit.controller', [
     $scope.MEDIA_ITEM_PARTIALS_URL = MEDIA_ITEM_PARTIALS_URL;
     $scope.page = 'edit';
     $scope.saveArticleDeferred = $q.defer();
-
-    // bind save keys
-    var listener = new keypress.Listener();
-    listener.simple_combo('cmd s', function (e) {
-      $scope.saveArticle();
-    });
-    listener.simple_combo('ctrl s', function (e) {
-      $scope.saveArticle();
-    });
 
     var saveHTML =  '<i class=\'fa fa-floppy-o\'></i> Save';
     var navbarSave = '.navbar-save';

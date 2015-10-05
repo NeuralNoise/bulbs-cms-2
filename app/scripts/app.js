@@ -7,7 +7,6 @@ angular.module('URLify', []).constant('URLify', window.URLify);
 angular.module('jquery', []).constant('$', window.$);
 angular.module('moment', []).constant('moment', window.moment);
 angular.module('PNotify', []).constant('PNotify', window.PNotify);
-angular.module('keypress', []).constant('keypress', window.keypress);
 angular.module('Raven', []).constant('Raven', window.Raven);
 angular.module('OnionEditor', []).constant('OnionEditor', window.OnionEditor);
 
@@ -28,7 +27,6 @@ angular.module('bulbsCmsApp', [
   'BettyCropper',
   'ipCookie',
   'jquery',
-  'keypress',
   'lodash',
   'moment',
   'ngCookies',

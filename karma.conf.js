@@ -54,7 +54,6 @@ module.exports = function(config) {
       'app/bower_components/urlify/urlify.js',
       'app/bower_components/onion-editor/build/onion-editor.min.js',
       'app/bower_components/angular-bootstrap-datetimepicker/src/js/datetimepicker.js',
-      'app/bower_components/Keypress/keypress.js',
       'app/bower_components/zeroclipboard/dist/ZeroClipboard.min.js',
       'app/bower_components/ng-clip/dest/ng-clip.min.js',
       'app/bower_components/bulbs-autocomplete/dist/bulbs-autocomplete.js',

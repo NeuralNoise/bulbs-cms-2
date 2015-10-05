@@ -29,7 +29,6 @@ module.exports = {
       'copy:font_awesome_less_tmp_styles',
       'less:font_awesome_styles',
       'newer:karma:ci',
-      'newer:jshint:all',
       'injector:local_dependencies',
       'ngtemplates:tmp'
     ]
