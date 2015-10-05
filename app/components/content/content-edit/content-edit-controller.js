@@ -17,7 +17,6 @@ angular.module('content.edit.controller', [
     $scope.page = 'edit';
     $scope.saveArticleDeferred = $q.defer();
 
-    var saveHTML =  '<i class=\'fa fa-floppy-o\'></i> Save';
     var navbarSave = '.navbar-save';
 
     // keep track of if article is dirty or not
@@ -67,7 +66,7 @@ angular.module('content.edit.controller', [
       });
     };
 
-    var getContent = function () {
+    $scope.getContent = function () {
       return ContentFactory.one('content', $routeParams.id).get()
         .then(function (data) {
           $scope.article = data;
@@ -87,10 +86,10 @@ angular.module('content.edit.controller', [
             .$retrieveCurrentArticle()
               .then(function ($article) {
 
-                var $activeUsers = $article.$activeUsers(),
-                    $versions = $article.$versions(),
-                    currentUser,
-                    savePNotify;
+                var $activeUsers = $article.$activeUsers();
+                var $versions = $article.$versions();
+                var currentUser;
+                var savePNotify;
 
                 $versions.$loaded(function () {
                   $versions.$watch(function (e) {
@@ -219,11 +218,15 @@ angular.module('content.edit.controller', [
         $scope.saveArticleDeferred = $q.defer();
       }
 
+      // want to retrieve article again here to ensure that we don't overwrite
+      //   someone else's changes
       ContentFactory.one('content', $routeParams.id).get()
         .then(function (data) {
           if (data.last_modified &&
               $scope.article.last_modified &&
               moment(data.last_modified) > moment($scope.article.last_modified)) {
+            // there's been another save since our last save, prevent saving without
+            //  user validation
 
             $scope.saveArticleDeferred.reject();
 
@@ -237,6 +240,7 @@ angular.module('content.edit.controller', [
               }
             });
           } else {
+            // okay to save, move to next step
             $scope.postValidationSaveArticle();
           }
         })
@@ -244,12 +248,6 @@ angular.module('content.edit.controller', [
 
       return $scope.saveArticleDeferred.promise;
 
-    };
-
-    var saveToContentApi = function () {
-      $scope.article.put()
-        .then(saveArticleSuccessCbk)
-        .catch(saveArticleErrorCbk);
     };
 
     var saveArticleErrorCbk = function (data) {
@@ -263,35 +261,35 @@ angular.module('content.edit.controller', [
       $scope.saveArticleDeferred.reject();
     };
 
-    /**
-     * Last thing to happen on a successful save.
-     */
-    var saveArticleSuccessCbk = function (resp) {
-      // store a version with version api
-      VersionStorageApi.$create($scope.article, $scope.articleIsDirty);
-
-      $(navbarSave).html('<i class=\'fa fa-check\'></i> Saved!');
-      setTimeout(function () {
-          $(navbarSave).html(saveHTML);
-        }, 2500);
-      $scope.article = resp;
-      $scope.last_saved_article = angular.copy(resp);
-      $scope.articleIsDirty = false;
-      $scope.errors = null;
-      $location.search('rating_type', null); //maybe just kill the whole query string with $location.url($location.path())
-      $scope.saveArticleDeferred.resolve(resp);
-    };
-
     $scope.postValidationSaveArticle = function () {
       if ($scope.article.status !== 'Published') {
         $scope.article.slug = $window.URLify($scope.article.title, 50);
       }
-      saveToContentApi();
-      return $scope.saveArticleDeferred.promise;
-    };
 
-    $scope.publishSuccessCbk = function () {
-      return getContent();
+      // update article
+      $scope.article.put()
+        .then(function (data) {
+          // store a version with version api
+          VersionStorageApi.$create($scope.article, $scope.articleIsDirty);
+
+          // short button change to reflect that save occurred, then switch back to normal state
+          $(navbarSave).html('<i class=\'fa fa-check\'></i> Saved!');
+          setTimeout(function () {
+            $(navbarSave).html('<i class=\'fa fa-floppy-o\'></i> Save');
+          }, 2500);
+
+          $scope.article = data;
+          $scope.last_saved_article = angular.copy(data);
+
+          $scope.articleIsDirty = false;
+          $scope.errors = null;
+
+          $location.search('rating_type', null); //maybe just kill the whole query string with $location.url($location.path())
+          $scope.saveArticleDeferred.resolve(data);
+        })
+        .catch(saveArticleErrorCbk);
+
+      return $scope.saveArticleDeferred.promise;
     };
 
     $scope.trashSuccessCbk = function () {
@@ -303,5 +301,5 @@ angular.module('content.edit.controller', [
 
     // finish initialization
     setupUnsavedChangesGuard();
-    getContent();
+    $scope.getContent();
   });
