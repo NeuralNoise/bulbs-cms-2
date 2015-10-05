@@ -7,10 +7,10 @@ angular.module('content.edit.controller', [
   'confirmationModal.factory'
 ])
   .controller('ContentEdit', function (
-      $scope, $routeParams, $http, $window, $location, $timeout, $interval, $compile,
-      $q, $modal, $, _, moment, keypress, Raven, PNotify, IfExistsElse, VersionStorageApi,
-      ContentFactory, FirebaseApi, FirebaseArticleFactory, LinkBrowser, VersionBrowserModalOpener,
-      PARTIALS_URL, MEDIA_ITEM_PARTIALS_URL, CMS_NAMESPACE, ConfirmationModal) {
+      $, $scope, $routeParams, $window, $location, $timeout, $q, $modal, _, moment,
+      keypress, PNotify, VersionStorageApi, ContentFactory, FirebaseApi,
+      FirebaseArticleFactory, LinkBrowser, VersionBrowserModalOpener, PARTIALS_URL,
+      MEDIA_ITEM_PARTIALS_URL, CMS_NAMESPACE, ConfirmationModal) {
 
     $scope.PARTIALS_URL = PARTIALS_URL;
     $scope.MEDIA_ITEM_PARTIALS_URL = MEDIA_ITEM_PARTIALS_URL;
