@@ -67,133 +67,132 @@ angular.module('content.edit.controller', [
       });
     };
 
-    var getArticleCallback = function (data) {
-      $scope.article = data;
-
-      $scope.last_saved_article = angular.copy(data);
-
-      FirebaseApi.$connection
-        .onConnect(function () {
-          $scope.firebaseConnected = true;
-        })
-        .onDisconnect(function () {
-          $scope.firebaseConnected = false;
-        });
-
-      // get article and active users, register current user as active
-      FirebaseArticleFactory
-        .$retrieveCurrentArticle()
-          .then(function ($article) {
-
-            var $activeUsers = $article.$activeUsers(),
-                $versions = $article.$versions(),
-                currentUser,
-                savePNotify;
-
-            $versions.$loaded(function () {
-              $versions.$watch(function (e) {
-                if (e.event === 'child_added') {
-
-                  // order versions newest to oldest then grab the top one which should be the new version
-                  var newVersion = _.sortBy($versions, function (version) {
-                    return -version.timestamp;
-                  })[0];
-
-                  if (currentUser && newVersion.user.id !== currentUser.id) {
-
-                    // close any existing save pnotify
-                    if (savePNotify) {
-                      savePNotify.remove();
-                    }
-
-                    var msg = '<b>' +
-                                newVersion.user.displayName +
-                              '</b> -- ' +
-                              moment(newVersion.timestamp).format('MMM Do YYYY, h:mma') +
-                              '<br>';
-                    if ($scope.articleIsDirty) {
-                      msg += ' You have unsaved changes that may conflict when you save.';
-                    }
-                    msg += ' Open the version browser to see their latest version.';
-
-                    // this isn't the current user that saved, so someone else must have saved, notify this user
-                    savePNotify = new PNotify({
-                      title: 'Another User Saved!',
-                      text: msg,
-                      type: 'error',
-                      mouse_reset: false,
-                      hide: false,
-                      confirm: {
-                        confirm: true,
-                        buttons: [{
-                          text: 'Open Version Browser',
-                          addClass: 'btn-primary',
-                          click: function (notice) {
-                            notice.mouse_reset = false;
-                            notice.remove();
-                            VersionBrowserModalOpener.open($scope, $scope.article);
-                          }
-                        }, {
-                          addClass: 'hide'
-                        }]
-                      },
-                      buttons: {
-                        closer_hover: false,
-                        sticker: false
-                      }
-                    });
-                  }
-                }
-              });
-            });
-
-            // register a watch on active users so we can update the list in real time
-            $activeUsers.$watch(function () {
-
-              // unionize user data so that we don't have a bunch of the same users in the list
-              $scope.activeUsers =
-                _.chain($activeUsers)
-                  // group users by their id
-                  .groupBy(function (user) {
-                    return user.id;
-                  })
-                  // take first user in grouping and use that data along with a count of the number of times they show
-                  //  up in the list (number of sessions they have running)
-                  .map(function (group) {
-                    var groupedUser = group[0];
-                    groupedUser.count = group.length;
-
-                    if (currentUser && groupedUser.id === currentUser.id) {
-                      groupedUser.displayName = 'You';
-                    }
-
-                    return groupedUser;
-                  })
-                  // sort users by their display names
-                  .sortBy(function (user) {
-                    return user.displayName === 'You' ? '' : user.displayName;
-                  })
-                  // now we have a list of unique users along with the number of sessions they have running, sorted by
-                  //  their display names
-                  .value();
-
-            });
-
-            // register current user active with this article
-            $article.$registerCurrentUserActive()
-              .then(function (user) {
-                currentUser = user;
-              });
-
-            // who knows what kind of promises you might have in the future? so return the article object for chains
-            return $article;
-
-          });
-
-    };
-
     var getContent = function () {
-      return ContentFactory.one('content', $routeParams.id).get().then(getArticleCallback);
+      return ContentFactory.one('content', $routeParams.id).get()
+        .then(function (data) {
+          $scope.article = data;
+
+          $scope.last_saved_article = angular.copy(data);
+
+          FirebaseApi.$connection
+            .onConnect(function () {
+              $scope.firebaseConnected = true;
+            })
+            .onDisconnect(function () {
+              $scope.firebaseConnected = false;
+            });
+
+          // get article and active users, register current user as active
+          FirebaseArticleFactory
+            .$retrieveCurrentArticle()
+              .then(function ($article) {
+
+                var $activeUsers = $article.$activeUsers(),
+                    $versions = $article.$versions(),
+                    currentUser,
+                    savePNotify;
+
+                $versions.$loaded(function () {
+                  $versions.$watch(function (e) {
+                    if (e.event === 'child_added') {
+
+                      // order versions newest to oldest then grab the top one which should be the new version
+                      var newVersion = _.sortBy($versions, function (version) {
+                        return -version.timestamp;
+                      })[0];
+
+                      if (currentUser && newVersion.user.id !== currentUser.id) {
+
+                        // close any existing save pnotify
+                        if (savePNotify) {
+                          savePNotify.remove();
+                        }
+
+                        var msg = '<b>' +
+                                    newVersion.user.displayName +
+                                  '</b> -- ' +
+                                  moment(newVersion.timestamp).format('MMM Do YYYY, h:mma') +
+                                  '<br>';
+                        if ($scope.articleIsDirty) {
+                          msg += ' You have unsaved changes that may conflict when you save.';
+                        }
+                        msg += ' Open the version browser to see their latest version.';
+
+                        // this isn't the current user that saved, so someone else must have saved, notify this user
+                        savePNotify = new PNotify({
+                          title: 'Another User Saved!',
+                          text: msg,
+                          type: 'error',
+                          mouse_reset: false,
+                          hide: false,
+                          confirm: {
+                            confirm: true,
+                            buttons: [{
+                              text: 'Open Version Browser',
+                              addClass: 'btn-primary',
+                              click: function (notice) {
+                                notice.mouse_reset = false;
+                                notice.remove();
+                                VersionBrowserModalOpener.open($scope, $scope.article);
+                              }
+                            }, {
+                              addClass: 'hide'
+                            }]
+                          },
+                          buttons: {
+                            closer_hover: false,
+                            sticker: false
+                          }
+                        });
+                      }
+                    }
+                  });
+                });
+
+                // register a watch on active users so we can update the list in real time
+                $activeUsers.$watch(function () {
+
+                  // unionize user data so that we don't have a bunch of the same users in the list
+                  $scope.activeUsers =
+                    _.chain($activeUsers)
+                      // group users by their id
+                      .groupBy(function (user) {
+                        return user.id;
+                      })
+                      // take first user in grouping and use that data along with a count of the number of times they show
+                      //  up in the list (number of sessions they have running)
+                      .map(function (group) {
+                        var groupedUser = group[0];
+                        groupedUser.count = group.length;
+
+                        if (currentUser && groupedUser.id === currentUser.id) {
+                          groupedUser.displayName = 'You';
+                        }
+
+                        return groupedUser;
+                      })
+                      // sort users by their display names
+                      .sortBy(function (user) {
+                        return user.displayName === 'You' ? '' : user.displayName;
+                      })
+                      // now we have a list of unique users along with the number of sessions they have running, sorted by
+                      //  their display names
+                      .value();
+
+                });
+
+                // register current user active with this article
+                $article.$registerCurrentUserActive()
+                  .then(function (user) {
+                    currentUser = user;
+                  });
+
+                // who knows what kind of promises you might have in the future? so return the article object for chains
+                return $article;
+
+              });
+
+        });
     };
 
     $scope.saveArticleIfDirty = function () {
