@@ -30,11 +30,6 @@ angular.module('content.edit.controller', [
       $window.document.title = CMS_NAMESPACE + ' | Editing ' + ($scope.article && $('<span>' + $scope.article.title + '</span>').text());
     });
 
-    var initEditPage = function () {
-      setupUnsavedChangesGuard();
-      getContent();
-    };
-
     var setupUnsavedChangesGuard = function () {
       // browser navigation hook
       $window.onbeforeunload = function () {
@@ -308,5 +303,6 @@ angular.module('content.edit.controller', [
     };
 
     // finish initialization
-    initEditPage();
+    setupUnsavedChangesGuard();
+    getContent();
   });
