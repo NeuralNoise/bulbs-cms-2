@@ -8,7 +8,7 @@ var config = require('../config');
 module.exports = {
   app: {
     src: config.paths.app('index.html'),
-    ignorePath: config.paths.app('/'),
+    ignorePath: '../bower_components',
     devDependencies: true,
     overrides: {
       'angular-restmod': {
@@ -40,5 +40,5 @@ module.exports = {
         ]
       }
     }
-  },
+  }
 };

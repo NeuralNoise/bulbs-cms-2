@@ -1,3 +1,4 @@
+bower_components
 node_modules
 
 
@@ -11,7 +12,6 @@ node_modules
 
 .tmp
 .sass-cache
-app/bower_components
 app/styles/**/*.css
 app/keys.js
 coverage

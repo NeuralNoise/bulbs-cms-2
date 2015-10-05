@@ -8,6 +8,7 @@ var modRewrite = require('connect-modrewrite');
 var path = require('path');
 
 var mountFolder = function (connect, dir) {
+  console.log('mounting directory ' + dir);
   return connect.static(path.resolve(dir));
 };
 
@@ -29,6 +30,7 @@ module.exports = {
           modRewrite([
             '!\\.eot|\\.woff|\\.woff2\\.ttf|\\.svg|\\.html|\\.js|\\.css|\\.swf|\\.jp(e?)g|\\.png|\\.gif$ /index.html'
           ]),
+          mountFolder(connect, 'bower_components'),
           mountFolder(connect, config.paths.tmp()),
           mountFolder(connect, config.paths.app())
         ];
