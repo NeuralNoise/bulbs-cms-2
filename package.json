@@ -1,5 +1,7 @@
 {
-  "name": "bulbscms",
+  "name": "bulbs-cms-2",
+  "description": "Don't install via npm.",
+  "private": true,
   "version": "0.0.0",
   "devDependencies": {
     "bower": "~1.3.2",
@@ -32,7 +34,6 @@
     "grunt-protractor-runner": "^0.2.4",
     "grunt-release": "https://github.com/theonion/grunt-release/archive/0.7.0-2.tar.gz",
     "grunt-rev": "~0.1.0",
-    "grunt-shell": "~0.7.0",
     "grunt-svgmin": "~0.2.0",
     "grunt-usemin": "~2.1.0",
     "grunt-wiredep": "^1.9.0",

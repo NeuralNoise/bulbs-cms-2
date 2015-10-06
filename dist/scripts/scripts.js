@@ -40,7 +40,6 @@ angular.module('URLify', []).constant('URLify', window.URLify);
 angular.module('jquery', []).constant('$', window.$);
 angular.module('moment', []).constant('moment', window.moment);
 angular.module('PNotify', []).constant('PNotify', window.PNotify);
-angular.module('keypress', []).constant('keypress', window.keypress);
 angular.module('Raven', []).constant('Raven', window.Raven);
 angular.module('OnionEditor', []).constant('OnionEditor', window.OnionEditor);
 
@@ -61,7 +60,6 @@ angular.module('bulbsCmsApp', [
   'BettyCropper',
   'ipCookie',
   'jquery',
-  'keypress',
   'lodash',
   'moment',
   'ngCookies',
@@ -1196,26 +1194,16 @@ angular.module('content.edit.controller', [
   'confirmationModal.factory'
 ])
   .controller('ContentEdit', function (
-      $scope, $routeParams, $http, $window, $location, $timeout, $interval, $compile,
-      $q, $modal, $, _, moment, keypress, Raven, PNotify, IfExistsElse, VersionStorageApi,
-      ContentFactory, FirebaseApi, FirebaseArticleFactory, LinkBrowser, VersionBrowserModalOpener,
-      PARTIALS_URL, MEDIA_ITEM_PARTIALS_URL, CMS_NAMESPACE, ConfirmationModal) {
+      $, $scope, $rootScope, $routeParams, $window, $location, $timeout, $q, $modal,
+      _, moment, PNotify, VersionStorageApi, ContentFactory, FirebaseApi,
+      FirebaseArticleFactory, LinkBrowser, VersionBrowserModalOpener, PARTIALS_URL,
+      MEDIA_ITEM_PARTIALS_URL, CMS_NAMESPACE, ConfirmationModal) {
 
     $scope.PARTIALS_URL = PARTIALS_URL;
     $scope.MEDIA_ITEM_PARTIALS_URL = MEDIA_ITEM_PARTIALS_URL;
     $scope.page = 'edit';
     $scope.saveArticleDeferred = $q.defer();
 
-    // bind save keys
-    var listener = new keypress.Listener();
-    listener.simple_combo('cmd s', function (e) {
-      $scope.saveArticle();
-    });
-    listener.simple_combo('ctrl s', function (e) {
-      $scope.saveArticle();
-    });
-
-    var saveHTML =  '<i class=\'fa fa-floppy-o\'></i> Save';
     var navbarSave = '.navbar-save';
 
     // keep track of if article is dirty or not
@@ -1227,11 +1215,6 @@ angular.module('content.edit.controller', [
     $scope.$watch('article.title', function () {
       $window.document.title = CMS_NAMESPACE + ' | Editing ' + ($scope.article && $('<span>' + $scope.article.title + '</span>').text());
     });
-
-    var initEditPage = function () {
-      setupUnsavedChangesGuard();
-      getContent();
-    };
 
     var setupUnsavedChangesGuard = function () {
       // browser navigation hook
@@ -1270,133 +1253,132 @@ angular.module('content.edit.controller', [
       });
     };
 
-    var getArticleCallback = function (data) {
-      $scope.article = data;
+    $scope.getContent = function () {
+      return ContentFactory.one('content', $routeParams.id).get()
+        .then(function (data) {
+          $scope.article = data;
 
-      $scope.last_saved_article = angular.copy(data);
+          $scope.last_saved_article = angular.copy(data);
 
-      FirebaseApi.$connection
-        .onConnect(function () {
-          $scope.firebaseConnected = true;
-        })
-        .onDisconnect(function () {
-          $scope.firebaseConnected = false;
-        });
+          FirebaseApi.$connection
+            .onConnect(function () {
+              $scope.firebaseConnected = true;
+            })
+            .onDisconnect(function () {
+              $scope.firebaseConnected = false;
+            });
 
-      // get article and active users, register current user as active
-      FirebaseArticleFactory
-        .$retrieveCurrentArticle()
-          .then(function ($article) {
+          // get article and active users, register current user as active
+          FirebaseArticleFactory
+            .$retrieveCurrentArticle()
+              .then(function ($article) {
 
-            var $activeUsers = $article.$activeUsers(),
-                $versions = $article.$versions(),
-                currentUser,
-                savePNotify;
+                var $activeUsers = $article.$activeUsers();
+                var $versions = $article.$versions();
+                var currentUser;
+                var savePNotify;
 
-            $versions.$loaded(function () {
-              $versions.$watch(function (e) {
-                if (e.event === 'child_added') {
+                $versions.$loaded(function () {
+                  $versions.$watch(function (e) {
+                    if (e.event === 'child_added') {
 
-                  // order versions newest to oldest then grab the top one which should be the new version
-                  var newVersion = _.sortBy($versions, function (version) {
-                    return -version.timestamp;
-                  })[0];
+                      // order versions newest to oldest then grab the top one which should be the new version
+                      var newVersion = _.sortBy($versions, function (version) {
+                        return -version.timestamp;
+                      })[0];
 
-                  if (currentUser && newVersion.user.id !== currentUser.id) {
+                      if (currentUser && newVersion.user.id !== currentUser.id) {
 
-                    // close any existing save pnotify
-                    if (savePNotify) {
-                      savePNotify.remove();
-                    }
+                        // close any existing save pnotify
+                        if (savePNotify) {
+                          savePNotify.remove();
+                        }
 
-                    var msg = '<b>' +
-                                newVersion.user.displayName +
-                              '</b> -- ' +
-                              moment(newVersion.timestamp).format('MMM Do YYYY, h:mma') +
-                              '<br>';
-                    if ($scope.articleIsDirty) {
-                      msg += ' You have unsaved changes that may conflict when you save.';
-                    }
-                    msg += ' Open the version browser to see their latest version.';
+                        var msg = '<b>' +
+                                    newVersion.user.displayName +
+                                  '</b> -- ' +
+                                  moment(newVersion.timestamp).format('MMM Do YYYY, h:mma') +
+                                  '<br>';
+                        if ($scope.articleIsDirty) {
+                          msg += ' You have unsaved changes that may conflict when you save.';
+                        }
+                        msg += ' Open the version browser to see their latest version.';
 
-                    // this isn't the current user that saved, so someone else must have saved, notify this user
-                    savePNotify = new PNotify({
-                      title: 'Another User Saved!',
-                      text: msg,
-                      type: 'error',
-                      mouse_reset: false,
-                      hide: false,
-                      confirm: {
-                        confirm: true,
-                        buttons: [{
-                          text: 'Open Version Browser',
-                          addClass: 'btn-primary',
-                          click: function (notice) {
-                            notice.mouse_reset = false;
-                            notice.remove();
-                            VersionBrowserModalOpener.open($scope, $scope.article);
+                        // this isn't the current user that saved, so someone else must have saved, notify this user
+                        savePNotify = new PNotify({
+                          title: 'Another User Saved!',
+                          text: msg,
+                          type: 'error',
+                          mouse_reset: false,
+                          hide: false,
+                          confirm: {
+                            confirm: true,
+                            buttons: [{
+                              text: 'Open Version Browser',
+                              addClass: 'btn-primary',
+                              click: function (notice) {
+                                notice.mouse_reset = false;
+                                notice.remove();
+                                VersionBrowserModalOpener.open($scope, $scope.article);
+                              }
+                            }, {
+                              addClass: 'hide'
+                            }]
+                          },
+                          buttons: {
+                            closer_hover: false,
+                            sticker: false
                           }
-                        }, {
-                          addClass: 'hide'
-                        }]
-                      },
-                      buttons: {
-                        closer_hover: false,
-                        sticker: false
+                        });
                       }
-                    });
-                  }
-                }
-              });
-            });
-
-            // register a watch on active users so we can update the list in real time
-            $activeUsers.$watch(function () {
-
-              // unionize user data so that we don't have a bunch of the same users in the list
-              $scope.activeUsers =
-                _.chain($activeUsers)
-                  // group users by their id
-                  .groupBy(function (user) {
-                    return user.id;
-                  })
-                  // take first user in grouping and use that data along with a count of the number of times they show
-                  //  up in the list (number of sessions they have running)
-                  .map(function (group) {
-                    var groupedUser = group[0];
-                    groupedUser.count = group.length;
-
-                    if (currentUser && groupedUser.id === currentUser.id) {
-                      groupedUser.displayName = 'You';
                     }
+                  });
+                });
 
-                    return groupedUser;
-                  })
-                  // sort users by their display names
-                  .sortBy(function (user) {
-                    return user.displayName === 'You' ? '' : user.displayName;
-                  })
-                  // now we have a list of unique users along with the number of sessions they have running, sorted by
-                  //  their display names
-                  .value();
+                // register a watch on active users so we can update the list in real time
+                $activeUsers.$watch(function () {
 
-            });
+                  // unionize user data so that we don't have a bunch of the same users in the list
+                  $scope.activeUsers =
+                    _.chain($activeUsers)
+                      // group users by their id
+                      .groupBy(function (user) {
+                        return user.id;
+                      })
+                      // take first user in grouping and use that data along with a count of the number of times they show
+                      //  up in the list (number of sessions they have running)
+                      .map(function (group) {
+                        var groupedUser = group[0];
+                        groupedUser.count = group.length;
 
-            // register current user active with this article
-            $article.$registerCurrentUserActive()
-              .then(function (user) {
-                currentUser = user;
+                        if (currentUser && groupedUser.id === currentUser.id) {
+                          groupedUser.displayName = 'You';
+                        }
+
+                        return groupedUser;
+                      })
+                      // sort users by their display names
+                      .sortBy(function (user) {
+                        return user.displayName === 'You' ? '' : user.displayName;
+                      })
+                      // now we have a list of unique users along with the number of sessions they have running, sorted by
+                      //  their display names
+                      .value();
+
+                });
+
+                // register current user active with this article
+                $article.$registerCurrentUserActive()
+                  .then(function (user) {
+                    currentUser = user;
+                  });
+
+                // who knows what kind of promises you might have in the future? so return the article object for chains
+                return $article;
+
               });
 
-            // who knows what kind of promises you might have in the future? so return the article object for chains
-            return $article;
-
-          });
-
-    };
-
-    var getContent = function () {
-      return ContentFactory.one('content', $routeParams.id).get().then(getArticleCallback);
+        });
     };
 
     $scope.saveArticleIfDirty = function () {
@@ -1423,11 +1405,15 @@ angular.module('content.edit.controller', [
         $scope.saveArticleDeferred = $q.defer();
       }
 
+      // want to retrieve article again here to ensure that we don't overwrite
+      //   someone else's changes
       ContentFactory.one('content', $routeParams.id).get()
         .then(function (data) {
           if (data.last_modified &&
               $scope.article.last_modified &&
               moment(data.last_modified) > moment($scope.article.last_modified)) {
+            // there's been another save since our last save, prevent saving without
+            //  user validation
 
             $scope.saveArticleDeferred.reject();
 
@@ -1441,6 +1427,7 @@ angular.module('content.edit.controller', [
               }
             });
           } else {
+            // okay to save, move to next step
             $scope.postValidationSaveArticle();
           }
         })
@@ -1448,12 +1435,6 @@ angular.module('content.edit.controller', [
 
       return $scope.saveArticleDeferred.promise;
 
-    };
-
-    var saveToContentApi = function () {
-      $scope.article.put()
-        .then(saveArticleSuccessCbk)
-        .catch(saveArticleErrorCbk);
     };
 
     var saveArticleErrorCbk = function (data) {
@@ -1467,35 +1448,35 @@ angular.module('content.edit.controller', [
       $scope.saveArticleDeferred.reject();
     };
 
-    /**
-     * Last thing to happen on a successful save.
-     */
-    var saveArticleSuccessCbk = function (resp) {
-      // store a version with version api
-      VersionStorageApi.$create($scope.article, $scope.articleIsDirty);
-
-      $(navbarSave).html('<i class=\'fa fa-check\'></i> Saved!');
-      setTimeout(function () {
-          $(navbarSave).html(saveHTML);
-        }, 2500);
-      $scope.article = resp;
-      $scope.last_saved_article = angular.copy(resp);
-      $scope.articleIsDirty = false;
-      $scope.errors = null;
-      $location.search('rating_type', null); //maybe just kill the whole query string with $location.url($location.path())
-      $scope.saveArticleDeferred.resolve(resp);
-    };
-
     $scope.postValidationSaveArticle = function () {
       if ($scope.article.status !== 'Published') {
         $scope.article.slug = $window.URLify($scope.article.title, 50);
       }
-      saveToContentApi();
-      return $scope.saveArticleDeferred.promise;
-    };
 
-    $scope.publishSuccessCbk = function () {
-      return getContent();
+      // update article
+      $scope.article.put()
+        .then(function (data) {
+          // store a version with version api
+          VersionStorageApi.$create($scope.article, $scope.articleIsDirty);
+
+          // short button change to reflect that save occurred, then switch back to normal state
+          $(navbarSave).html('<i class=\'fa fa-check\'></i> Saved!');
+          setTimeout(function () {
+            $(navbarSave).html('<i class=\'fa fa-floppy-o\'></i> Save');
+          }, 2500);
+
+          $scope.article = data;
+          $scope.last_saved_article = angular.copy(data);
+
+          $scope.articleIsDirty = false;
+          $scope.errors = null;
+
+          $location.search('rating_type', null); //maybe just kill the whole query string with $location.url($location.path())
+          $scope.saveArticleDeferred.resolve(data);
+        })
+        .catch(saveArticleErrorCbk);
+
+      return $scope.saveArticleDeferred.promise;
     };
 
     $scope.trashSuccessCbk = function () {
@@ -1506,7 +1487,8 @@ angular.module('content.edit.controller', [
     };
 
     // finish initialization
-    initEditPage();
+    setupUnsavedChangesGuard();
+    $scope.getContent();
   });
 
 'use strict';

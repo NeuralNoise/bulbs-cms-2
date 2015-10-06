@@ -1,6 +1,7 @@
 {
-  "name": "bulbs-cms",
-  "version": "0.9.148",
+  "name": "bulbs-cms-2",
+  "version": "0.0.2",
+  "private": true,
   "main": [
     "dist/scripts/scripts.js",
     "dist/scripts/templates.js",

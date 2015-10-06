@@ -66,8 +66,6 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
-    'shell:bower_install',
-    'shell:bower_update',
     'wiredep',
     'ngtemplates:dist',
     'injector:less_components',

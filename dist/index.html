@@ -13,16 +13,16 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(app) styles/vendor.css -->
     <!-- bower:css -->
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" />
-    <link rel="stylesheet" href="bower_components/jcrop/css/jquery.Jcrop.css" />
-    <link rel="stylesheet" href="bower_components/onion-editor/build/editor-main.css" />
-    <link rel="stylesheet" href="bower_components/pnotify/pnotify.core.css" />
-    <link rel="stylesheet" href="bower_components/pnotify/pnotify.buttons.css" />
-    <link rel="stylesheet" href="bower_components/pnotify/pnotify.history.css" />
-    <link rel="stylesheet" href="bower_components/token-auth-frontend/dist/token-auth-login-form.css" />
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" />
+    <link rel="stylesheet" href="/jcrop/css/jquery.Jcrop.css" />
+    <link rel="stylesheet" href="/onion-editor/build/editor-main.css" />
+    <link rel="stylesheet" href="/pnotify/pnotify.core.css" />
+    <link rel="stylesheet" href="/pnotify/pnotify.buttons.css" />
+    <link rel="stylesheet" href="/pnotify/pnotify.history.css" />
+    <link rel="stylesheet" href="/token-auth-frontend/dist/token-auth-login-form.css" />
     <!-- endbower -->
-    <link rel="stylesheet" href="bower_components/jcrop/css/jquery.Jcrop.min.css" />
+    <link rel="stylesheet" href="/jcrop/css/jquery.Jcrop.min.css" />
     <!-- endbuild -->
     <!-- build:css({.tmp,app}) styles/main.css -->
 
@@ -33,7 +33,6 @@
     <link rel="stylesheet" href="styles/cms-notify-container.css">
     <link rel="stylesheet" href="styles/edit-page.css">
     <link rel="stylesheet" href="styles/feature-image.css">
-    <link rel="stylesheet" href="styles/font-awesome.css">
     <link rel="stylesheet" href="styles/last-modified-preview.css">
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/temporary-url-modal.css">
@@ -43,7 +42,7 @@
     <!-- endbuild -->
 
     <!-- don't bundle this -->
-    <link rel="stylesheet" href="bower_components/onion-editor/build/inline.css" />
+    <link rel="stylesheet" href="/onion-editor/build/inline.css" />
 
     <script type="text/javascript">
         function jqueryCsrfSetup(){
@@ -60,58 +59,57 @@
     <div ng-view=""></div>
 
     <!--[if lt IE 9]>
-    <script src="bower_components/es5-shim/es5-shim.js"></script>
-    <script src="bower_components/json3/lib/json3.min.js"></script>
+    <script src="/es5-shim/es5-shim.js"></script>
+    <script src="/json3/lib/json3.min.js"></script>
     <![endif]-->
     <!-- build:js(app) scripts/vendor.js -->
     <!-- bower:js -->
-    <script src="bower_components/jquery/dist/jquery.js"></script>
-    <script src="bower_components/Keypress/keypress.js"></script>
-    <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-    <script src="bower_components/moment/moment.js"></script>
-    <script src="bower_components/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
-    <script src="bower_components/angular-cookie/angular-cookie.js"></script>
-    <script src="bower_components/angular-cookies/angular-cookies.js"></script>
-    <script src="bower_components/angular-resource/angular-resource.js"></script>
-    <script src="bower_components/angular-inflector/dist/angular-inflector.min.js"></script>
-    <script src="bower_components/angular-restmod/dist/angular-restmod-bundle.js"></script>
-    <script src="bower_components/angular-restmod/dist/plugins/nested-dirty.js"></script>
-    <script src="bower_components/angular-route/angular-route.js"></script>
-    <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
-    <script src="bower_components/jquery-ui/jquery-ui.js"></script>
-    <script src="bower_components/angular-ui-sortable/sortable.js"></script>
-    <script src="bower_components/angular-uuid4/angular-uuid4.js"></script>
-    <script src="bower_components/firebase/firebase.js"></script>
-    <script src="bower_components/firebase-simple-login/firebase-simple-login.js"></script>
-    <script src="bower_components/mockfirebase/dist/mockfirebase.js"></script>
-    <script src="bower_components/angularfire/dist/angularfire.min.js"></script>
-    <script src="bower_components/lodash/lodash.js"></script>
-    <script src="bower_components/bulbs-autocomplete/dist/bulbs-autocomplete.js"></script>
-    <script src="bower_components/bulbs-public-embed-instagram/dist/jquery.instagram-embed-processor.js"></script>
-    <script src="bower_components/jcrop/js/jquery.Jcrop.js"></script>
-    <script src="bower_components/moment-timezone/builds/moment-timezone-with-data-2010-2020.js"></script>
-    <script src="bower_components/zeroclipboard/dist/ZeroClipboard.js"></script>
-    <script src="bower_components/ng-clip/src/ngClip.js"></script>
-    <script src="bower_components/onion-editor/build/onion-editor.js"></script>
-    <script src="bower_components/pnotify/pnotify.core.js"></script>
-    <script src="bower_components/pnotify/pnotify.buttons.js"></script>
-    <script src="bower_components/pnotify/pnotify.callbacks.js"></script>
-    <script src="bower_components/pnotify/pnotify.confirm.js"></script>
-    <script src="bower_components/pnotify/pnotify.desktop.js"></script>
-    <script src="bower_components/pnotify/pnotify.history.js"></script>
-    <script src="bower_components/pnotify/pnotify.nonblock.js"></script>
-    <script src="bower_components/raven-js/dist/raven.js"></script>
-    <script src="bower_components/restangular/dist/restangular.js"></script>
-    <script src="bower_components/restmod-style-drf-paged/restmod-style-drf-paged.js"></script>
-    <script src="bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
-    <script src="bower_components/token-auth-frontend/dist/token-auth.js"></script>
-    <script src="bower_components/urlify/urlify.js"></script>
-    <script src="bower_components/videohub-client-js/dist/videohub-client.js"></script>
-    <script src="bower_components/firebase-token-generator/build/firebase-token-generator.js"></script>
+    <script src="/jquery/dist/jquery.js"></script>
+    <script src="/angular/angular.js"></script>
+    <script src="/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="/moment/moment.js"></script>
+    <script src="/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
+    <script src="/angular-cookie/angular-cookie.js"></script>
+    <script src="/angular-cookies/angular-cookies.js"></script>
+    <script src="/angular-resource/angular-resource.js"></script>
+    <script src="/angular-inflector/dist/angular-inflector.min.js"></script>
+    <script src="/angular-restmod/dist/angular-restmod-bundle.js"></script>
+    <script src="/angular-restmod/dist/plugins/nested-dirty.js"></script>
+    <script src="/angular-route/angular-route.js"></script>
+    <script src="/angular-sanitize/angular-sanitize.js"></script>
+    <script src="/jquery-ui/jquery-ui.js"></script>
+    <script src="/angular-ui-sortable/sortable.js"></script>
+    <script src="/angular-uuid4/angular-uuid4.js"></script>
+    <script src="/firebase/firebase.js"></script>
+    <script src="/firebase-simple-login/firebase-simple-login.js"></script>
+    <script src="/mockfirebase/dist/mockfirebase.js"></script>
+    <script src="/angularfire/dist/angularfire.min.js"></script>
+    <script src="/lodash/lodash.js"></script>
+    <script src="/bulbs-autocomplete/dist/bulbs-autocomplete.js"></script>
+    <script src="/bulbs-public-embed-instagram/dist/jquery.instagram-embed-processor.js"></script>
+    <script src="/jcrop/js/jquery.Jcrop.js"></script>
+    <script src="/moment-timezone/builds/moment-timezone-with-data-2010-2020.js"></script>
+    <script src="/zeroclipboard/dist/ZeroClipboard.js"></script>
+    <script src="/ng-clip/src/ngClip.js"></script>
+    <script src="/onion-editor/build/onion-editor.js"></script>
+    <script src="/pnotify/pnotify.core.js"></script>
+    <script src="/pnotify/pnotify.buttons.js"></script>
+    <script src="/pnotify/pnotify.callbacks.js"></script>
+    <script src="/pnotify/pnotify.confirm.js"></script>
+    <script src="/pnotify/pnotify.desktop.js"></script>
+    <script src="/pnotify/pnotify.history.js"></script>
+    <script src="/pnotify/pnotify.nonblock.js"></script>
+    <script src="/raven-js/dist/raven.js"></script>
+    <script src="/restangular/dist/restangular.js"></script>
+    <script src="/restmod-style-drf-paged/restmod-style-drf-paged.js"></script>
+    <script src="/angular-local-storage/dist/angular-local-storage.js"></script>
+    <script src="/token-auth-frontend/dist/token-auth.js"></script>
+    <script src="/urlify/urlify.js"></script>
+    <script src="/videohub-client-js/dist/videohub-client.js"></script>
+    <script src="/firebase-token-generator/build/firebase-token-generator.js"></script>
     <!-- endbower -->
-    <script src="bower_components/jcrop/js/jquery.Jcrop.min.js"></script>
+    <script src="/jcrop/js/jquery.Jcrop.min.js"></script>
     <!-- endbuild -->
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
@@ -318,7 +316,7 @@
     <!-- endbuild -->
     <script src="scripts/templates.js"></script>
 
-    <script src="bower_components/angular-mocks/angular-mocks.js"></script>
+    <script src="/angular-mocks/angular-mocks.js"></script>
 
     <script type="text/javascript">
         window.loggedInUser = null;
@@ -373,7 +371,7 @@
           .constant('TIMEZONE_NAME', 'America/Chicago')
           .constant('VIDEO_EMBED_URL', 'http://www.avclub.com/videos/embed?id=')
           .constant('VIDEO_THUMBNAIL_URL', 'http://v.theonion.com/avclubmedia/video/{{video}}/frame_{{thumbnail}}.jpg')
-          .constant('ZERO_CLIPBOARD_SWF', 'bower_components/zeroclipboard/dist/ZeroClipboard.swf');
+          .constant('ZERO_CLIPBOARD_SWF', '/zeroclipboard/dist/ZeroClipboard.swf');
 
         angular.module('customSearch.settings')
           .constant('CUSTOM_SEARCH_TIME_PERIODS', [{
@@ -405,7 +403,7 @@
     <script src="mocks/api/api-custom-search.js"></script>
     <script src="mocks/api/api-special-coverage.js"></script>
     <script src="mocks/api/api-sections.js"></script>
-    <script src="bower_components/videohub-client-js/src/videohub-client/videohub-api-mocks.js"></script>
+    <script src="/videohub-client-js/src/videohub-client/videohub-api-mocks.js"></script>
 
     <script src="mocks/newapp.js"></script>
     <script src="scripts/api/mock.js"></script>
