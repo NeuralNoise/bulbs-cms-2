@@ -8,16 +8,35 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a
-          class="navbar-save btn btn-success navbar-btn visible-xs-inline pull-right"
-          ng-class="{'btn-clean': !articleIsDirty}"
-          href=""
-          ng-click="saveArticle();"
+
+      <!-- TODO : duplicated save button HTML from below -->
+      <button
+          class="navbar-save btn navbar-btn visible-xs-inline pull-right"
+          ng-class="{
+            'btn-warning': saveArticleDeferred.promise.$$state.status === 0,
+            'btn-success': !saveArticleDeferred || saveArticleDeferred.promise.$$state.status === 1,
+            'btn-clean': !articleIsDirty && (!saveArticleDeferred || saveArticleDeferred.promise.$$state.status !== 2),
+            'btn-danger': saveArticleDeferred.promise.$$state.status === 2
+          }"
+          ng-disabled="saveArticleDeferred.promise.$$state.status === 0"
+          ng-click="saveArticle()"
           hide-if-forbidden
           options-url="{{'/content/' + article.id + '/'}}">
-        <i class="fa fa-floppy-o"></i>
-        <span>Save</span>
-      </a>
+        <i
+            ng-class="{
+              'fa-refresh fa-spin': saveArticleDeferred.promise.$$state.status === 0,
+              'fa-floppy-o': articleIsDirty && (!saveArticleDeferred || saveArticleDeferred.promise.$$state.status === 1),
+              'fa-check': !articleIsDirty && (!saveArticleDeferred || saveArticleDeferred.promise.$$state.status === 1),
+              'fa-times': saveArticleDeferred.promise.$$state.status === 2
+            }"
+            class="fa">
+        </i>
+        <span ng-if="saveArticleDeferred.promise.$$state.status === 0">Saving...</span>
+        <span ng-if="articleIsDirty && (!saveArticleDeferred || saveArticleDeferred.promise.$$state.status === 1)">Save</span>
+        <span ng-if="!articleIsDirty && (!saveArticleDeferred || saveArticleDeferred.promise.$$state.status === 1)">Saved</span>
+        <span ng-if="saveArticleDeferred.promise.$$state.status === 2">Error</span>
+      </button>
+
     </div>
 
     <div class="collapse navbar-collapse" id="navbar-collapse">
@@ -154,21 +173,35 @@
             </a>
           </li>
 
-          <li
-              class="hidden-xs"
-              hide-if-forbidden
-              options-url="{{'/content/' + article.id + '/'}}">
+          <li>
+            <!-- TODO : duplicated save button HTML from above -->
             <button
-                id="save-article-btn"
-                class="navbar-save btn btn-success btn-sm navbar-btn"
-                ng-class="{'btn-clean': !articleIsDirty}"
-                href=""
-                ng-click="saveArticle();">
-              <i class="fa fa-floppy-o"></i>
-              <span>Save</span>
+                class="navbar-save btn navbar-btn hidden-xs pull-right"
+                ng-class="{
+                  'btn-warning': saveArticleDeferred.promise.$$state.status === 0,
+                  'btn-success': !saveArticleDeferred || saveArticleDeferred.promise.$$state.status === 1,
+                  'btn-clean': !articleIsDirty && (!saveArticleDeferred || saveArticleDeferred.promise.$$state.status !== 2),
+                  'btn-danger': saveArticleDeferred.promise.$$state.status === 2
+                }"
+                ng-disabled="saveArticleDeferred.promise.$$state.status === 0"
+                ng-click="saveArticle()"
+                hide-if-forbidden
+                options-url="{{'/content/' + article.id + '/'}}">
+              <i
+                  ng-class="{
+                    'fa-refresh fa-spin': saveArticleDeferred.promise.$$state.status === 0,
+                    'fa-floppy-o': articleIsDirty && (!saveArticleDeferred || saveArticleDeferred.promise.$$state.status === 1),
+                    'fa-check': !articleIsDirty && (!saveArticleDeferred || saveArticleDeferred.promise.$$state.status === 1),
+                    'fa-times': saveArticleDeferred.promise.$$state.status === 2
+                  }"
+                  class="fa">
+              </i>
+              <span ng-if="saveArticleDeferred.promise.$$state.status === 0">Saving...</span>
+              <span ng-if="articleIsDirty && (!saveArticleDeferred || saveArticleDeferred.promise.$$state.status === 1)">Save</span>
+              <span ng-if="!articleIsDirty && (!saveArticleDeferred || saveArticleDeferred.promise.$$state.status === 1)">Saved</span>
+              <span ng-if="saveArticleDeferred.promise.$$state.status === 2">Error</span>
             </button>
           </li>
-
       </ul>
     </div>
 

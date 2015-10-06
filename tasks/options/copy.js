@@ -66,10 +66,9 @@ module.exports = {
   font_awesome_less_tmp_styles: {
     expand: true,
     flatten: true,
-    cwd: config.paths.app(),
     dest: config.paths.tmp('font-awesome-less/'),
     src: [
-      'styles/font-awesome/variables.less',
+      'app/styles/font-awesome/variables.less',
       'bower_components/font-awesome/less/*.less',
       '!bower_components/font-awesome/less/variables.less'
     ]

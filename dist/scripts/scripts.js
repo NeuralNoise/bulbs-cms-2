@@ -1202,9 +1202,7 @@ angular.module('content.edit.controller', [
     $scope.PARTIALS_URL = PARTIALS_URL;
     $scope.MEDIA_ITEM_PARTIALS_URL = MEDIA_ITEM_PARTIALS_URL;
     $scope.page = 'edit';
-    $scope.saveArticleDeferred = $q.defer();
-
-    var navbarSave = '.navbar-save';
+    $scope.saveArticleDeferred = null;
 
     // keep track of if article is dirty or not
     $scope.articleIsDirty = false;
@@ -1395,12 +1393,8 @@ angular.module('content.edit.controller', [
     };
 
     $scope.saveArticle = function () {
-      $(navbarSave)
-        .removeClass('btn-danger')
-        .addClass('btn-success')
-        .html('<i class=\'fa fa-refresh fa-spin\'></i> Saving');
-
-      if ($scope.saveArticleDeferred.promise.$$state.status !== 0) {
+      if ($scope.saveArticleDeferred === null ||
+          $scope.saveArticleDeferred.promise.$$state.status !== 0) {
         // there isn't a article already in the process of saving, use a new deferred
         $scope.saveArticleDeferred = $q.defer();
       }
@@ -1438,10 +1432,6 @@ angular.module('content.edit.controller', [
     };
 
     var saveArticleErrorCbk = function (data) {
-      $(navbarSave)
-        .removeClass('btn-success')
-        .addClass('btn-danger')
-        .html('<i class=\'fa fa-times\'></i> Error');
       if (status === 400) {
         $scope.errors = data;
       }
@@ -1458,12 +1448,6 @@ angular.module('content.edit.controller', [
         .then(function (data) {
           // store a version with version api
           VersionStorageApi.$create($scope.article, $scope.articleIsDirty);
-
-          // short button change to reflect that save occurred, then switch back to normal state
-          $(navbarSave).html('<i class=\'fa fa-check\'></i> Saved!');
-          setTimeout(function () {
-            $(navbarSave).html('<i class=\'fa fa-floppy-o\'></i> Save');
-          }, 2500);
 
           $scope.article = data;
           $scope.last_saved_article = angular.copy(data);
