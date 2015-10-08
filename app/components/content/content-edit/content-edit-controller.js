@@ -17,16 +17,6 @@ angular.module('content.edit.controller', [
     $scope.page = 'edit';
     $scope.saveArticleDeferred = null;
 
-    // keep track of if article is dirty or not
-    $scope.articleIsDirty = false;
-    $scope.$watch('article', function () {
-      $scope.articleIsDirty = !angular.equals($scope.article, $scope.last_saved_article);
-    }, true);
-
-    $scope.$watch('article.title', function () {
-      $window.document.title = CMS_NAMESPACE + ' | Editing ' + ($scope.article && $('<span>' + $scope.article.title + '</span>').text());
-    });
-
     var setupUnsavedChangesGuard = function () {
       // browser navigation hook
       $window.onbeforeunload = function () {

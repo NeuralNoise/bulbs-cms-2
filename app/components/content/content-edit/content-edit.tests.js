@@ -77,11 +77,12 @@ describe('Controller: ContentEdit', function () {
       expect(scope.saveArticle).toBeDefined();
     });
 
-    it('should set articleIsDirty to true when article is dirty', function () {
-      scope.article.title = 'some random title that isn not the same as the original';
-      scope.$digest();
-      expect(scope.articleIsDirty).toBe(true);
-    });
+    // TODO : move this to directive test
+    // it('should set articleIsDirty to true when article is dirty', function () {
+    //   scope.article.title = 'some random title that isn not the same as the original';
+    //   scope.$digest();
+    //   expect(scope.articleIsDirty).toBe(true);
+    // });
 
     describe('function: saveArticleIfDirty', function () {
       it('should call saveArticle if article is dirty', function () {
