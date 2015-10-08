@@ -1,58 +1,21 @@
 'use strict';
 
 angular.module('content.edit.controller', [
+  'bulbs.cms.unsavedChangesGuard',
   'content.edit.linkBrowser',
   'content.edit.versionBrowser.api',
-  'cms.firebase',
-  'confirmationModal.factory'
+  'cms.firebase'
 ])
   .controller('ContentEdit', function (
       $, $scope, $rootScope, $routeParams, $window, $location, $timeout, $q, $modal,
       _, moment, PNotify, VersionStorageApi, ContentFactory, FirebaseApi,
       FirebaseArticleFactory, LinkBrowser, VersionBrowserModalOpener, PARTIALS_URL,
-      MEDIA_ITEM_PARTIALS_URL, CMS_NAMESPACE, ConfirmationModal) {
+      MEDIA_ITEM_PARTIALS_URL, CMS_NAMESPACE, UnsavedChangesGuard) {
 
     $scope.PARTIALS_URL = PARTIALS_URL;
     $scope.MEDIA_ITEM_PARTIALS_URL = MEDIA_ITEM_PARTIALS_URL;
     $scope.page = 'edit';
     $scope.saveArticleDeferred = null;
-
-    var setupUnsavedChangesGuard = function () {
-      // browser navigation hook
-      $window.onbeforeunload = function () {
-        if ($scope.articleIsDirty) {
-          return 'You have unsaved changes. Do you want to continue?';
-        }
-      };
-      // angular navigation hook
-      $scope.$on('$locationChangeStart', function (e, newUrl) {
-        if ($scope.articleIsDirty && !$scope.ignoreGuard) {
-          // keep track of if navigation has accepted by user
-          $scope.ignoreGuard = false;
-
-          // set up modal
-          var modalScope = $scope.$new();
-          modalScope.modalOnOk = function () {
-            // user wants to navigate, ignore guard in this navigation action
-            $location.url(newUrl.substring($location.absUrl().length - $location.url().length));
-            $scope.ignoreGuard = true;
-
-            // remove browser nav hook
-            $window.onbeforeunload = function () {};
-          };
-          modalScope.modalTitle = 'Unsaved Changes!';
-          modalScope.modalBody = 'You have unsaved changes. Do you want to continue?';
-          modalScope.modalOkText = 'Yes';
-          modalScope.modalCancelText = 'No';
-
-          // open modal
-          new ConfirmationModal(modalScope);
-
-          // stop immediate navigation
-          e.preventDefault();
-        }
-      });
-    };
 
     $scope.getContent = function () {
       return ContentFactory.one('content', $routeParams.id).get()
@@ -274,6 +237,10 @@ angular.module('content.edit.controller', [
     };
 
     // finish initialization
-    setupUnsavedChangesGuard();
+    UnsavedChangesGuard.enable({
+      unsavedChangesCheckCallback: function () {
+        return $scope.articleIsDirty;
+      }
+    });
     $scope.getContent();
   });
