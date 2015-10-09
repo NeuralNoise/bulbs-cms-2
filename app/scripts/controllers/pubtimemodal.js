@@ -2,7 +2,7 @@
 
 angular.module('bulbsCmsApp')
   .controller('PubtimemodalCtrl', function ($scope, $http, $modal, $modalInstance,
-      $, moment, article, TIMEZONE_NAME, Raven, CmsConfig, PARTIALS_URL) {
+      $, moment, article, TIMEZONE_NAME, Raven, CmsConfig) {
     $scope.article = article;
 
     $scope.pubButton = {
@@ -52,7 +52,7 @@ angular.module('bulbsCmsApp')
       if (!$scope.article.feature_type) {
         $modalInstance.dismiss();
         $modal.open({
-          templateUrl: PARTIALS_URL + 'modals/pubtime-validation-modal.html'
+          templateUrl: CmsConfig.getPartialsUrl() + 'modals/pubtime-validation-modal.html'
         });
         return;
       }

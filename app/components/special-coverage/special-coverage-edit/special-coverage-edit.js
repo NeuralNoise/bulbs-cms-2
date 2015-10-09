@@ -1,17 +1,21 @@
 'use strict';
 
 angular.module('specialCoverage.edit', [
+  'cms.config',
   'specialCoverage.edit.directive'
 ])
-  .config(function ($routeProvider, CMS_NAMESPACE) {
+  .config(function ($routeProvider) {
     $routeProvider
       .when('/cms/app/special-coverage/edit/:id/', {
-        controller: function ($routeParams, $scope, $window) {
-          // set title
-          $window.document.title = CMS_NAMESPACE + ' | Edit Special Coverage';
+        controller: [
+          '$routeParams', '$scope', '$window', 'CmsConfig',
+          function ($routeParams, $scope, $window, CmsConfig) {
+            // set title
+            $window.document.title = CmsConfig.getCmsTitle() + ' | Edit Special Coverage';
 
-          $scope.routeId = $routeParams.id;
-        },
+            $scope.routeId = $routeParams.id;
+          }
+        ],
         template: '<special-coverage-edit model-id="routeId"></special-coverage-edit>'
       });
   });

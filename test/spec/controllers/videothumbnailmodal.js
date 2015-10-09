@@ -16,7 +16,7 @@ describe('Controller: VideothumbnailmodalCtrl', function () {
   var customVideoPosterUrlString = '{{ratio}}_{{image}}';
 
   // Initialize the controller and a mock scope
-  beforeEach(inject(function ($controller, $rootScope, $modal, PARTIALS_URL, Zencoder) {
+  beforeEach(inject(function ($controller, $rootScope, $modal, CmsConfig, Zencoder) {
     scope = $rootScope.$new();
     zencoderService = Zencoder;
 
@@ -24,7 +24,7 @@ describe('Controller: VideothumbnailmodalCtrl', function () {
       return {then: function () {}}
     }
 
-    var modalUrl = PARTIALS_URL + 'modals/last-modified-guard-modal.html';
+    var modalUrl = CmsConfig.getPartialsUrl() + 'modals/last-modified-guard-modal.html';
     modal = $modal.open({
       templateUrl: modalUrl
     });

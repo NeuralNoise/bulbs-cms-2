@@ -3,7 +3,7 @@
 describe('ImageCropModalCtrl', function () {
 
   var $httpBackend, $rootScope, $controller,
-  modalInstance, BettyCropper, BettyImage, PARTIALS_URL, $modal;
+  modalInstance, BettyCropper, BettyImage, CmsConfig, $modal;
 
   beforeEach(function () {
     module('bulbsCmsApp');
@@ -18,10 +18,10 @@ describe('ImageCropModalCtrl', function () {
       $controller = $injector.get('$controller');
       BettyCropper = $injector.get('BettyCropper');
       BettyImage = $injector.get('BettyImage');
-      PARTIALS_URL = $injector.get('PARTIALS_URL');
+      CmsConfig = $injector.get('CmsConfig');
 
       modalInstance = $modal.open({
-        templateUrl: PARTIALS_URL + 'image-crop-modal.html'
+        templateUrl: CmsConfig.getPartialsUrl() + 'image-crop-modal.html'
       });
 
     });

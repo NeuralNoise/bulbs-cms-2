@@ -2,10 +2,10 @@
 
 angular.module('bulbsCmsApp')
   .directive('slideshowPane', function ($http, $window, $compile, $, LOADING_IMG_SRC,
-      PARTIALS_URL, CmsImage) {
+      CmsConfig, CmsImage) {
     return {
       restrict: 'E',
-      templateUrl: PARTIALS_URL + 'slideshow-pane.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'slideshow-pane.html',
       scope: {
         article: '=',
         image: '=',

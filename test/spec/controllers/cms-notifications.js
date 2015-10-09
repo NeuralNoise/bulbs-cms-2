@@ -34,7 +34,7 @@ describe('Controller: CmsNotificationsCtrl', function () {
 
     }));
 
-    beforeEach(inject(function ($rootScope, $controller, CmsNotificationsApi, $window, CMS_NAMESPACE,
+    beforeEach(inject(function ($rootScope, $controller, CmsNotificationsApi, $window, CmsConfig,
                                 mockApiData, CurrentUser) {
 
       $httpBackend.expectGET('/cms/api/v1/notifications/').respond(mockApiData.notifications);
@@ -42,7 +42,7 @@ describe('Controller: CmsNotificationsCtrl', function () {
       CmsNotificationsCtrl = $controller('CmsNotificationsCtrl', {
         $window: $window,
         $scope: $scope,
-        CMS_NAMESPACE: CMS_NAMESPACE,
+        CmsConfig: CmsConfig,
         CmsNotificationsApi: CmsNotificationsApi,
         CurrentUser: CurrentUser
       });
@@ -155,7 +155,7 @@ describe('Controller: CmsNotificationsCtrl', function () {
 
     }));
 
-    beforeEach(inject(function ($rootScope, $controller, CmsNotificationsApi, $window, CMS_NAMESPACE, moment, CurrentUser) {
+    beforeEach(inject(function ($rootScope, $controller, CmsNotificationsApi, $window, CmsConfig, moment, CurrentUser) {
 
       var today = moment();
       $httpBackend.expectGET('/cms/api/v1/notifications/').respond([
@@ -174,7 +174,7 @@ describe('Controller: CmsNotificationsCtrl', function () {
       CmsNotificationsCtrl = $controller('CmsNotificationsCtrl', {
         $window: $window,
         $scope: $scope,
-        CMS_NAMESPACE: CMS_NAMESPACE,
+        CmsConfig: CmsConfig,
         CmsNotificationsApi: CmsNotificationsApi,
         CurrentUser: CurrentUser
       });

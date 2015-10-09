@@ -1,6 +1,7 @@
 'use strict';
 
 angular.module('content.edit.directive', [
+  'cms.config',
   'content.edit.authors',
   'content.edit.body',
   'content.edit.controller',
@@ -15,8 +16,8 @@ angular.module('content.edit.directive', [
   'utils'
 ])
   .directive('contentEdit', [
-    '$window', 'CMS_NAMESPACE', 'COMPONENTS_URL', 'Utils',
-    function ($window, CMS_NAMESPACE, COMPONENTS_URL, Utils) {
+    '$window', 'CmsConfig', 'COMPONENTS_URL', 'Utils',
+    function ($window, CmsConfig, COMPONENTS_URL, Utils) {
       return {
         controller: 'ContentEdit',
         link: function (scope) {
@@ -27,7 +28,7 @@ angular.module('content.edit.directive', [
           }, true);
 
           scope.$watch('article.title', function () {
-            $window.document.title = CMS_NAMESPACE +
+            $window.document.title = CmsConfig.getCmsTitle() +
                 ' | Editing ' +
                 (scope.article && scope.article.title ? scope.article.title : '');
           });

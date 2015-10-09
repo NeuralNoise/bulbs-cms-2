@@ -11,12 +11,12 @@ describe('Controller: DescriptionModalCtrl', function () {
         modalService;
 
     // initialize controller and a mock scope
-    beforeEach(inject(function ($controller, $rootScope, $modal, PARTIALS_URL) {
+    beforeEach(inject(function ($controller, $rootScope, $modal, CmsConfig) {
 
         scope = $rootScope.$new();
 
         // mock modal
-        var modalUrl = PARTIALS_URL + 'modals/description-modal.html';
+        var modalUrl = CmsConfig.getPartialsUrl() + 'modals/description-modal.html';
         modal = $modal.open({
             templateUrl: modalUrl
         });

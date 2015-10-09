@@ -17,12 +17,12 @@ describe('Controller: ChangelogmodalCtrl', function () {
   var article = {id: 1};
 
   // Initialize the controller and a mock scope
-  beforeEach(inject(function ($controller, $rootScope, $httpBackend, $modal, PARTIALS_URL, mockApiData) {
+  beforeEach(inject(function ($controller, $rootScope, $httpBackend, $modal, CmsConfig, mockApiData) {
     httpBackend = $httpBackend;
 
     mockChangelog = mockApiData['changelog'];
 
-    var modalUrl = PARTIALS_URL + 'modals/changelog-modal.html';
+    var modalUrl = CmsConfig.getPartialsUrl() + 'modals/changelog-modal.html';
     modal = $modal.open({
       templateUrl: modalUrl
     })

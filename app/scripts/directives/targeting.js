@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('targeting', function (PARTIALS_URL) {
+  .directive('targeting', function (CmsConfig) {
     return {
       restrict: 'E',
-      templateUrl: PARTIALS_URL + 'targeting.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'targeting.html',
       link: function (scope, element, attrs) {
         scope.addTargetingRow = function (index) {
           scope.targetingArray.push([]);

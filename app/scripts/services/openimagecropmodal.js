@@ -1,11 +1,11 @@
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .factory('openImageCropModal', function ($modal, PARTIALS_URL) {
+  .factory('openImageCropModal', function ($modal, CmsConfig) {
     var openImageCropModal = function (imageData, ratios) {
 
       return $modal.open({
-        templateUrl: PARTIALS_URL + 'image-crop-modal.html',
+        templateUrl: CmsConfig.getPartialsUrl() + 'image-crop-modal.html',
         controller: 'ImageCropModalCtrl',
         resolve: {
           imageData: function () { return imageData; },

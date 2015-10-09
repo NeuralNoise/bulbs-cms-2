@@ -3,15 +3,15 @@
 angular.module('bulbsCmsApp')
   .controller('ContentworkflowCtrl', [
     '$scope', '$modal', 'moment', 'VersionBrowserModalOpener',
-      'TemporaryUrlModalOpener', 'TIMEZONE_NAME', 'PARTIALS_URL',
+      'TemporaryUrlModalOpener', 'TIMEZONE_NAME', 'CmsConfig',
     function ($scope, $modal, moment, VersionBrowserModalOpener,
-        TemporaryUrlModalOpener, TIMEZONE_NAME, PARTIALS_URL) {
+        TemporaryUrlModalOpener, TIMEZONE_NAME, CmsConfig) {
 
       $scope.TIMEZONE_LABEL = moment.tz(TIMEZONE_NAME).format('z');
 
       $scope.trashContentModal = function (articleId) {
         return $modal.open({
-          templateUrl: PARTIALS_URL + 'modals/confirm-trash-modal.html',
+          templateUrl: CmsConfig.getPartialsUrl() + 'modals/confirm-trash-modal.html',
           controller: 'TrashcontentmodalCtrl',
           scope: $scope,
           resolve: {
@@ -24,7 +24,7 @@ angular.module('bulbsCmsApp')
 
       $scope.pubTimeModal = function (article) {
         return $modal.open({
-          templateUrl: PARTIALS_URL + 'modals/publish-date-modal.html',
+          templateUrl: CmsConfig.getPartialsUrl() + 'modals/publish-date-modal.html',
           controller: 'PubtimemodalCtrl',
           scope: $scope,
           resolve: {
@@ -35,7 +35,7 @@ angular.module('bulbsCmsApp')
 
       $scope.changelogModal = function (article) {
         return $modal.open({
-          templateUrl: PARTIALS_URL + 'modals/changelog-modal.html',
+          templateUrl: CmsConfig.getPartialsUrl() + 'modals/changelog-modal.html',
           controller: 'ChangelogmodalCtrl',
           scope: $scope,
           resolve: {
@@ -47,7 +47,7 @@ angular.module('bulbsCmsApp')
       $scope.thumbnailModal = function (article) {
         // open thumbnail modal along with its controller
         return $modal.open({
-          templateUrl: PARTIALS_URL + 'modals/thumbnail-modal.html',
+          templateUrl: CmsConfig.getPartialsUrl() + 'modals/thumbnail-modal.html',
           controller: 'ThumbnailModalCtrl',
           scope: $scope,
           resolve: {
@@ -58,7 +58,7 @@ angular.module('bulbsCmsApp')
 
       $scope.sponsorModal = function (article) {
         return $modal.open({
-          templateUrl: PARTIALS_URL + 'modals/sponsor-modal.html',
+          templateUrl: CmsConfig.getPartialsUrl() + 'modals/sponsor-modal.html',
           scope: $scope,
           controller: 'SponsormodalCtrl',
           resolve: {
@@ -77,7 +77,7 @@ angular.module('bulbsCmsApp')
 
       $scope.descriptionModal = function (article) {
         return $modal.open({
-          templateUrl: PARTIALS_URL + 'modals/description-modal.html',
+          templateUrl: CmsConfig.getPartialsUrl() + 'modals/description-modal.html',
           controller: 'DescriptionModalCtrl',
           scope: $scope,
           size: 'lg',

@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('articlecontainer', function (PARTIALS_URL, LOADING_IMG_SRC) {
+  .directive('articlecontainer', function (CmsConfig, LOADING_IMG_SRC) {
     return {
       restrict: 'E',
-      templateUrl: PARTIALS_URL + 'promotion-tool-article-container.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'promotion-tool-article-container.html',
       scope: {
         article: '='
       },

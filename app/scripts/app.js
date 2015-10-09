@@ -69,10 +69,10 @@ angular.module('bulbsCmsApp', [
   .config([
     '$provide', '$httpProvider', '$locationProvider', '$routeProvider', '$sceProvider',
       'TokenAuthConfigProvider', 'TokenAuthServiceProvider', 'CmsConfigProvider',
-      'COMPONENTS_URL', 'PARTIALS_URL', 'FirebaseConfigProvider',
+      'COMPONENTS_URL', 'FirebaseConfigProvider',
     function ($provide, $httpProvider, $locationProvider, $routeProvider, $sceProvider,
         TokenAuthConfigProvider, TokenAuthServiceProvider, CmsConfigProvider,
-        COMPONENTS_URL, PARTIALS_URL, FirebaseConfigProvider) {
+        COMPONENTS_URL, FirebaseConfigProvider) {
 
       // FirebaseConfigProvider
       //   .setDbUrl('')
@@ -80,9 +80,11 @@ angular.module('bulbsCmsApp', [
 
       $locationProvider.html5Mode(true);
 
+      var config = CmsConfigProvider.$get();
+
       $routeProvider
         .when('/', {
-          templateUrl: PARTIALS_URL + 'contentlist.html',
+          templateUrl: config.getPartialsUrl() + 'contentlist.html',
           controller: 'ContentlistCtrl',
           reloadOnSearch: false
         })
@@ -90,23 +92,23 @@ angular.module('bulbsCmsApp', [
           redirectTo: '/'
         })
         .when('/cms/app/edit/:id/contributions/', {
-          templateUrl: PARTIALS_URL + 'contributions.html',
+          templateUrl: config.getPartialsUrl() + 'contributions.html',
           controller: 'ContributionsCtrl'
         })
         .when('/cms/app/targeting/', {
-          templateUrl: PARTIALS_URL + 'targeting-editor.html',
+          templateUrl: config.getPartialsUrl() + 'targeting-editor.html',
           controller: 'TargetingCtrl'
         })
         .when('/cms/app/notifications/', {
-          templateUrl: PARTIALS_URL + 'cms-notifications.html',
+          templateUrl: config.getPartialsUrl() + 'cms-notifications.html',
           controller: 'CmsNotificationsCtrl'
         })
         .when('/cms/app/pzones/', {
-          templateUrl: PARTIALS_URL + 'pzones.html',
+          templateUrl: config.getPartialsUrl() + 'pzones.html',
           controller: 'PzoneCtrl'
         })
         .when('/cms/login/', {
-          templateUrl: COMPONENTS_URL + 'login/login.html'
+          templateUrl: config.getPartialsUrl() + 'login/login.html'
         })
         .otherwise({
           templateUrl: '/404.html'

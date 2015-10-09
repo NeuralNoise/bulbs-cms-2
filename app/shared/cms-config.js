@@ -8,6 +8,13 @@ angular.module('cms.config', [
     var apiPath = '';
     // root for all backend requests
     var backendRoot = '';
+    // title to display for cms
+    var cmsTitle = 'Smoove';
+    // create content modal template to use
+    var createContentTemplateUrl = '';
+    // mappings where pairs are <template-url>: <polymorphic_ctype[]>
+    //  for looking up edit page templates
+    var editPageMappings = {};
     // default width to request for images
     var imageDefaultWidth = 1200;
     // image server root
@@ -16,15 +23,14 @@ angular.module('cms.config', [
     var imageServerApiKey = '';
     // url to inline objects file
     var inlineObjectsUrl = '';
-    // create content modal template to use
-    var createContentTemplateUrl = '';
-    // mappings where pairs are <template-url>: <polymorphic_ctype[]>
-    //  for looking up edit page templates
-    var editPageMappings = {};
     // url for logo to display in CMS
     var logoUrl = '';
     // callback to fire when user is attempting to logout
     var logoutCallback = function () {};
+    // url where media item templates are stored, TODO : evaluate if this is necessary
+    var mediaItemsPartialsUrl = '/cms/api/partials/media_items/';
+    // urls where some templates are stored, TODO : remove this once templates are in pods
+    var partialsUrl = '/views/';
     // mappings where pairs are <name>: <template-url> for looking up toolbar templates
     var toolbarMappings = {};
 
@@ -65,6 +71,24 @@ angular.module('cms.config', [
       return this;
     };
 
+    this.setCmsTitle = function (value) {
+      if (_.isString(value)) {
+        cmsTitle = value;
+      } else {
+        throw error('cmsTitle must be a string!');
+      }
+      return this;
+    };
+
+    this.setCreateContentTemplateUrl = function (value) {
+      if (_.isString(value)) {
+        createContentTemplateUrl = value;
+      } else {
+        throw error('createContentTemplateUrl must be a string!');
+      }
+      return this;
+    };
+
     this.setImageDefaultWidth = function (num) {
       if (_.isNumber(num)) {
         imageDefaultWidth = num;
@@ -101,20 +125,29 @@ angular.module('cms.config', [
       return this;
     };
 
-    this.setCreateContentTemplateUrl = function (value) {
-      if (_.isString(value)) {
-        createContentTemplateUrl = value;
-      } else {
-        throw error('createContentTemplateUrl must be a string!');
-      }
-      return this;
-    };
-
     this.setLogoUrl = function (value) {
       if (_.isString(value)) {
         logoUrl = value;
       } else {
         throw error('logoUrl must be a string!');
+      }
+      return this;
+    };
+
+    this.setMediaItemsPartialsUrl = function (value) {
+      if (_.isString(value)) {
+        mediaItemsPartialsUrl = value;
+      } else {
+        throw error('mediaItemsPartialsUrl must be a string!');
+      }
+      return this;
+    };
+
+    this.setPartialsUrl = function (value) {
+      if (_.isString(value)) {
+        partialsUrl = value;
+      } else {
+        throw error('partialsUrl must be a string!');
       }
       return this;
     };
@@ -207,11 +240,14 @@ angular.module('cms.config', [
 
     this.$get = function () {
       return {
+        getCmsTitle: _.constant(cmsTitle),
         getCreateContentTemplateUrl: _.constant(createContentTemplateUrl),
         getImageDefaultWidth: _.constant(imageDefaultWidth),
         getImageServerApiKey: _.constant(imageServerApiKey),
         getInlineObjectsUrl: _.constant(inlineObjectsUrl),
         getLogoUrl: _.constant(logoUrl),
+        getMediaItemsPartialsUrl: _.constant(mediaItemsPartialsUrl),
+        getPartialsUrl: _.constant(partialsUrl),
         logoutCallback: logoutCallback,
         /**
          * Get the template url for given toolbar.

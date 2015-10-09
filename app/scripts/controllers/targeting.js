@@ -2,8 +2,8 @@
 
 angular.module('bulbsCmsApp')
   .controller('TargetingCtrl', function ($scope, $http, $window, $q, $location,
-      TAR_OPTIONS, CMS_NAMESPACE, CmsConfig) {
-    $window.document.title = CMS_NAMESPACE + ' | Targeting Editor';
+      TAR_OPTIONS, CmsConfig) {
+    $window.document.title = CmsConfig.getCmsTitle() + ' | Targeting Editor';
 
     var canceller;
     $scope.search = function (url) {

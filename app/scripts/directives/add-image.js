@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('addImage', function ($http, $window, PARTIALS_URL) {
+  .directive('addImage', function ($http, $window, CmsConfig) {
     return {
       restrict: 'E',
-      templateUrl: PARTIALS_URL + 'add-image.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'add-image.html',
       scope: {
         article: '='
       },

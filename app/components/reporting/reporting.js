@@ -1,6 +1,7 @@
 'use strict';
 
 angular.module('reporting', [
+  'cms.config',
   'reporting.directive'
 ])
   .config([
@@ -10,10 +11,10 @@ angular.module('reporting', [
       $routeProvider
         .when('/cms/app/reporting/', {
           controller: [
-            '$window', 'CMS_NAMESPACE',
-            function ($window, CMS_NAMESPACE) {
+            '$window', 'CmsConfig',
+            function ($window, CmsConfig) {
               // set title
-              $window.document.title = CMS_NAMESPACE + ' | Reporting';
+              $window.document.title = CmsConfig.getCmsTitle() + ' | Reporting';
             }
           ],
           templateUrl: COMPONENTS_URL + 'reporting/reporting-page.html'

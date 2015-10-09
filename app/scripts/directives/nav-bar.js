@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('navBar', function (CmsConfig, PARTIALS_URL) {
-    var defaultView = PARTIALS_URL + 'nav.html';
+  .directive('navBar', function (CmsConfig) {
+    var defaultView = CmsConfig.getPartialsUrl() + 'nav.html';
 
     return {
       controller: 'ContentworkflowCtrl',

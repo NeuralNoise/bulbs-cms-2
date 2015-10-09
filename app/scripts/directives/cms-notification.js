@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('cmsNotification', function (PARTIALS_URL) {
+  .directive('cmsNotification', function (CmsConfig) {
     return {
       restrict: 'E',
-      templateUrl: PARTIALS_URL + 'cms-notification.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'cms-notification.html',
       scope: {
         notification: '='
       },

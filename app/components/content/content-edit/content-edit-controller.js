@@ -4,16 +4,17 @@ angular.module('content.edit.controller', [
   'bulbs.cms.unsavedChangesGuard',
   'content.edit.linkBrowser',
   'content.edit.versionBrowser.api',
+  'cms.config',
   'cms.firebase'
 ])
   .controller('ContentEdit', function (
       $, $scope, $rootScope, $routeParams, $window, $location, $timeout, $q, $modal,
       _, moment, PNotify, VersionStorageApi, ContentFactory, FirebaseApi,
-      FirebaseArticleFactory, LinkBrowser, VersionBrowserModalOpener, PARTIALS_URL,
-      MEDIA_ITEM_PARTIALS_URL, CMS_NAMESPACE, UnsavedChangesGuard) {
+      FirebaseArticleFactory, LinkBrowser, VersionBrowserModalOpener, CmsConfig,
+      UnsavedChangesGuard) {
 
-    $scope.PARTIALS_URL = PARTIALS_URL;
-    $scope.MEDIA_ITEM_PARTIALS_URL = MEDIA_ITEM_PARTIALS_URL;
+    $scope.PARTIALS_URL = CmsConfig.getPartialsUrl();
+    $scope.MEDIA_ITEM_PARTIALS_URL = CmsConfig.getMediaItemsPartialsUrl();
     $scope.page = 'edit';
     $scope.saveArticleDeferred = null;
 
@@ -178,7 +179,7 @@ angular.module('content.edit.controller', [
             $scope.saveArticleDeferred.reject();
 
             $modal.open({
-              templateUrl: PARTIALS_URL + 'modals/last-modified-guard-modal.html',
+              templateUrl: CmsConfig.getPartialsUrl() + 'modals/last-modified-guard-modal.html',
               controller: 'LastmodifiedguardmodalCtrl',
               scope: $scope,
               resolve: {
