@@ -47,7 +47,7 @@ describe('Service: VersionStorageApi', function () {
     });
     $provide.service('FirebaseArticleFactory', function () {
       return {
-        $retrieveCurrentArticle: function () { return liveArticleMock; }
+        $retrieveArticle: function () { return liveArticleMock; }
       };
     });
     $provide.service('LocalStorageBackup', function () {

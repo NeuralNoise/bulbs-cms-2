@@ -11,8 +11,8 @@ angular.module('cms.firebase.articleFactory', [
   'lodash'
 ])
   .factory('FirebaseArticleFactory', [
-    '_', '$firebase', '$q', '$routeParams', 'CurrentUser', 'FirebaseApi', 'FirebaseConfig', 'moment',
-    function (_, $firebase, $q, $routeParams, CurrentUser, FirebaseApi, FirebaseConfig, moment) {
+    '_', '$firebase', '$q', 'CurrentUser', 'FirebaseApi', 'FirebaseConfig', 'moment',
+    function (_, $firebase, $q, CurrentUser, FirebaseApi, FirebaseConfig, moment) {
 
       /**
        * Create a new article.
@@ -169,16 +169,6 @@ angular.module('cms.firebase.articleFactory', [
           return retrievePromise;
 
         },
-        /**
-         * Retrieve current article object that is connected to firebase.
-         *
-         * @returns   deferred promise that will resolve with the current article object.
-         */
-        $retrieveCurrentArticle: function () {
-
-          return this.$retrieveArticle($routeParams.id);
-
-        }
 
       };
 

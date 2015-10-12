@@ -16,17 +16,17 @@ angular.module('content.edit.versionBrowser.api', [
   'cms.firebase'
 ])
   .factory('VersionStorageApi', [
-    '_', '$q', 'FirebaseApi', 'FirebaseArticleFactory', 'LocalStorageBackup',
-    function (_, $q, FirebaseApi, FirebaseArticleFactory, LocalStorageBackup) {
+    '_', '$q', '$routeParams', 'FirebaseApi', 'FirebaseArticleFactory', 'LocalStorageBackup',
+    function (_, $q, $routeParams, FirebaseApi, FirebaseArticleFactory, LocalStorageBackup) {
 
       // set up a promise for checking if we can authorize with firebase
-      var firebaseAvailableDefer = $q.defer(),
-          $firebaseAvailable = firebaseAvailableDefer.promise;
+      var firebaseAvailableDefer = $q.defer();
+      var $firebaseAvailable = firebaseAvailableDefer.promise;
       FirebaseApi.$authorize()
         .then(function () {
 
           // we have a firebase connection, use firebase for versioning
-          firebaseAvailableDefer.resolve(FirebaseArticleFactory.$retrieveCurrentArticle());
+          firebaseAvailableDefer.resolve(FirebaseArticleFactory.$retrieveArticle($routeParams.id));
 
         })
         .catch(function () {

@@ -12,6 +12,10 @@ angular.module('cms.firebase.api', [
     '$q', '$rootScope', 'CurrentUser', 'FirebaseConfig', 'FirebaseRefFactory',
     function ($q, $rootScope, CurrentUser, FirebaseConfig, FirebaseRefFactory) {
 
+      // set up a promise for authorization
+      var authDefer = $q.defer();
+      var $authorize = authDefer.promise;
+
       // get root reference in firebase for this site
       var rootRef;
       var connectedRef;
@@ -21,10 +25,6 @@ angular.module('cms.firebase.api', [
       } catch (e) {
         console.warn('Firebase url is invalid, FirebaseApi will prevent firebase from working: ' + e.message);
       }
-
-      // set up a promise for authorization
-      var authDefer = $q.defer(),
-          $authorize = authDefer.promise;
 
       // set up catch all for logging auth errors
       $authorize
@@ -57,6 +57,9 @@ angular.module('cms.firebase.api', [
             authDefer.reject();
           }
         });
+      } else {
+        // no root ref, reject authorization defer
+        authDefer.reject();
       }
 
       // emit events when firebase reconnects or disconnects, disconnect event
@@ -71,6 +74,8 @@ angular.module('cms.firebase.api', [
           }
           $rootScope.$emit('firebase-connection-state-changed');
         });
+      } else {
+        console.warn('No connection ref for Firebase, connection status cannot be tracked.');
       }
 
       // connection object

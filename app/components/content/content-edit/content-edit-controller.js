@@ -35,7 +35,7 @@ angular.module('content.edit.controller', [
 
           // get article and active users, register current user as active
           FirebaseArticleFactory
-            .$retrieveCurrentArticle()
+            .$retrieveArticle(data.id)
               .then(function ($article) {
 
                 var $activeUsers = $article.$activeUsers();

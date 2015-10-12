@@ -12,7 +12,7 @@ angular.module('content.edit.versionBrowser.api.backup', [
 ])
   .factory('LocalStorageBackup', [
     '_', '$q', '$routeParams', '$window', 'CurrentUser', 'moment',
-    function ($q, $routeParams, $window, moment, _, CurrentUser) {
+    function (_, $q, $routeParams, $window, CurrentUser, moment) {
 
       var keyPrefixArticle = 'article';
       var keyPrefix = keyPrefixArticle + '.' + $routeParams.id + '.';
@@ -102,9 +102,9 @@ angular.module('content.edit.versionBrowser.api.backup', [
         $versions: function () {
 
           // note: using a promise here to better match the version api functionality
-          var retrieveDefer = $q.defer(),
-              retrievePromise = retrieveDefer.promise,
-              versions =
+          var retrieveDefer = $q.defer();
+          var retrievePromise = retrieveDefer.promise;
+          var versions =
                 // loop through entries of local storage
                 _.chain($window.localStorage)
                   // pick only entries that are for this particular article
