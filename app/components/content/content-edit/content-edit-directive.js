@@ -2,6 +2,7 @@
 
 angular.module('content.edit.directive', [
   'cms.config',
+  'content.edit.activeUsers',
   'content.edit.authors',
   'content.edit.body',
   'content.edit.controller',

@@ -95,21 +95,8 @@
       </ul>
         <ul class="nav navbar-nav navbar-right" ng-show="page === 'edit'">
 
-          <li
-              class="content-status"
-              ng-show="firebaseConnected && activeUsers.length > 0"
-              ng-init="showActiveUsers = false;">
-            <a href="" ng-mouseenter="showActiveUsers = true;" ng-mouseleave="showActiveUsers = false;">
-              <i class="fa fa-eye"></i>
-              <span>Active Users ({{ activeUsers.length }})</span>
-            </a>
-            <div class="active-users" ng-show="showActiveUsers">
-                <ul>
-                    <li ng-repeat="user in activeUsers">
-                        <span>{{ user.displayName }}</span><span ng-show="user.count > 1"> ({{ user.count }})</span>
-                    </li>
-                </ul>
-            </div>
+          <li>
+            <content-edit-active-users article-id="articleId"></content-edit-active-users>
           </li>
 
           <li

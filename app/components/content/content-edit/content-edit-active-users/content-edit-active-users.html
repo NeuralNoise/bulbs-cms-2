@@ -1,0 +1,18 @@
+<div
+    ng-show="firebaseConnected && activeUsers.length > 0"
+    ng-init="showActiveUsers = false;">
+  <div
+      ng-mouseenter="showActiveUsers = true;"
+      ng-mouseleave="showActiveUsers = false;">
+    <i class="fa fa-eye"></i>
+    <span>Active Users ({{ activeUsers.length }})</span>
+  </div>
+  <div class="active-users" ng-show="showActiveUsers">
+    <ul>
+      <li ng-repeat="user in activeUsers">
+        <span>{{ user.displayName }}</span>
+        <span ng-show="user.count > 1"> ({{ user.count }})</span>
+      </li>
+    </ul>
+  </div>
+</div>
