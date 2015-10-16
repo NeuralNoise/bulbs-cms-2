@@ -55,6 +55,7 @@
     ".git*",
     ".jshintrc",
     ".travis.yml",
+    ".editorconfig",
     "Gruntfile.js",
     "karma.conf.js",
     "package.json",
