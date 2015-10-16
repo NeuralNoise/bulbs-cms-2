@@ -108,7 +108,7 @@ angular.module('bulbsCmsApp', [
           controller: 'PzoneCtrl'
         })
         .when('/cms/login/', {
-          templateUrl: config.getPartialsUrl() + 'login/login.html'
+          templateUrl: COMPONENTS_URL + 'login/login.html'
         })
         .otherwise({
           templateUrl: '/404.html'

@@ -24,7 +24,7 @@ describe('Controller: VideothumbnailmodalCtrl', function () {
       return {then: function () {}}
     }
 
-    var modalUrl = CmsConfig.getPartialsUrl() + 'modals/last-modified-guard-modal.html';
+    var modalUrl = CmsConfig.getPartialsUrl() + 'modals/video-thumbnail-modal.html';
     modal = $modal.open({
       templateUrl: modalUrl
     });

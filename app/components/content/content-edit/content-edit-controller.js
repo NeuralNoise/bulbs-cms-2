@@ -3,14 +3,16 @@
 angular.module('content.edit.controller', [
   'bulbs.cms.unsavedChangesGuard',
   'content.edit.lastModified',
+  'content.edit.lastModified.modal.factory',
   'content.edit.linkBrowser',
   'content.edit.versionBrowser.api',
   'cms.config'
 ])
   .controller('ContentEdit', function (
       $, $scope, $rootScope, $routeParams, $window, $location, $timeout, $q, $modal,
-      _, moment, VersionStorageApi, ContentFactory, LinkBrowser, VersionBrowserModalOpener,
-      CmsConfig, UnsavedChangesGuard, ContentEditLastModifiedGuard) {
+      _, moment, VersionStorageApi, ContentFactory, LastModifiedModal, LinkBrowser,
+      VersionBrowserModalOpener, CmsConfig, UnsavedChangesGuard,
+      ContentEditLastModifiedGuard) {
 
     $scope.PARTIALS_URL = CmsConfig.getPartialsUrl();
     $scope.MEDIA_ITEM_PARTIALS_URL = CmsConfig.getMediaItemsPartialsUrl();
@@ -51,24 +53,52 @@ angular.module('content.edit.controller', [
       // want to retrieve article again here to ensure that we don't overwrite
       //   someone else's changes
       ContentFactory.one('content', $scope.articleId).get()
-        .then(function (data) {
-          if (data.last_modified &&
-              $scope.article.last_modified &&
-              moment(data.last_modified) > moment($scope.article.last_modified)) {
+        .then(function (articleOnServer) {
+
+          // if (articleOnServer.last_modified &&
+          //     $scope.article.last_modified &&
+          //     moment(articleOnServer.last_modified) > moment($scope.article.last_modified)) {
+
+          if (true) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             // there's been another save since our last save, prevent saving without
             //  user validation
 
             $scope.saveArticleDeferred.reject();
 
-            $modal.open({
-              templateUrl: CmsConfig.getPartialsUrl() + 'modals/last-modified-guard-modal.html',
-              controller: 'LastmodifiedguardmodalCtrl',
-              scope: $scope,
-              resolve: {
-                articleOnPage: function () { return $scope.article; },
-                articleOnServer: function () { return data; }
-              }
-            });
+            var modalScope = $rootScope.$new();
+            modalScope.modalOnLoadChanges = function () {
+              // pull article from server and replace whatever data we need to
+              //  show the newest version
+              _.each(articleOnServer, function (value, key) {
+                $scope.article[key] = value;
+              });
+              $scope.articleIsDirty = true;
+            };
+            modalScope.modalOnOverwriteChanges = function () {
+              $scope.postValidationSaveArticle();
+            };
+            modalScope.articleOnServer = articleOnServer;
+            modalScope.articleOnPage = $scope.article;
+
+            // open modal
+            new LastModifiedModal(modalScope);
+
           } else {
             // okay to save, move to next step
             $scope.postValidationSaveArticle();
