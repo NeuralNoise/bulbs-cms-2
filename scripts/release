@@ -1,0 +1,85 @@
+#!/bin/bash -e
+#
+# Push latest dist to dist repo.
+
+
+BRANCH_NAME_RELEASE="publishing-strategy" # HACK : should be master
+
+
+
+
+
+BOWER_COMPONENTS=./bower_components
+LOG_PREFIX="[RELEASE] [$(date)]"
+NODE_MODULES=./node_modules
+NODE_BIN=$NODE_MODULES/.bin
+RELEASE_DIRECTORY=./dist
+RELEASE_REPO=git@github.com:theonion/bulbs-cms-2-release.git
+
+
+# user input
+RELEASE_TYPE=$1
+
+
+function secho {
+  echo "$LOG_PREFIX $1"
+}
+
+
+if [ -z $RELEASE_TYPE ]; then
+  secho "Must provide a relase type to this command ('major', 'minor', or 'fix'), exiting..."
+  exit 1
+fi
+
+
+secho "Starting release process..."
+BRANCH_NAME="$(git symbolic-ref --short HEAD)"
+if [ $BRANCH_NAME = $BRANCH_NAME_RELEASE ]; then
+  secho "On releasable branch '$BRANCH_NAME_RELEASE'"
+else
+  secho "You are currently on branch '$BRANCH_NAME', please switch to '$BRANCH_NAME_RELEASE' before running this command, exiting..."
+  exit 1
+fi
+
+if [ ! -d $RELEASE_DIRECTORY ]; then
+  secho "No release directory, creating it"
+  git clone $RELEASE_REPO $RELEASE_DIRECTORY
+fi
+
+secho "Pulling latest from release repo"
+(
+  cd dist
+  git pull
+)
+
+secho "Check that npm dependencies are in place"
+if [ ! -d $NODE_MODULES ]; then
+  npm install
+else
+  npm update
+fi
+
+secho "Check that bower dependencies are in place"
+if [ ! -d $BOWER_COMPONENTS ]; then
+  $NODE_BIN/bower install
+else
+  $NODE_BIN/bower update
+fi
+
+secho "Building sources"
+$NODE_BIN/grunt build
+
+secho "Increasing $RELEASE_TYPE version"
+node ./scripts/helpers/version-up.js $RELEASE_DIRECTORY/package.json $RELEASE_TYPE
+node ./scripts/helpers/version-up.js $RELEASE_DIRECTORY/bower.json $RELEASE_TYPE
+
+secho "Committing release"
+NEW_VERSION="$(node ./scripts/helpers/version-read.js $RELEASE_DIRECTORY/package.json)"
+(
+  cd dist
+  git add --all && git commit -m "Version up to $NEW_VERSION"
+  git tag -a $NEW_VERSION -m "Version up to $NEW_VERSION"
+  git push origin && git push origin --tags
+)
+
+secho "Release complete."

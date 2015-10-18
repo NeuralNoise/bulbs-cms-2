@@ -1,12 +1,8 @@
 {
   "name": "bulbs-cms-2",
-  "version": "0.0.2",
+  "description": "Don't install via bower.",
+  "version": "0.0.0",
   "private": true,
-  "main": [
-    "dist/scripts/scripts.js",
-    "dist/scripts/templates.js",
-    "dist/styles/main.css"
-  ],
   "dependencies": {
     "Keypress": "~2.0.2",
     "angular": "~1.3.0",
@@ -48,19 +44,6 @@
     "angular-mocks": "~1.3.0",
     "firebase-token-generator": "~1.1.3"
   },
-  "ignore": [
-    "app",
-    "tasks",
-    "test",
-    ".git*",
-    ".jshintrc",
-    ".travis.yml",
-    ".editorconfig",
-    "Gruntfile.js",
-    "karma.conf.js",
-    "package.json",
-    "protractor.conf.js"
-  ],
   "resolutions": {
     "lodash": "~3.1.0",
     "zeroclipboard": "~2.2.0"
