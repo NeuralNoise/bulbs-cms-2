@@ -10,6 +10,6 @@ var Versioner = require('./versioner.js');
 var jsonFile = process.argv[2];     // a JSON file
 
 
-new Versioner(jsonFile, function (version, json) {
+Versioner.getVersion(jsonFile, function (version, json) {
   console.log([version.major, version.minor, version.fix].join('.'));
 });
