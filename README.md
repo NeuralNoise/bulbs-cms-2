@@ -9,7 +9,7 @@ To create a new release there, first ensure you're on the ```master``` branch, t
 ```bash
 $ npm run release <versioning-type>
 ```
-where ```versioning-type``` is one of ```major```, ```minor```, or ```fix```.
+where ```versioning-type``` is one of ```major```, ```minor```, or ```patch```.
 See [semver](http://semver.org/) for an explanation of what each of these types
 of versionings mean.
 

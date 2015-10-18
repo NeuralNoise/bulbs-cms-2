@@ -1,7 +1,7 @@
 /**
  * Opens a JSON file provided as the first argument to this script, searches for
  *  "version" key in the root object, versions up that key based on the
- *  second argument to this script ('major', 'minor', 'fix'), then writes the
+ *  second argument to this script ('major', 'minor', 'patch'), then writes the
  *  JSON back to the file with the new version.
  */
 
@@ -11,17 +11,17 @@ var fs = require('fs');
 
 var Versioner = require('./versioner.js');
 
-var jsonFile = process.argv[2];     // a JSON file
-var versionType = process.argv[3];  // 'major', 'minor', 'fix'
+var jsonFile = process.argv[2];     // path to a JSON file
+var versionType = process.argv[3];  // 'major', 'minor', 'patch'
 
 
 Versioner.getVersion(jsonFile, function (version, json) {
-  var newVersionSplit = [version.major, version.minor, version.fix];
+  var newVersionSplit = [version.major, version.minor, version.patch];
   if (versionType === 'major') {
     newVersionSplit[0]++;
   } else if (versionType === 'minor') {
     newVersionSplit[1]++;
-  } else if (versionType === 'fix') {
+  } else if (versionType === 'patch') {
     newVersionSplit[2]++;
   } else {
     Versioner.exitWithError('Invalid version type "%s" provided!', versionType);

@@ -42,9 +42,9 @@ module.exports = {
       var version = {
         major: Number(versionSplit[0]),
         minor: Number(versionSplit[1]),
-        fix: Number(versionSplit[2])
+        patch: Number(versionSplit[2])
       };
-      if (isNaN(version.major) || isNaN(version.minor) || isNaN(version.fix)) {
+      if (isNaN(version.major) || isNaN(version.minor) || isNaN(version.patch)) {
         self.exitWithError('Invalid version string "%s" in "%s"!', versionString);
       }
 

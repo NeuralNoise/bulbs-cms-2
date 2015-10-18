@@ -11,5 +11,5 @@ var jsonFile = process.argv[2];     // a JSON file
 
 
 Versioner.getVersion(jsonFile, function (version, json) {
-  console.log([version.major, version.minor, version.fix].join('.'));
+  console.log([version.major, version.minor, version.patch].join('.'));
 });
