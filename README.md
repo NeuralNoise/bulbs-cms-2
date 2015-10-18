@@ -7,8 +7,11 @@ Releases are located in [bulbs-cms-2-release](https://github.com/theonion/bulbs-
 
 To create a new release there, first ensure you're on the ```master``` branch, then:
 ```bash
-$ npm run release
+$ npm run release <versioning-type>
 ```
+where ```versioning-type``` is one of ```major```, ```minor```, or ```fix```.
+See [semver](http://semver.org/) for an explanation of what each of these types
+of versionings mean.
 
 Which will build, version up, push your changes to ```bulbs-cms-2-release```, then
 create a new release tag in that repo.
