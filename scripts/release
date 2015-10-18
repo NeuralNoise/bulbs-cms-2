@@ -3,12 +3,7 @@
 # Push latest dist to dist repo.
 
 
-BRANCH_NAME_RELEASE="publishing-strategy" # HACK : should be master
-
-
-
-
-
+BRANCH_NAME_RELEASE="master"
 BOWER_COMPONENTS=./bower_components
 LOG_PREFIX="[RELEASE] [$(date)]"
 NODE_MODULES=./node_modules
