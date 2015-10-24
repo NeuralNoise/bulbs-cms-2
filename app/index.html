@@ -34,7 +34,6 @@
     <link rel="stylesheet" href="styles/edit-page.css">
     <link rel="stylesheet" href="styles/feature-image.css">
     <link rel="stylesheet" href="styles/font-awesome.css">
-    <link rel="stylesheet" href="styles/last-modified-preview.css">
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/temporary-url-modal.css">
     <link rel="stylesheet" href="styles/variables.css">
@@ -51,7 +50,7 @@
         }
     </script>
   </head>
-  <body ng-app="bulbsCmsAppDev">
+  <body ng-app="app.dev">
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
@@ -323,85 +322,17 @@
     <script src="/angular-mocks/angular-mocks.js"></script>
 
     <script>
-        window.loggedInUser = null;
+      window.loggedInUser = null;
 
-        //these probably don't need to be constants
-        //but there probably isn't any reason for them to not be
-        //so...
-        // ¯\_(ツ)_/¯
+      window.dummySearchHandler = function(term, resultsElement, filtersElement) {
+        filtersElement.html('<b>Filtering on:</b><br><button class="toggle-filter active">Donald Trump</button><button class="toggle-filter">Parents</button>')
+        resultsElement.html("<b>Searching for: " + term + "</b><br><a href='/fart/'>Fart</a><br><a href='/butt/'>Butt</a><br><a href='/dumb/'>Dumb</a><br>");
+      };
 
-        angular.module('apiServices.settings', []).constant('API_URL_ROOT', '/cms/api/v1/');
-
-        angular.module('bulbsCmsApp')
-          .config(function ($httpProvider, CmsConfigProvider, TokenAuthConfigProvider,
-              TokenAuthServiceProvider, DIRECTIVE_PARTIALS_URL, FirebaseConfigProvider) {
-
-            CmsConfigProvider
-                .setApiPath('/cms/api/v1/')
-                .setLogoUrl('/images/onion-logo.png')
-                .setPartialsUrl('/views/')
-                .setToolbarMappings({
-                  toolbar: CmsConfigProvider.$get().getPartialsUrl() + 'toolbar.html'
-                })
-                .addEditPageMapping(
-                  '/content_type_views/content_content.html',
-                  'content_content'
-                )
-                .setCreateContentTemplateUrl(DIRECTIVE_PARTIALS_URL + 'create-content.html')
-                .setImageServerRoot('http://clickholeimg.local')
-                .setImageServerApiKey('some-bc-api-key')
-                .setInlineObjectsUrl('/static/inline-objects.json');
-
-            FirebaseConfigProvider.setDbUrl('');
-
-            TokenAuthConfigProvider.setLogoUrl('/images/onion-logo.png');
-            TokenAuthConfigProvider.setApiHost('');
-
-            $httpProvider.interceptors.push('TokenAuthInterceptor');
-          });
-
-        angular.module('bulbsCmsApp.settings')
-          .constant('AUTO_ADD_AUTHOR', true)
-          .constant('CONTENT_PARTIALS_URL', '/content_type_views/')
-          .constant('COMPONENTS_URL', '/components/')
-          .constant('CUSTOM_VIDEO_POSTER_URL', 'http://chimg.onionstatic.com/{{image}}/{{ratio}}/600.jpg')
-          .constant('DIRECTIVE_PARTIALS_URL', '/views/')
-          .constant('EXTERNAL_URL', 'onion.local')
-          .constant('FIREBASE_ROOT', 'bulbs-cms-testing')
-          .constant('LOADING_IMG_SRC', '/images/loading.gif')
-          .constant('RESTANGULAR_API_URL_ROOT', '/cms/api/v1')
-          .constant('SHARED_URL', '/shared/')
-          .constant('STATIC_URL', '/static/')
-          .constant('TAR_OPTIONS', { endpoint: '/ads/targeting' })
-          .constant('TIMEZONE_NAME', 'America/Chicago')
-          .constant('VIDEO_EMBED_URL', 'http://www.avclub.com/videos/embed?id=')
-          .constant('VIDEO_THUMBNAIL_URL', 'http://v.theonion.com/avclubmedia/video/{{video}}/frame_{{thumbnail}}.jpg')
-          .constant('ZERO_CLIPBOARD_SWF', '/zeroclipboard/dist/ZeroClipboard.swf');
-
-        angular.module('customSearch.settings')
-          .constant('CUSTOM_SEARCH_TIME_PERIODS', [{
-            name: 'Past Day',
-            value: 'Past day'
-          }, {
-            name: 'Past Week',
-            value: 'Past week'
-          }, {
-            name: 'Past Month',
-            value: 'Past month'
-          }]);
-
-        angular.module('VideohubClient.settings')
-          .constant('VIDEOHUB_API_BASE_URL', 'http://videohub.local/api/v0')
-          .constant('VIDEOHUB_SECRET_TOKEN', 'BLAH BLAH')
-          .constant('VIDEOHUB_DEFAULT_CHANNEL', 'The Onion');
-
-        window.dummySearchHandler = function(term, resultsElement, filtersElement) {
-          filtersElement.html('<b>Filtering on:</b><br><button class="toggle-filter active">Donald Trump</button><button class="toggle-filter">Parents</button>')
-          resultsElement.html("<b>Searching for: " + term + "</b><br><a href='/fart/'>Fart</a><br><a href='/butt/'>Butt</a><br><a href='/dumb/'>Dumb</a><br>");
-        };
-
+      angular.module('apiServices.settings', []).constant('API_URL_ROOT', '/cms/api/v1/');
     </script>
 
+    <script src="mocks/development-config.js"></script>
     <script src="mocks/api-mock-data.js"></script>
     <script src="mocks/api.js"></script>
     <script src="mocks/api/api-campaign.js"></script>
@@ -412,24 +343,45 @@
 
     <script src="mocks/newapp.js"></script>
     <script src="scripts/api/mock.js"></script>
+    <script src="mocks/app.js"></script>
 
     <script>
-        angular.module('bulbsCmsAppDev', ['bulbsCmsApp.mockApi', 'bulbsCmsApp', 'bulbs.api.mock'])
-          .config(function (StatusFilterOptionsProvider) {
-            StatusFilterOptionsProvider.setStatuses([
-              {label: 'Filter 1', key: 'filter1key', value: 'charizard'},
-              {label: 'Filter 2', key: 'filter2key', value: function(){ return moment().unix(); }},
-              {label: 'Filter 3', key: 'filter2key', value: function(){ return "cool"; }},
-              {label: 'All', key: null, value: null}
-            ]);
-          });
+      angular.module('bulbsCmsApp.settings')
+        .constant('AUTO_ADD_AUTHOR', true)
+        .constant('CONTENT_PARTIALS_URL', '/content_type_views/')
+        .constant('COMPONENTS_URL', '/components/')
+        .constant('CUSTOM_VIDEO_POSTER_URL', 'http://chimg.onionstatic.com/{{image}}/{{ratio}}/600.jpg')
+        .constant('DIRECTIVE_PARTIALS_URL', '/views/')
+        .constant('EXTERNAL_URL', 'onion.local')
+        .constant('FIREBASE_ROOT', 'bulbs-cms-testing')
+        .constant('LOADING_IMG_SRC', '/images/loading.gif')
+        .constant('RESTANGULAR_API_URL_ROOT', '/cms/api/v1')
+        .constant('SHARED_URL', '/shared/')
+        .constant('STATIC_URL', '/static/')
+        .constant('TAR_OPTIONS', { endpoint: '/ads/targeting' })
+        .constant('TIMEZONE_NAME', 'America/Chicago')
+        .constant('VIDEO_EMBED_URL', 'http://www.avclub.com/videos/embed?id=')
+        .constant('VIDEO_THUMBNAIL_URL', 'http://v.theonion.com/avclubmedia/video/{{video}}/frame_{{thumbnail}}.jpg')
+        .constant('ZERO_CLIPBOARD_SWF', '/zeroclipboard/dist/ZeroClipboard.swf');
 
-        //huhhhhh
-        $("body").on("click", "a", function(e){
-          if($(this).attr("target") == "_blank") return true;
-          $(this).attr("target", "_self");
-        });
+      angular.module('customSearch.settings')
+        .constant('CUSTOM_SEARCH_TIME_PERIODS', [{
+          name: 'Past Day',
+          value: 'Past day'
+        }, {
+          name: 'Past Week',
+          value: 'Past week'
+        }, {
+          name: 'Past Month',
+          value: 'Past month'
+        }]);
+
+      angular.module('VideohubClient.settings')
+        .constant('VIDEOHUB_API_BASE_URL', 'http://videohub.local/api/v0')
+        .constant('VIDEOHUB_SECRET_TOKEN', 'BLAH BLAH')
+        .constant('VIDEOHUB_DEFAULT_CHANNEL', 'The Onion');
     </script>
+
     <bug-reporter></bug-reporter>
     <firebase-save-reporter></firebase-save-reporter>
 

@@ -11,11 +11,15 @@ angular.module('bulbsCmsApp.mockApi', [
   'bulbsCmsApp.mockApi.specialCoverage',
   'bulbsCmsApp.mockApi.sections',
 
-  'VideohubClient.api.mocks'
+  'VideohubClient.api.mocks',
+
+  'bulbs.cms.development.config'
 ])
 .run([
   '$httpBackend', 'mockApiData', 'moment', '_', 'localStorageService',
-  function ($httpBackend, mockApiData, moment, _, localStorageService) {
+    'CmsDevelopmentConfig',
+  function ($httpBackend, mockApiData, moment, _, localStorageService,
+      CmsDevelopmentConfig) {
 
     var today = moment();
 
@@ -415,8 +419,8 @@ angular.module('bulbsCmsApp.mockApi', [
       }
     ];
 
-    var tokenGenerator;
-    // var tokenGenerator = new FirebaseTokenGenerator('');
+    var firebaseSecret = CmsDevelopmentConfig.getFirebaseSecretToken();
+    var tokenGenerator = firebaseSecret ? new FirebaseTokenGenerator(firebaseSecret) : null;
 
     var addFirebaseTokenProperty = function (user) {
       if (tokenGenerator) {
