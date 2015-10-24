@@ -43,7 +43,7 @@ angular.module('cms.firebase.api', [
           //  in an environment where firebase isn't set up yet
           if ('firebase_token' in user && user.firebase_token) {
             // authorize user
-            rootRef.auth(user.firebase_token, function (error) {
+            rootRef.authWithCustomToken(user.firebase_token, function (error) {
               if (error) {
                 // authorization failed
                 authDefer.reject(error);

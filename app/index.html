@@ -82,10 +82,8 @@
     <script src="/jquery-ui/jquery-ui.js"></script>
     <script src="/angular-ui-sortable/sortable.js"></script>
     <script src="/angular-uuid4/angular-uuid4.js"></script>
-    <script src="/firebase/firebase.js"></script>
-    <script src="/firebase-simple-login/firebase-simple-login.js"></script>
-    <script src="/mockfirebase/dist/mockfirebase.js"></script>
-    <script src="/angularfire/dist/angularfire.min.js"></script>
+    <script src="/firebase/firebase-debug.js"></script>
+    <script src="/angularfire/dist/angularfire.js"></script>
     <script src="/lodash/lodash.js"></script>
     <script src="/bulbs-autocomplete/dist/bulbs-autocomplete.js"></script>
     <script src="/bulbs-public-embed-instagram/dist/jquery.instagram-embed-processor.js"></script>
@@ -108,7 +106,7 @@
     <script src="/token-auth-frontend/dist/token-auth.js"></script>
     <script src="/urlify/urlify.js"></script>
     <script src="/videohub-client-js/dist/videohub-client.js"></script>
-    <script src="/firebase-token-generator/build/firebase-token-generator.js"></script>
+    <script src="/firebase-token-generator/dist/firebase-token-generator.js"></script>
     <!-- endbower -->
     <script src="/jcrop/js/jquery.Jcrop.min.js"></script>
     <!-- endbuild -->
@@ -324,7 +322,7 @@
 
     <script src="/angular-mocks/angular-mocks.js"></script>
 
-    <script type="text/javascript">
+    <script>
         window.loggedInUser = null;
 
         //these probably don't need to be constants
@@ -336,7 +334,8 @@
 
         angular.module('bulbsCmsApp')
           .config(function ($httpProvider, CmsConfigProvider, TokenAuthConfigProvider,
-              TokenAuthServiceProvider, DIRECTIVE_PARTIALS_URL) {
+              TokenAuthServiceProvider, DIRECTIVE_PARTIALS_URL, FirebaseConfigProvider) {
+
             CmsConfigProvider
                 .setApiPath('/cms/api/v1/')
                 .setLogoUrl('/images/onion-logo.png')
@@ -352,6 +351,8 @@
                 .setImageServerRoot('http://clickholeimg.local')
                 .setImageServerApiKey('some-bc-api-key')
                 .setInlineObjectsUrl('/static/inline-objects.json');
+
+            FirebaseConfigProvider.setDbUrl('');
 
             TokenAuthConfigProvider.setLogoUrl('/images/onion-logo.png');
             TokenAuthConfigProvider.setApiHost('');

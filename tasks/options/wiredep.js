@@ -23,6 +23,9 @@ module.exports = {
           './dist/js/bootstrap.js'
         ]
       },
+      firebase: {
+        main: 'firebase-debug.js'
+      },
       // don't use anything from font-awesome, we manually compile these
       'font-awesome': {
         main: []

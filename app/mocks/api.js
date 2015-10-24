@@ -384,8 +384,6 @@ angular.module('bulbsCmsApp.mockApi', [
     // send to webtech (fickle)
     $httpBackend.whenPOST('/cms/api/v1/report-bug/').respond('');
 
-    // var tokenGenerator = new FirebaseTokenGenerator('');
-
     // users
     mockApiData.users = [
       {
@@ -395,13 +393,7 @@ angular.module('bulbsCmsApp.mockApi', [
         email: 'webtech@theonion.com',
         first_name: 'Herman',
         last_name: 'Zweibel',
-        is_superuser: true,
-      //  firebase_token: tokenGenerator.createToken({
-      //    id: 0,
-      //    username: 'admin',
-      //    email: 'webtech@theonion.com',
-      //    is_staff: true
-      //  })
+        is_superuser: true
       },
       {
         id: 1,
@@ -410,12 +402,7 @@ angular.module('bulbsCmsApp.mockApi', [
         email: 'jadams@theonion.com',
         first_name: 'John',
         last_name: 'Adams',
-      //  firebase_token: tokenGenerator.createToken({
-      //    id: 1,
-      //    username: 'jadams',
-      //    email: 'jadams@theonion.com',
-      //    is_staff: true
-      //  })
+        is_staff: true
       },
       {
         id: 2,
@@ -424,14 +411,26 @@ angular.module('bulbsCmsApp.mockApi', [
         email: 'bdole@theonion.com',
         first_name: 'Bob',
         last_name: 'Dole Dole Dole Dole Dole Dole',
-      //  firebase_token: tokenGenerator.createToken({
-      //    id: 2,
-      //    username: 'bdoledoledoledoledoledole',
-      //    email: 'bdole@theonion.com',
-      //    is_staff: true
-      //  })
+        is_staff: true
       }
     ];
+
+    var tokenGenerator;
+    // var tokenGenerator = new FirebaseTokenGenerator('');
+
+    var addFirebaseTokenProperty = function (user) {
+      if (tokenGenerator) {
+        user.firebase_token = tokenGenerator.createToken({
+          uid: String(user.id),
+          username: user.username,
+          email: user.email,
+          is_staff: user.is_superuser || user.is_staff || false
+        });
+      }
+    };
+    addFirebaseTokenProperty(mockApiData.users[0]);
+    addFirebaseTokenProperty(mockApiData.users[1]);
+    addFirebaseTokenProperty(mockApiData.users[2]);
 
     var lsUserKey = 'devLoggedInUser';
     $httpBackend.whenPOST('/token/auth').respond(function (method, url, data) {
