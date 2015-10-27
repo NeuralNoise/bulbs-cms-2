@@ -20,8 +20,9 @@ origin	git@github.com:theonion/bulbs-cms-2.git (fetch)
 origin	git@github.com:theonion/bulbs-cms-2.git (push)
 ```
 
-Now, to merge in changes from ```old-bulbs-cms/relocated-cms```:
+Now, to merge in changes from ```old-bulbs-cms/relocated-cms``` into a new branch:
 ```bash
+$ git checkout -b <YOUR_BRANCH_NAME>
 $ git fetch old-bulbs-cms
 $ git merge old-bulbs-cms/relocated-cms
 ```
@@ -31,7 +32,9 @@ Resolve any differences, then commit without a message (just use the default mes
 $ git commit
 ```
 
-Then push to master:
+Then push to your branch:
 ```bash
 $ git push
 ```
+
+Now, create a PR and get verification to merge into master.
