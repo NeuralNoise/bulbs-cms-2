@@ -2,8 +2,22 @@
 
 ## Development
 
+### Creating a new release
+Releases are located in [bulbs-cms-2-release](https://github.com/theonion/bulbs-cms-2-release).
+
+To create a new release there, first ensure you're on the ```master``` branch, then:
+```bash
+$ npm run release <versioning-type>
+```
+where ```versioning-type``` is one of ```major```, ```minor```, or ```patch```.
+See [semver](http://semver.org/) for an explanation of what each of these types
+of versionings mean.
+
+Which will build, version up, push your changes to ```bulbs-cms-2-release```, then
+create a new release tag in that repo.
+
 ### Fetching changes from bulbs-cms
-This repo should be following the changes in [bulbs-cms/relocated-cms ](https://github.com/theonion/bulbs-cms/tree/relocated-cms) until that branch is deleted.
+This repo should be following the changes in [bulbs-cms/relocated-cms](https://github.com/theonion/bulbs-cms/tree/relocated-cms) until that branch is deleted.
 
 To merge in changes from that branch, first, add the original ```bulbs-cms``` repo as a fetch-only remote:
 ```bash
