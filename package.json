@@ -63,6 +63,7 @@
   },
   "scripts": {
     "test": "grunt travis",
-    "release": "./scripts/release"
+    "release": "./scripts/release",
+    "example": "./node_modules/.bin/grunt serve"
   }
 }
