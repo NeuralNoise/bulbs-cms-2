@@ -2,6 +2,13 @@
 
 ## Development
 
+### Running locally
+To run this project locally, based on mocked out data:
+```bash
+$ npm install && bower install
+$ npm run example
+```
+
 ### Creating a new release
 Releases are located in [bulbs-cms-2-release](https://github.com/theonion/bulbs-cms-2-release).
 
