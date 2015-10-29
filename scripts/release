@@ -69,7 +69,7 @@ secho "Ensure README.md table of contents is updated"
 node $HELPERS_DIR/table-of-contents-update.js
 
 secho "Copy bower dependencies and resolutions from development to dist"
-node $HELPERS_DIR/copy-json-keys ./bower.json $RELEASE_DIR/bower.json dependencies,resolutionsd
+node $HELPERS_DIR/copy-json-keys ./bower.json $RELEASE_DIR/bower.json dependencies,resolutions
 
 secho "Increasing $RELEASE_TYPE version"
 node $HELPERS_DIR/version-up.js $RELEASE_DIR/package.json $RELEASE_TYPE

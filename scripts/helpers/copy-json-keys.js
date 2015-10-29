@@ -19,7 +19,11 @@ ReadJsonFile.getJSON(jsonFileFrom, function (jsonFrom) {
   ReadJsonFile.getJSON(jsonFileTo, function (jsonTo) {
 
     splitKeys.forEach(function (key) {
-      jsonTo[key] = jsonFrom[key];
+      if (jsonFrom.hasOwnProperty(key)) {
+        jsonTo[key] = jsonFrom[key];
+      } else {
+        ConsoleHelper.exitWithError('Unable to find key "%s" in origin file "%s"');
+      }
     });
 
     fs.writeFile(jsonFileTo, JSON.stringify(jsonTo, null, 2), function (error) {
