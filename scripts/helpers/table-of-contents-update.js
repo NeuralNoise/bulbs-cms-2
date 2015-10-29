@@ -7,12 +7,14 @@
 var fs = require('fs');
 var toc = require('markdown-toc');
 
+var ConsoleHelper = require('console-helper');
+
+
 var README_PATH = 'README.md';
 
 fs.readFile(README_PATH, 'utf-8', function (error, data) {
   if (error) {
-    console.error(error);
-    process.exit(1);
+    ConsoleHelper.exitWithError(error);
   }
 
   var withToc = toc.insert(data, {
