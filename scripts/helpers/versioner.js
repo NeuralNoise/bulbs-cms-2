@@ -4,19 +4,11 @@
 
 'use strict';
 
-var fs = require('fs');
+var ConsoleHelper = require('./console-helper');
+var ReadJsonFile = require('./read-json-file');
 
 
 module.exports = {
-  /**
-   * Log an error to console and exit the process with error code 1.
-   *
-   * @param {...} arguments to pass to console.error.
-   */
-  exitWithError: function () {
-    console.error(arguments);
-    process.exit(1);
-  },
   /**
    * Read the version from a given JSON file, operate on it with a callback.
    *
@@ -25,17 +17,10 @@ module.exports = {
    *  arguments (version, parsed file json).
    */
   getVersion: function (jsonFile, callback) {
-    var self = this;
-
-    fs.readFile(jsonFile, function(error, data) {
-      if (error) {
-        self.exitWithError(error);
-      }
-
-      var json = JSON.parse(data);
+    ReadJsonFile.getJSON(jsonFile, function (json) {
       var versionString = json.version;
       if (typeof(versionString) === 'undefined') {
-        self.exitWithError('No version string found in "%s"!', jsonFile);
+        ConsoleHelper.exitWithError('No version string found in "%s"!', jsonFile);
       }
 
       var versionSplit = versionString.split('.');
@@ -45,7 +30,7 @@ module.exports = {
         patch: Number(versionSplit[2])
       };
       if (isNaN(version.major) || isNaN(version.minor) || isNaN(version.patch)) {
-        self.exitWithError('Invalid version string "%s" in "%s"!', versionString);
+        ConsoleHelper.exitWithError('Invalid version string "%s" in "%s"!', versionString);
       }
 
       callback(version, json);

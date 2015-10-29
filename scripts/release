@@ -5,10 +5,11 @@
 
 BRANCH_NAME_RELEASE="master"
 BOWER_COMPONENTS=./bower_components
+HELPERS_DIR=./scripts/helpers
 LOG_PREFIX="[RELEASE] [$(date)]"
 NODE_MODULES=./node_modules
 NODE_BIN=$NODE_MODULES/.bin
-RELEASE_DIRECTORY=./dist
+RELEASE_DIR=./dist
 RELEASE_REPO=git@github.com:theonion/bulbs-cms-2-release.git
 
 
@@ -36,9 +37,9 @@ else
   exit 1
 fi
 
-if [ ! -d $RELEASE_DIRECTORY ]; then
+if [ ! -d $RELEASE_DIR ]; then
   secho "No release directory, creating it"
-  git clone $RELEASE_REPO $RELEASE_DIRECTORY
+  git clone $RELEASE_REPO $RELEASE_DIR
 fi
 
 secho "Pulling latest from release repo"
@@ -65,14 +66,17 @@ secho "Building sources"
 $NODE_BIN/grunt build
 
 secho "Ensure README.md table of contents is updated"
-node ./scripts/helpers/table-of-contents-update.js
+node $HELPERS_DIR/table-of-contents-update.js
+
+secho "Copy bower dependencies and resolutions from development to dist"
+node $HELPERS_DIR/copy-json-keys ./bower.json $RELEASE_DIR/bower.json dependencies,resolutionsd
 
 secho "Increasing $RELEASE_TYPE version"
-node ./scripts/helpers/version-up.js $RELEASE_DIRECTORY/package.json $RELEASE_TYPE
-node ./scripts/helpers/version-up.js $RELEASE_DIRECTORY/bower.json $RELEASE_TYPE
+node $HELPERS_DIR/version-up.js $RELEASE_DIR/package.json $RELEASE_TYPE
+node $HELPERS_DIR/version-up.js $RELEASE_DIR/bower.json $RELEASE_TYPE
 
 secho "Committing release"
-NEW_VERSION="$(node ./scripts/helpers/version-read.js $RELEASE_DIRECTORY/package.json)"
+NEW_VERSION="$(node $HELPERS_DIR/version-read.js $RELEASE_DIR/package.json)"
 (
   cd dist
   git add --all && git commit -m "Version up to $NEW_VERSION"
