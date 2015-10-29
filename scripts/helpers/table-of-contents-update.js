@@ -1,3 +1,7 @@
+/**
+ * Utility for updating the table of contents in README.md
+ */
+
 'use strict';
 
 var fs = require('fs');
