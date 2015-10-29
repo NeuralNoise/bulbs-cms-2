@@ -9,6 +9,7 @@
 
 var fs = require('fs');
 
+var ConsoleHelper = require('console-helper');
 var Versioner = require('./versioner.js');
 
 var jsonFile = process.argv[2];     // path to a JSON file
@@ -24,13 +25,13 @@ Versioner.getVersion(jsonFile, function (version, json) {
   } else if (versionType === 'patch') {
     newVersionSplit[2]++;
   } else {
-    Versioner.exitWithError('Invalid version type "%s" provided!', versionType);
+    ConsoleHelper.exitWithError('Invalid version type "%s" provided!', versionType);
   }
 
   json.version = newVersionSplit.join('.');
   fs.writeFile(jsonFile, JSON.stringify(json, null, 2), function (error) {
     if (error) {
-      Versioner.exitWithError(error);
+      ConsoleHelper.exitWithError(error);
     }
 
     console.log('Versioned up "%s" to "%s"', jsonFile, json.version);
