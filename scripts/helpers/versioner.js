@@ -4,8 +4,8 @@
 
 'use strict';
 
-var fs = require('fs');
-var ConsoleHelper = require('console-helper');
+var ConsoleHelper = require('./console-helper');
+var ReadJsonFile = require('./read-json-file');
 
 
 module.exports = {
@@ -17,12 +17,7 @@ module.exports = {
    *  arguments (version, parsed file json).
    */
   getVersion: function (jsonFile, callback) {
-    fs.readFile(jsonFile, function(error, data) {
-      if (error) {
-        ConsoleHelper.exitWithError(error);
-      }
-
-      var json = JSON.parse(data);
+    ReadJsonFile.getJSON(jsonFile, function (json) {
       var versionString = json.version;
       if (typeof(versionString) === 'undefined') {
         ConsoleHelper.exitWithError('No version string found in "%s"!', jsonFile);

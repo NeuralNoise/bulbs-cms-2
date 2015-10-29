@@ -7,7 +7,7 @@
 var fs = require('fs');
 var toc = require('markdown-toc');
 
-var ConsoleHelper = require('console-helper');
+var ConsoleHelper = require('./console-helper');
 
 
 var README_PATH = 'README.md';

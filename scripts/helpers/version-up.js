@@ -9,7 +9,7 @@
 
 var fs = require('fs');
 
-var ConsoleHelper = require('console-helper');
+var ConsoleHelper = require('./console-helper');
 var Versioner = require('./versioner.js');
 
 var jsonFile = process.argv[2];     // path to a JSON file
