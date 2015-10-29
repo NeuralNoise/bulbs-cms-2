@@ -64,6 +64,9 @@ fi
 secho "Building sources"
 $NODE_BIN/grunt build
 
+secho "Ensure README.md table of contents is updated"
+node ./scripts/helpers/table-of-contents-update.js
+
 secho "Increasing $RELEASE_TYPE version"
 node ./scripts/helpers/version-up.js $RELEASE_DIRECTORY/package.json $RELEASE_TYPE
 node ./scripts/helpers/version-up.js $RELEASE_DIRECTORY/bower.json $RELEASE_TYPE

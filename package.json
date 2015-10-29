@@ -53,6 +53,7 @@
     "karma-script-launcher": "~0.1.0",
     "load-grunt-config": "^0.17.1",
     "load-grunt-tasks": "~0.2.0",
+    "markdown-toc": "^0.11.7",
     "protractor": "^0.22.0",
     "requirejs": "~2.1.11",
     "shelljs": "~0.1.2",
@@ -64,6 +65,7 @@
   "scripts": {
     "test": "grunt travis",
     "release": "./scripts/release",
-    "example": "./node_modules/.bin/grunt serve"
+    "example": "./node_modules/.bin/grunt serve",
+    "update-readme-toc": "node ./scripts/helpers/table-of-contents-update.js"
   }
 }

@@ -1,5 +1,15 @@
 # Bulbs CMS
 
+<!-- markdown-toc -->
+
+- [Development](#development)
+  * [Running locally](#running-locally)
+  * [Creating a new release](#creating-a-new-release)
+  * [Fetching changes from bulbs-cms](#fetching-changes-from-bulbs-cms)
+  * [Updating table of contents](#updating-table-of-contents)
+
+<!-- markdown-toc-stop -->
+
 ## Development
 
 ### Running locally
@@ -59,3 +69,11 @@ $ git push
 ```
 
 Now, create a PR and get verification to merge into master.
+
+### Updating table of contents
+To update the table of contents based on new content in this README.md:
+```bash
+$ npm run update-readme-toc
+```
+
+Then commit your changes.
