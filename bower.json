@@ -46,8 +46,6 @@
   },
   "resolutions": {
     "lodash": "~3.1.0",
-    "zeroclipboard": "~2.2.0",
-    "bulbs-public-analytics-manager": "~0.1.0",
-    "bootstrap": "^3.1.1"
+    "zeroclipboard": "~2.2.0"
   }
 }
