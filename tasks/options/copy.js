@@ -70,8 +70,8 @@ module.exports = {
     dest: config.paths.tmp('font-awesome-less/'),
     src: [
       'styles/font-awesome/variables.less',
-      'bower_components/font-awesome/less/*.less',
-      '!bower_components/font-awesome/less/variables.less'
+      '../bower_components/font-awesome/less/*.less',
+      '!../bower_components/font-awesome/less/variables.less'
     ]
   },
   zeroclipboard: {

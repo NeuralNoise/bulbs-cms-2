@@ -10,25 +10,33 @@ angular.module('apiServices.customSearch.factory', [
   'lodash',
   'restmod'
 ])
-  .factory('CustomSearch', function (_, restmod, CustomSearchCount, CustomSearchGroupCount,
-      CustomSearchSettings) {
+  .factory('CustomSearch', [
+    '_', 'restmod', 'CustomSearchCount', 'CustomSearchGroupCount',
+      'CustomSearchSettings',
+    function (_, restmod, CustomSearchCount, CustomSearchGroupCount,
+        CustomSearchSettings) {
 
-    var CustomSearch = restmod.model(CustomSearchSettings.searchEndpoint).mix({
-      $hooks: {
-        'before-save': function (_req) {
-          _req.url += '/?page=' + _req.data.page;
+      var CustomSearch = restmod.model(CustomSearchSettings.searchEndpoint).mix({
+        $config: {
+          jsonRootSingle: 'results'
+        },
+        $hooks: {
+          'before-save': function (_req) {
+            _req.url += '/?page=' + _req.data.page;
+          }
         }
-      }
-    });
+      });
 
-    return {
-      $retrieveResultCount: CustomSearchCount.$retrieveResultCount,
-      $retrieveGroupCount: CustomSearchGroupCount.$retrieveResultCount,
-      $retrieveContent: function (query) {
-        return CustomSearch.$create(query).$asPromise()
-          .then(function (model) {
-            return model.$response.data;
-          });
-      }
-    };
-  });
+      return {
+        $retrieveResultCount: CustomSearchCount.$retrieveResultCount,
+        $retrieveGroupCount: CustomSearchGroupCount.$retrieveResultCount,
+        $retrieveContent: function (query) {
+          // HACK : because endpoint is a POST
+          return CustomSearch.$create(query).$asPromise()
+            .then(function (model) {
+              return model.$response.data;
+            });
+        }
+      };
+    }
+  ]);

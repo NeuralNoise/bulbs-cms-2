@@ -22,7 +22,7 @@
     "bulbs-public-embed-instagram": "https://github.com/theonion/bulbs-public-embed-instagram.git#~0.0.8",
     "es5-shim": "~2.1.0",
     "firebase": "1.0.21",
-    "font-awesome": "~4.1.0",
+    "font-awesome": "~4.4.0",
     "jcrop": "0.9.12",
     "jquery": "~2.1.0",
     "json3": "~3.2.6",
