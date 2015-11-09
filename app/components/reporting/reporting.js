@@ -86,6 +86,7 @@ angular.module('reports', [
                   {'title': 'Content ID', 'expression': 'id'},
                   {'title': 'Headline', 'expression': 'title'},
                   {'title': 'Feature Type', 'expression': 'feature_type'},
+                  {'title': 'Video', 'expression': 'video_id'},
                   {'title': 'Article Cost', 'expression': 'value'},
                   {'title': 'Date Published', 'expression': 'published | date: \'MM/dd/yyyy\''}
                 ],
