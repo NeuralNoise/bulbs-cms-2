@@ -4,6 +4,7 @@
 
 - [Development](#development)
   * [Running locally](#running-locally)
+  * [Running tests](#running-tests)
   * [Creating a new release](#creating-a-new-release)
   * [Fetching changes from bulbs-cms](#fetching-changes-from-bulbs-cms)
   * [Updating table of contents](#updating-table-of-contents)
@@ -17,6 +18,12 @@ To run this project locally, based on mocked out data:
 ```bash
 $ npm install && bower install
 $ npm run example
+```
+
+### Running tests
+To run tests:
+```bash
+$ npm test
 ```
 
 ### Creating a new release
@@ -51,11 +58,11 @@ origin	git@github.com:theonion/bulbs-cms-2.git (fetch)
 origin	git@github.com:theonion/bulbs-cms-2.git (push)
 ```
 
-Now, to merge in changes from ```old-bulbs-cms/relocated-cms``` into a new branch:
+Now, to merge in changes from ```old-bulbs-cms/master``` into a new branch:
 ```bash
 $ git checkout -b <YOUR_BRANCH_NAME>
 $ git fetch old-bulbs-cms
-$ git merge old-bulbs-cms/relocated-cms
+$ git merge old-bulbs-cms/master
 ```
 
 Resolve any differences, then commit without a message (just use the default message provided):
