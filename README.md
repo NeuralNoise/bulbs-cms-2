@@ -4,6 +4,7 @@
 
 - [Development](#development)
   * [Running locally](#running-locally)
+  * [Running tests](#running-tests)
   * [Creating a new release](#creating-a-new-release)
   * [Fetching changes from bulbs-cms](#fetching-changes-from-bulbs-cms)
   * [Updating table of contents](#updating-table-of-contents)
@@ -17,6 +18,12 @@ To run this project locally, based on mocked out data:
 ```bash
 $ npm install && bower install
 $ npm run example
+```
+
+### Running tests
+To run tests:
+```bash
+$ npm test
 ```
 
 ### Creating a new release
