@@ -55,14 +55,16 @@ angular.module('bulbsCmsApp', [
   'content',
   'content.video',
   'filterWidget',
+  'filterListWidget',
   'promotedContent',
-  'reporting',
   'sections',
   'sendToEditor',
   'specialCoverage',
   'statusFilter',
   'templateTypeField',
-
+  'specialCoverage',
+  'sections',
+  'reports',
   // TODO : remove these, here because they are used by unrefactored compontents
   'content.edit.versionBrowser.modal.opener'
 ])

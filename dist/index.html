@@ -34,7 +34,6 @@
     <link rel="stylesheet" href="styles/edit-page.css">
     <link rel="stylesheet" href="styles/feature-image.css">
     <link rel="stylesheet" href="styles/font-awesome.css">
-    <link rel="stylesheet" href="styles/last-modified-preview.css">
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/temporary-url-modal.css">
     <link rel="stylesheet" href="styles/variables.css">
@@ -51,7 +50,7 @@
         }
     </script>
   </head>
-  <body ng-app="bulbsCmsAppDev">
+  <body ng-app="app.dev">
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
@@ -82,7 +81,7 @@
     <script src="/jquery-ui/jquery-ui.js"></script>
     <script src="/angular-ui-sortable/sortable.js"></script>
     <script src="/angular-uuid4/angular-uuid4.js"></script>
-    <script src="/firebase/firebase.js"></script>
+    <script src="/firebase/firebase-debug.js"></script>
     <script src="/firebase-simple-login/firebase-simple-login.js"></script>
     <script src="/mockfirebase/dist/mockfirebase.js"></script>
     <script src="/angularfire/dist/angularfire.min.js"></script>
@@ -137,11 +136,16 @@
     <script src="components/campaigns/campaigns.js"></script>
     <script src="components/confirmation-modal/confirmation-modal-opener.js"></script>
     <script src="components/confirmation-modal/confirmation-modal.js"></script>
+    <script src="components/content/content-edit/content-edit-active-users/content-edit-active-users.js"></script>
     <script src="components/content/content-edit/content-edit-authors/content-edit-authors.js"></script>
     <script src="components/content/content-edit/content-edit-body/content-edit-body.js"></script>
     <script src="components/content/content-edit/content-edit-controller.js"></script>
+    <script src="components/content/content-edit/content-edit-directive.js"></script>
     <script src="components/content/content-edit/content-edit-editor-item/content-edit-editor-item-service.js"></script>
     <script src="components/content/content-edit/content-edit-editor-item/content-edit-editor-item.js"></script>
+    <script src="components/content/content-edit/content-edit-last-modified/content-edit-last-modified-modal-opener.js"></script>
+    <script src="components/content/content-edit/content-edit-last-modified/content-edit-last-modified-modal.js"></script>
+    <script src="components/content/content-edit/content-edit-last-modified/content-edit-last-modified.js"></script>
     <script src="components/content/content-edit/content-edit-link-browser/content-edit-link-browser.js"></script>
     <script src="components/content/content-edit/content-edit-main-image/content-edit-main-image.js"></script>
     <script src="components/content/content-edit/content-edit-section/content-edit-section.js"></script>
@@ -169,6 +173,8 @@
     <script src="components/custom-search/custom-search.js"></script>
     <script src="components/edit-pages/video/video.js"></script>
     <script src="components/editors-pick/editors-pick.js"></script>
+    <script src="components/filter-list-widget/filter-list-widget-directive.js"></script>
+    <script src="components/filter-list-widget/filter-list-widget.js"></script>
     <script src="components/filter-widget/filter-widget-directive.js"></script>
     <script src="components/filter-widget/filter-widget.js"></script>
     <script src="components/generic-ajax-button/generic-ajax-button-controller.js"></script>
@@ -192,6 +198,15 @@
     <script src="components/promoted-content/promoted-content-time-picker/promoted-content-time-picker.js"></script>
     <script src="components/promoted-content/promoted-content.js"></script>
     <script src="components/reporting/reporting-directive.js"></script>
+    <script src="components/reporting/reporting-line-items-edit/reporting-line-items-edit-directive.js"></script>
+    <script src="components/reporting/reporting-line-items-edit/reporting-line-items-edit.js"></script>
+    <script src="components/reporting/reporting-line-items-list/reporting-line-items-list.js"></script>
+    <script src="components/reporting/reporting-rate-overrides-edit/reporting-rate-overrides-directive.js"></script>
+    <script src="components/reporting/reporting-rate-overrides-edit/reporting-rate-overrides-edit.js"></script>
+    <script src="components/reporting/reporting-rate-overrides-list/reporting-rate-overrides-list.js"></script>
+    <script src="components/reporting/reporting-roles-edit/reporting-roles-edit-directive.js"></script>
+    <script src="components/reporting/reporting-roles-edit/reporting-roles-edit.js"></script>
+    <script src="components/reporting/reporting-roles-list/reporting-roles-list.js"></script>
     <script src="components/reporting/reporting.js"></script>
     <script src="components/sections/sections-edit/sections-edit-directive.js"></script>
     <script src="components/sections/sections-edit/sections-edit.js"></script>
@@ -216,7 +231,6 @@
     <script src="components/top-bar/top-bar-item-factory.js"></script>
     <script src="components/top-bar/top-bar.js"></script>
     <script src="shared/api-services/api-services-mixins/mixin-field-display.js"></script>
-    <script src="shared/api-services/api-services-styles/style-django-drf-paged.js"></script>
     <script src="shared/api-services/api-services.js"></script>
     <script src="shared/api-services/author/author-factory.js"></script>
     <script src="shared/api-services/campaign/campaign-factory.js"></script>
@@ -224,6 +238,10 @@
     <script src="shared/api-services/custom-search/custom-search-factory.js"></script>
     <script src="shared/api-services/custom-search/custom-search-group-count-factory.js"></script>
     <script src="shared/api-services/custom-search/custom-search-settings.js"></script>
+    <script src="shared/api-services/feature-type/featuretype-factory.js"></script>
+    <script src="shared/api-services/reporting/line-item-factory.js"></script>
+    <script src="shared/api-services/reporting/rate-override-factory.js"></script>
+    <script src="shared/api-services/reporting/reporting-factory.js"></script>
     <script src="shared/api-services/section/section-factory.js"></script>
     <script src="shared/api-services/special-coverage/special-coverage-factory.js"></script>
     <script src="shared/api-services/tag/tag-factory.js"></script>
@@ -248,6 +266,7 @@
     <script src="shared/list-page/list-page.js"></script>
     <script src="shared/sponsored-content-modal/sponsored-content-modal-opener.js"></script>
     <script src="shared/sponsored-content-modal/sponsored-content-modal.js"></script>
+    <script src="shared/unsaved-changes-guard/unsaved-changes-guard.js"></script>
     <script src="shared/utils/utils.js"></script>
     <script src="shared/video-list/video-list-video/video-list-video-directive.js"></script>
     <script src="shared/video-list/video-list.js"></script>
@@ -258,6 +277,7 @@
     <script src="scripts/directives/bulbs-autocomplete.js"></script>
     <script src="scripts/directives/cms-notification.js"></script>
     <script src="scripts/directives/cms-notify-container.js"></script>
+    <script src="scripts/directives/contributorfield.js"></script>
     <script src="scripts/directives/create-content.js"></script>
     <script src="scripts/directives/datetimeselectionmodalopener.js"></script>
     <script src="scripts/directives/devicepreview.js"></script>
@@ -269,6 +289,7 @@
     <script src="scripts/directives/logged-in-user.js"></script>
     <script src="scripts/directives/nav-bar.js"></script>
     <script src="scripts/directives/responsive-image.js"></script>
+    <script src="scripts/directives/rolefield.js"></script>
     <script src="scripts/directives/save-button.js"></script>
     <script src="scripts/directives/slideshow-pane.js"></script>
     <script src="scripts/directives/static-image.js"></script>
@@ -290,8 +311,8 @@
     <script src="scripts/controllers/descriptionmodal.js"></script>
     <script src="scripts/controllers/forbiddenmodal.js"></script>
     <script src="scripts/controllers/imagecropmodal.js"></script>
-    <script src="scripts/controllers/lastmodifiedguardmodal.js"></script>
     <script src="scripts/controllers/pubtimemodal.js"></script>
+    <script src="scripts/controllers/reporting.js"></script>
     <script src="scripts/controllers/sponsormodal.js"></script>
     <script src="scripts/controllers/targeting.js"></script>
     <script src="scripts/controllers/temporary-url-modal.js"></script>
@@ -319,113 +340,70 @@
 
     <script src="/angular-mocks/angular-mocks.js"></script>
 
-    <script type="text/javascript">
-        window.loggedInUser = null;
+    <script>
+      window.loggedInUser = null;
 
-        //these probably don't need to be constants
-        //but there probably isn't any reason for them to not be
-        //so...
-        // ¯\_(ツ)_/¯
+      window.dummySearchHandler = function(term, resultsElement, filtersElement) {
+        filtersElement.html('<b>Filtering on:</b><br><button class="toggle-filter active">Donald Trump</button><button class="toggle-filter">Parents</button>')
+        resultsElement.html("<b>Searching for: " + term + "</b><br><a href='/fart/'>Fart</a><br><a href='/butt/'>Butt</a><br><a href='/dumb/'>Dumb</a><br>");
+      };
 
-        angular.module('apiServices.settings', []).constant('API_URL_ROOT', '/cms/api/v1/');
-
-        angular.module('bulbsCmsApp')
-          .config(function ($httpProvider, CmsConfigProvider, TokenAuthConfigProvider,
-              TokenAuthServiceProvider, PARTIALS_URL, DIRECTIVE_PARTIALS_URL) {
-            CmsConfigProvider
-                .setApiPath('/cms/api/v1/')
-                .setLogoUrl('/images/onion-logo.png')
-                .setToolbarMappings({
-                  toolbar: PARTIALS_URL + 'toolbar.html'
-                })
-                .addEditPageMapping(
-                  '/content_type_views/content_content.html',
-                  'content_content'
-                )
-                .setCreateContentTemplateUrl(DIRECTIVE_PARTIALS_URL + 'create-content.html')
-                .setImageServerRoot('http://clickholeimg.local')
-                .setImageServerApiKey('some-bc-api-key')
-                .setInlineObjectsUrl('/static/inline-objects.json');
-
-            TokenAuthConfigProvider.setLogoUrl('/images/onion-logo.png');
-            TokenAuthConfigProvider.setApiHost('');
-
-            $httpProvider.interceptors.push('TokenAuthInterceptor');
-          });
-
-        angular.module('bulbsCmsApp.settings')
-          .constant('AUTO_ADD_AUTHOR', true)
-          .constant('CMS_NAMESPACE', 'Smoove')
-          .constant('CONTENT_PARTIALS_URL', '/content_type_views/')
-          .constant('COMPONENTS_URL', '/components/')
-          .constant('CUSTOM_VIDEO_POSTER_URL', 'http://chimg.onionstatic.com/{{image}}/{{ratio}}/600.jpg')
-          .constant('DIRECTIVE_PARTIALS_URL', '/views/')
-          .constant('EXTERNAL_URL', 'onion.local')
-          .constant('FIREBASE_ROOT', 'bulbs-cms-testing')
-          .constant('PARTIALS_URL', '/views/')
-          .constant('LOADING_IMG_SRC', '/images/loading.gif')
-          .constant('MEDIA_ITEM_PARTIALS_URL', '/cms/api/partials/media_items/')
-          .constant('RESTANGULAR_API_URL_ROOT', '/cms/api/v1')
-          .constant('SHARED_URL', '/shared/')
-          .constant('STATIC_URL', '/static/')
-          .constant('TAR_OPTIONS', { endpoint: '/ads/targeting' })
-          .constant('TIMEZONE_NAME', 'America/Chicago')
-          .constant('VIDEO_EMBED_URL', 'http://www.avclub.com/videos/embed?id=')
-          .constant('VIDEO_THUMBNAIL_URL', 'http://v.theonion.com/avclubmedia/video/{{video}}/frame_{{thumbnail}}.jpg')
-          .constant('ZERO_CLIPBOARD_SWF', '/zeroclipboard/dist/ZeroClipboard.swf');
-
-        angular.module('customSearch.settings')
-          .constant('CUSTOM_SEARCH_TIME_PERIODS', [{
-            name: 'Past Day',
-            value: 'Past day'
-          }, {
-            name: 'Past Week',
-            value: 'Past week'
-          }, {
-            name: 'Past Month',
-            value: 'Past month'
-          }]);
-
-        angular.module('VideohubClient.settings')
-          .constant('VIDEOHUB_API_BASE_URL', 'http://videohub.local/api/v0')
-          .constant('VIDEOHUB_SECRET_TOKEN', 'BLAH BLAH')
-          .constant('VIDEOHUB_DEFAULT_CHANNEL', 'The Onion');
-
-        window.dummySearchHandler = function(term, resultsElement, filtersElement) {
-          filtersElement.html('<b>Filtering on:</b><br><button class="toggle-filter active">Donald Trump</button><button class="toggle-filter">Parents</button>')
-          resultsElement.html("<b>Searching for: " + term + "</b><br><a href='/fart/'>Fart</a><br><a href='/butt/'>Butt</a><br><a href='/dumb/'>Dumb</a><br>");
-        };
-
+      angular.module('apiServices.settings', []).constant('API_URL_ROOT', '/cms/api/v1/');
     </script>
 
+    <script src="mocks/development-config.js"></script>
     <script src="mocks/api-mock-data.js"></script>
     <script src="mocks/api.js"></script>
     <script src="mocks/api/api-campaign.js"></script>
     <script src="mocks/api/api-custom-search.js"></script>
+    <script src="mocks/api/api-line-item.js"></script>
+    <script src="mocks/api/api-override.js"></script>
+    <script src="mocks/api/api-role.js"></script>
     <script src="mocks/api/api-special-coverage.js"></script>
     <script src="mocks/api/api-sections.js"></script>
     <script src="/videohub-client-js/src/videohub-client/videohub-api-mocks.js"></script>
 
     <script src="mocks/newapp.js"></script>
     <script src="scripts/api/mock.js"></script>
+    <script src="mocks/app.js"></script>
 
     <script>
-        angular.module('bulbsCmsAppDev', ['bulbsCmsApp.mockApi', 'bulbsCmsApp', 'bulbs.api.mock'])
-          .config(function (StatusFilterOptionsProvider) {
-            StatusFilterOptionsProvider.setStatuses([
-              {label: 'Filter 1', key: 'filter1key', value: 'charizard'},
-              {label: 'Filter 2', key: 'filter2key', value: function(){ return moment().unix(); }},
-              {label: 'Filter 3', key: 'filter2key', value: function(){ return "cool"; }},
-              {label: 'All', key: null, value: null}
-            ]);
-          });
+      angular.module('bulbsCmsApp.settings')
+        .constant('AUTO_ADD_AUTHOR', true)
+        .constant('CONTENT_PARTIALS_URL', '/content_type_views/')
+        .constant('COMPONENTS_URL', '/components/')
+        .constant('CUSTOM_VIDEO_POSTER_URL', 'http://chimg.onionstatic.com/{{image}}/{{ratio}}/600.jpg')
+        .constant('DIRECTIVE_PARTIALS_URL', '/views/')
+        .constant('EXTERNAL_URL', 'onion.local')
+        .constant('FIREBASE_ROOT', 'bulbs-cms-testing')
+        .constant('LOADING_IMG_SRC', '/images/loading.gif')
+        .constant('RESTANGULAR_API_URL_ROOT', '/cms/api/v1')
+        .constant('SHARED_URL', '/shared/')
+        .constant('STATIC_URL', '/static/')
+        .constant('TAR_OPTIONS', { endpoint: '/ads/targeting' })
+        .constant('TIMEZONE_NAME', 'America/Chicago')
+        .constant('VIDEO_EMBED_URL', 'http://www.avclub.com/videos/embed?id=')
+        .constant('VIDEO_THUMBNAIL_URL', 'http://v.theonion.com/avclubmedia/video/{{video}}/frame_{{thumbnail}}.jpg')
+        .constant('ZERO_CLIPBOARD_SWF', '/zeroclipboard/dist/ZeroClipboard.swf');
 
-        //huhhhhh
-        $("body").on("click", "a", function(e){
-          if($(this).attr("target") == "_blank") return true;
-          $(this).attr("target", "_self");
-        });
+      angular.module('customSearch.settings')
+        .constant('CUSTOM_SEARCH_TIME_PERIODS', [{
+          name: 'Past Day',
+          value: 'Past day'
+        }, {
+          name: 'Past Week',
+          value: 'Past week'
+        }, {
+          name: 'Past Month',
+          value: 'Past month'
+        }]);
+
+      angular.module('VideohubClient.settings')
+        .constant('VIDEOHUB_API_BASE_URL', 'http://videohub.local/api/v0')
+        .constant('VIDEOHUB_SECRET_TOKEN', 'BLAH BLAH')
+        .constant('VIDEOHUB_DEFAULT_CHANNEL', 'The Onion');
     </script>
+
     <bug-reporter></bug-reporter>
     <firebase-save-reporter></firebase-save-reporter>
 

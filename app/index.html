@@ -82,7 +82,9 @@
     <script src="/angular-ui-sortable/sortable.js"></script>
     <script src="/angular-uuid4/angular-uuid4.js"></script>
     <script src="/firebase/firebase-debug.js"></script>
-    <script src="/angularfire/dist/angularfire.js"></script>
+    <script src="/firebase-simple-login/firebase-simple-login.js"></script>
+    <script src="/mockfirebase/dist/mockfirebase.js"></script>
+    <script src="/angularfire/dist/angularfire.min.js"></script>
     <script src="/lodash/lodash.js"></script>
     <script src="/bulbs-autocomplete/dist/bulbs-autocomplete.js"></script>
     <script src="/bulbs-public-embed-instagram/dist/jquery.instagram-embed-processor.js"></script>
@@ -105,7 +107,7 @@
     <script src="/token-auth-frontend/dist/token-auth.js"></script>
     <script src="/urlify/urlify.js"></script>
     <script src="/videohub-client-js/dist/videohub-client.js"></script>
-    <script src="/firebase-token-generator/dist/firebase-token-generator.js"></script>
+    <script src="/firebase-token-generator/build/firebase-token-generator.js"></script>
     <!-- endbower -->
     <script src="/jcrop/js/jquery.Jcrop.min.js"></script>
     <!-- endbuild -->
@@ -171,6 +173,8 @@
     <script src="components/custom-search/custom-search.js"></script>
     <script src="components/edit-pages/video/video.js"></script>
     <script src="components/editors-pick/editors-pick.js"></script>
+    <script src="components/filter-list-widget/filter-list-widget-directive.js"></script>
+    <script src="components/filter-list-widget/filter-list-widget.js"></script>
     <script src="components/filter-widget/filter-widget-directive.js"></script>
     <script src="components/filter-widget/filter-widget.js"></script>
     <script src="components/generic-ajax-button/generic-ajax-button-controller.js"></script>
@@ -194,6 +198,15 @@
     <script src="components/promoted-content/promoted-content-time-picker/promoted-content-time-picker.js"></script>
     <script src="components/promoted-content/promoted-content.js"></script>
     <script src="components/reporting/reporting-directive.js"></script>
+    <script src="components/reporting/reporting-line-items-edit/reporting-line-items-edit-directive.js"></script>
+    <script src="components/reporting/reporting-line-items-edit/reporting-line-items-edit.js"></script>
+    <script src="components/reporting/reporting-line-items-list/reporting-line-items-list.js"></script>
+    <script src="components/reporting/reporting-rate-overrides-edit/reporting-rate-overrides-directive.js"></script>
+    <script src="components/reporting/reporting-rate-overrides-edit/reporting-rate-overrides-edit.js"></script>
+    <script src="components/reporting/reporting-rate-overrides-list/reporting-rate-overrides-list.js"></script>
+    <script src="components/reporting/reporting-roles-edit/reporting-roles-edit-directive.js"></script>
+    <script src="components/reporting/reporting-roles-edit/reporting-roles-edit.js"></script>
+    <script src="components/reporting/reporting-roles-list/reporting-roles-list.js"></script>
     <script src="components/reporting/reporting.js"></script>
     <script src="components/sections/sections-edit/sections-edit-directive.js"></script>
     <script src="components/sections/sections-edit/sections-edit.js"></script>
@@ -218,7 +231,6 @@
     <script src="components/top-bar/top-bar-item-factory.js"></script>
     <script src="components/top-bar/top-bar.js"></script>
     <script src="shared/api-services/api-services-mixins/mixin-field-display.js"></script>
-    <script src="shared/api-services/api-services-styles/style-django-drf-paged.js"></script>
     <script src="shared/api-services/api-services.js"></script>
     <script src="shared/api-services/author/author-factory.js"></script>
     <script src="shared/api-services/campaign/campaign-factory.js"></script>
@@ -226,6 +238,10 @@
     <script src="shared/api-services/custom-search/custom-search-factory.js"></script>
     <script src="shared/api-services/custom-search/custom-search-group-count-factory.js"></script>
     <script src="shared/api-services/custom-search/custom-search-settings.js"></script>
+    <script src="shared/api-services/feature-type/featuretype-factory.js"></script>
+    <script src="shared/api-services/reporting/line-item-factory.js"></script>
+    <script src="shared/api-services/reporting/rate-override-factory.js"></script>
+    <script src="shared/api-services/reporting/reporting-factory.js"></script>
     <script src="shared/api-services/section/section-factory.js"></script>
     <script src="shared/api-services/special-coverage/special-coverage-factory.js"></script>
     <script src="shared/api-services/tag/tag-factory.js"></script>
@@ -261,6 +277,7 @@
     <script src="scripts/directives/bulbs-autocomplete.js"></script>
     <script src="scripts/directives/cms-notification.js"></script>
     <script src="scripts/directives/cms-notify-container.js"></script>
+    <script src="scripts/directives/contributorfield.js"></script>
     <script src="scripts/directives/create-content.js"></script>
     <script src="scripts/directives/datetimeselectionmodalopener.js"></script>
     <script src="scripts/directives/devicepreview.js"></script>
@@ -272,6 +289,7 @@
     <script src="scripts/directives/logged-in-user.js"></script>
     <script src="scripts/directives/nav-bar.js"></script>
     <script src="scripts/directives/responsive-image.js"></script>
+    <script src="scripts/directives/rolefield.js"></script>
     <script src="scripts/directives/save-button.js"></script>
     <script src="scripts/directives/slideshow-pane.js"></script>
     <script src="scripts/directives/static-image.js"></script>
@@ -294,6 +312,7 @@
     <script src="scripts/controllers/forbiddenmodal.js"></script>
     <script src="scripts/controllers/imagecropmodal.js"></script>
     <script src="scripts/controllers/pubtimemodal.js"></script>
+    <script src="scripts/controllers/reporting.js"></script>
     <script src="scripts/controllers/sponsormodal.js"></script>
     <script src="scripts/controllers/targeting.js"></script>
     <script src="scripts/controllers/temporary-url-modal.js"></script>
@@ -337,6 +356,9 @@
     <script src="mocks/api.js"></script>
     <script src="mocks/api/api-campaign.js"></script>
     <script src="mocks/api/api-custom-search.js"></script>
+    <script src="mocks/api/api-line-item.js"></script>
+    <script src="mocks/api/api-override.js"></script>
+    <script src="mocks/api/api-role.js"></script>
     <script src="mocks/api/api-special-coverage.js"></script>
     <script src="mocks/api/api-sections.js"></script>
     <script src="/videohub-client-js/src/videohub-client/videohub-api-mocks.js"></script>

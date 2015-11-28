@@ -55,11 +55,11 @@ angular.module('content.edit.controller', [
       ContentFactory.one('content', $scope.articleId).get()
         .then(function (articleOnServer) {
 
-          // if (articleOnServer.last_modified &&
-          //     $scope.article.last_modified &&
-          //     moment(articleOnServer.last_modified) > moment($scope.article.last_modified)) {
+          if (articleOnServer.last_modified &&
+              $scope.article.last_modified &&
+              moment(articleOnServer.last_modified) > moment($scope.article.last_modified)) {
 
-          if (true) {
+          // if (true) {
 
 
 

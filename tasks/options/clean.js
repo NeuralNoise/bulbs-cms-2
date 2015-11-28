@@ -12,7 +12,10 @@ module.exports = {
       src: [
         config.paths.tmp(),
         config.paths.dist('*'),
-        '!' + config.paths.dist('.git*')
+        '!' + config.paths.dist('.git*'),
+        '!' + config.paths.dist('README.md'),
+        '!' + config.paths.dist('bower.json'),
+        '!' + config.paths.dist('package.json')
       ]
     }]
   },

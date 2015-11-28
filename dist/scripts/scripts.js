@@ -88,24 +88,26 @@ angular.module('bulbsCmsApp', [
   'content',
   'content.video',
   'filterWidget',
+  'filterListWidget',
   'promotedContent',
-  'reporting',
   'sections',
   'sendToEditor',
   'specialCoverage',
   'statusFilter',
   'templateTypeField',
-
+  'specialCoverage',
+  'sections',
+  'reports',
   // TODO : remove these, here because they are used by unrefactored compontents
   'content.edit.versionBrowser.modal.opener'
 ])
   .config([
     '$provide', '$httpProvider', '$locationProvider', '$routeProvider', '$sceProvider',
       'TokenAuthConfigProvider', 'TokenAuthServiceProvider', 'CmsConfigProvider',
-      'COMPONENTS_URL', 'PARTIALS_URL', 'FirebaseConfigProvider',
+      'COMPONENTS_URL', 'FirebaseConfigProvider',
     function ($provide, $httpProvider, $locationProvider, $routeProvider, $sceProvider,
         TokenAuthConfigProvider, TokenAuthServiceProvider, CmsConfigProvider,
-        COMPONENTS_URL, PARTIALS_URL, FirebaseConfigProvider) {
+        COMPONENTS_URL, FirebaseConfigProvider) {
 
       // FirebaseConfigProvider
       //   .setDbUrl('')
@@ -113,9 +115,11 @@ angular.module('bulbsCmsApp', [
 
       $locationProvider.html5Mode(true);
 
+      var config = CmsConfigProvider.$get();
+
       $routeProvider
         .when('/', {
-          templateUrl: PARTIALS_URL + 'contentlist.html',
+          templateUrl: config.getPartialsUrl() + 'contentlist.html',
           controller: 'ContentlistCtrl',
           reloadOnSearch: false
         })
@@ -123,19 +127,19 @@ angular.module('bulbsCmsApp', [
           redirectTo: '/'
         })
         .when('/cms/app/edit/:id/contributions/', {
-          templateUrl: PARTIALS_URL + 'contributions.html',
+          templateUrl: config.getPartialsUrl() + 'contributions.html',
           controller: 'ContributionsCtrl'
         })
         .when('/cms/app/targeting/', {
-          templateUrl: PARTIALS_URL + 'targeting-editor.html',
+          templateUrl: config.getPartialsUrl() + 'targeting-editor.html',
           controller: 'TargetingCtrl'
         })
         .when('/cms/app/notifications/', {
-          templateUrl: PARTIALS_URL + 'cms-notifications.html',
+          templateUrl: config.getPartialsUrl() + 'cms-notifications.html',
           controller: 'CmsNotificationsCtrl'
         })
         .when('/cms/app/pzones/', {
-          templateUrl: PARTIALS_URL + 'pzones.html',
+          templateUrl: config.getPartialsUrl() + 'pzones.html',
           controller: 'PzoneCtrl'
         })
         .when('/cms/login/', {
@@ -264,6 +268,12 @@ angular.module('bulbs.api')
   })
   .factory('ContentReportingService', function (Restangular) {
     return Restangular.service('contributions/contentreporting');
+  })
+  .factory('FreelancePayReportingService', function(Restangular, moment) {
+    return Restangular.withConfig(function (RestangularConfigurer) {
+      RestangularConfigurer.setBaseUrl('/cms/api/v1/contributions/');
+      RestangularConfigurer.setRequestSuffix('/');
+    }).service('freelancereporting');
   })
   .factory('ContributionReportingService', function (Restangular, moment) {
 
@@ -1000,18 +1010,22 @@ angular.module('campaigns.edit.sponsorPixel', [
 'use strict';
 
 angular.module('campaigns.edit', [
-  'campaigns.edit.directive'
+  'campaigns.edit.directive',
+  'cms.config'
 ])
-  .config(function ($routeProvider, CMS_NAMESPACE) {
+  .config(function ($routeProvider) {
     $routeProvider
     .when('/cms/app/campaigns/edit/:id/', {
-      controller: function ($routeParams, $scope, $window) {
+      controller: [
+        '$routeParams', '$scope', '$window', 'CmsConfig',
+        function ($routeParams, $scope, $window, CmsConfig) {
 
-        // set title
-        $window.document.title = CMS_NAMESPACE + ' | Edit Campaign';
+          // set title
+          $window.document.title = CmsConfig.getCmsTitle() + ' | Edit Campaign';
 
-        $scope.routeId = $routeParams.id;
-      },
+          $scope.routeId = $routeParams.id;
+        }
+      ],
       template: '<campaigns-edit model-id="routeId"></campaigns-edit>',
       reloadOnSearch: false
     });
@@ -1022,18 +1036,22 @@ angular.module('campaigns.edit', [
 angular.module('campaigns.list', [
   'apiServices.campaign.factory',
   'bulbsCmsApp.settings',
+  'cms.config',
   'listPage',
   'moment'
 ])
-  .config(function ($routeProvider, COMPONENTS_URL, CMS_NAMESPACE) {
+  .config(function ($routeProvider, COMPONENTS_URL) {
     $routeProvider
       .when('/cms/app/campaigns/', {
-        controller: function ($scope, $window, Campaign) {
-          // set title
-          $window.document.title = CMS_NAMESPACE + ' | Campaign';
+        controller: [
+          '$scope', '$window', 'Campaign', 'CmsConfig',
+          function ($scope, $window, Campaign, CmsConfig) {
+            // set title
+            $window.document.title = CmsConfig.getCmsTitle() + ' | Campaign';
 
-          $scope.modelFactory = Campaign;
-        },
+            $scope.modelFactory = Campaign;
+          }
+        ],
         templateUrl: COMPONENTS_URL + 'campaigns/campaigns-list/campaigns-list-page.html'
       });
   });
@@ -1106,6 +1124,89 @@ angular.module('confirmationModal.factory', [
     };
 
     return ConfirmationModal;
+  });
+
+'use strict';
+
+angular.module('content.edit.activeUsers', [
+  'bulbsCmsApp.settings',
+  'cms.firebase',
+  'lodash',
+  'utils'
+])
+  .directive('contentEditActiveUsers', function (COMPONENTS_URL, Utils) {
+    return {
+      controller: [
+        '_', '$scope', 'FirebaseApi', 'FirebaseArticleFactory',
+        function (_, $scope, FirebaseApi, FirebaseArticleFactory) {
+
+          var currentUser;
+
+          $scope.firebaseConnected = false;
+          FirebaseApi.$connection
+            .onConnect(function () {
+              $scope.firebaseConnected = true;
+            })
+            .onDisconnect(function () {
+              $scope.firebaseConnected = false;
+            });
+
+          FirebaseArticleFactory
+            .$retrieveArticle($scope.articleId)
+            .then(function ($article) {
+              // register a watch on active users so we can update the list in real time
+              var $activeUsers = $article.$activeUsers();
+              $activeUsers.$watch(function () {
+
+                // unionize user data so that we don't have a bunch of the same users in the list
+                $scope.activeUsers =
+                  _.chain($activeUsers)
+                    // group users by their id
+                    .groupBy(function (user) {
+                      return user.id;
+                    })
+                    // take first user in grouping and use that data along with a count of the number of times they show
+                    //  up in the list (number of sessions they have running)
+                    .map(function (group) {
+                      var groupedUser = group[0];
+                      groupedUser.count = group.length;
+
+                      if (currentUser && groupedUser.id === currentUser.id) {
+                        groupedUser.displayName = 'You';
+                      }
+
+                      return groupedUser;
+                    })
+                    // sort users by their display names
+                    .sortBy(function (user) {
+                      return user.displayName === 'You' ? '' : user.displayName;
+                    })
+                    // now we have a list of unique users along with the number of sessions they have running, sorted by
+                    //  their display names
+                    .value();
+
+              });
+
+              // register current user active with this article
+              $article.$registerCurrentUserActive()
+                .then(function (user) {
+                  currentUser = user;
+                });
+            });
+        }
+      ],
+      restrict: 'E',
+      scope: {
+        articleId: '='
+      },
+      templateUrl: Utils.path.join(
+        COMPONENTS_URL,
+        'content',
+        'content-edit',
+        'content-edit-active-users',
+        'content-edit-active-users.html'
+      )
+    };
   });
 
 'use strict';
@@ -1188,194 +1289,32 @@ angular.module('content.edit.body', [
 'use strict';
 
 angular.module('content.edit.controller', [
+  'bulbs.cms.unsavedChangesGuard',
+  'content.edit.lastModified',
+  'content.edit.lastModified.modal.factory',
   'content.edit.linkBrowser',
   'content.edit.versionBrowser.api',
-  'cms.firebase',
-  'confirmationModal.factory'
+  'cms.config'
 ])
   .controller('ContentEdit', function (
       $, $scope, $rootScope, $routeParams, $window, $location, $timeout, $q, $modal,
-      _, moment, PNotify, VersionStorageApi, ContentFactory, FirebaseApi,
-      FirebaseArticleFactory, LinkBrowser, VersionBrowserModalOpener, PARTIALS_URL,
-      MEDIA_ITEM_PARTIALS_URL, CMS_NAMESPACE, ConfirmationModal) {
+      _, moment, VersionStorageApi, ContentFactory, LastModifiedModal, LinkBrowser,
+      VersionBrowserModalOpener, CmsConfig, UnsavedChangesGuard,
+      ContentEditLastModifiedGuard) {
 
-    $scope.PARTIALS_URL = PARTIALS_URL;
-    $scope.MEDIA_ITEM_PARTIALS_URL = MEDIA_ITEM_PARTIALS_URL;
+    $scope.PARTIALS_URL = CmsConfig.getPartialsUrl();
+    $scope.MEDIA_ITEM_PARTIALS_URL = CmsConfig.getMediaItemsPartialsUrl();
     $scope.page = 'edit';
     $scope.saveArticleDeferred = null;
-
-    // keep track of if article is dirty or not
-    $scope.articleIsDirty = false;
-    $scope.$watch('article', function () {
-      $scope.articleIsDirty = !angular.equals($scope.article, $scope.last_saved_article);
-    }, true);
-
-    $scope.$watch('article.title', function () {
-      $window.document.title = CMS_NAMESPACE + ' | Editing ' + ($scope.article && $('<span>' + $scope.article.title + '</span>').text());
-    });
-
-    var setupUnsavedChangesGuard = function () {
-      // browser navigation hook
-      $window.onbeforeunload = function () {
-        if ($scope.articleIsDirty) {
-          return 'You have unsaved changes. Do you want to continue?';
-        }
-      };
-      // angular navigation hook
-      $scope.$on('$locationChangeStart', function (e, newUrl) {
-        if ($scope.articleIsDirty && !$scope.ignoreGuard) {
-          // keep track of if navigation has accepted by user
-          $scope.ignoreGuard = false;
-
-          // set up modal
-          var modalScope = $scope.$new();
-          modalScope.modalOnOk = function () {
-            // user wants to navigate, ignore guard in this navigation action
-            $location.url(newUrl.substring($location.absUrl().length - $location.url().length));
-            $scope.ignoreGuard = true;
-
-            // remove browser nav hook
-            $window.onbeforeunload = function () {};
-          };
-          modalScope.modalTitle = 'Unsaved Changes!';
-          modalScope.modalBody = 'You have unsaved changes. Do you want to continue?';
-          modalScope.modalOkText = 'Yes';
-          modalScope.modalCancelText = 'No';
-
-          // open modal
-          new ConfirmationModal(modalScope);
-
-          // stop immediate navigation
-          e.preventDefault();
-        }
-      });
-    };
+    $scope.articleId = $routeParams.id;
 
     $scope.getContent = function () {
-      return ContentFactory.one('content', $routeParams.id).get()
+      return ContentFactory.one('content', $scope.articleId).get()
         .then(function (data) {
           $scope.article = data;
-
           $scope.last_saved_article = angular.copy(data);
 
-          FirebaseApi.$connection
-            .onConnect(function () {
-              $scope.firebaseConnected = true;
-            })
-            .onDisconnect(function () {
-              $scope.firebaseConnected = false;
-            });
-
-          // get article and active users, register current user as active
-          FirebaseArticleFactory
-            .$retrieveCurrentArticle()
-              .then(function ($article) {
-
-                var $activeUsers = $article.$activeUsers();
-                var $versions = $article.$versions();
-                var currentUser;
-                var savePNotify;
-
-                $versions.$loaded(function () {
-                  $versions.$watch(function (e) {
-                    if (e.event === 'child_added') {
-
-                      // order versions newest to oldest then grab the top one which should be the new version
-                      var newVersion = _.sortBy($versions, function (version) {
-                        return -version.timestamp;
-                      })[0];
-
-                      if (currentUser && newVersion.user.id !== currentUser.id) {
-
-                        // close any existing save pnotify
-                        if (savePNotify) {
-                          savePNotify.remove();
-                        }
-
-                        var msg = '<b>' +
-                                    newVersion.user.displayName +
-                                  '</b> -- ' +
-                                  moment(newVersion.timestamp).format('MMM Do YYYY, h:mma') +
-                                  '<br>';
-                        if ($scope.articleIsDirty) {
-                          msg += ' You have unsaved changes that may conflict when you save.';
-                        }
-                        msg += ' Open the version browser to see their latest version.';
-
-                        // this isn't the current user that saved, so someone else must have saved, notify this user
-                        savePNotify = new PNotify({
-                          title: 'Another User Saved!',
-                          text: msg,
-                          type: 'error',
-                          mouse_reset: false,
-                          hide: false,
-                          confirm: {
-                            confirm: true,
-                            buttons: [{
-                              text: 'Open Version Browser',
-                              addClass: 'btn-primary',
-                              click: function (notice) {
-                                notice.mouse_reset = false;
-                                notice.remove();
-                                VersionBrowserModalOpener.open($scope, $scope.article);
-                              }
-                            }, {
-                              addClass: 'hide'
-                            }]
-                          },
-                          buttons: {
-                            closer_hover: false,
-                            sticker: false
-                          }
-                        });
-                      }
-                    }
-                  });
-                });
-
-                // register a watch on active users so we can update the list in real time
-                $activeUsers.$watch(function () {
-
-                  // unionize user data so that we don't have a bunch of the same users in the list
-                  $scope.activeUsers =
-                    _.chain($activeUsers)
-                      // group users by their id
-                      .groupBy(function (user) {
-                        return user.id;
-                      })
-                      // take first user in grouping and use that data along with a count of the number of times they show
-                      //  up in the list (number of sessions they have running)
-                      .map(function (group) {
-                        var groupedUser = group[0];
-                        groupedUser.count = group.length;
-
-                        if (currentUser && groupedUser.id === currentUser.id) {
-                          groupedUser.displayName = 'You';
-                        }
-
-                        return groupedUser;
-                      })
-                      // sort users by their display names
-                      .sortBy(function (user) {
-                        return user.displayName === 'You' ? '' : user.displayName;
-                      })
-                      // now we have a list of unique users along with the number of sessions they have running, sorted by
-                      //  their display names
-                      .value();
-
-                });
-
-                // register current user active with this article
-                $article.$registerCurrentUserActive()
-                  .then(function (user) {
-                    currentUser = user;
-                  });
-
-                // who knows what kind of promises you might have in the future? so return the article object for chains
-                return $article;
-
-              });
-
+          ContentEditLastModifiedGuard.setup($scope);
         });
     };
 
@@ -1401,25 +1340,53 @@ angular.module('content.edit.controller', [
 
       // want to retrieve article again here to ensure that we don't overwrite
       //   someone else's changes
-      ContentFactory.one('content', $routeParams.id).get()
-        .then(function (data) {
-          if (data.last_modified &&
-              $scope.article.last_modified &&
-              moment(data.last_modified) > moment($scope.article.last_modified)) {
+      ContentFactory.one('content', $scope.articleId).get()
+        .then(function (articleOnServer) {
+
+          // if (articleOnServer.last_modified &&
+          //     $scope.article.last_modified &&
+          //     moment(articleOnServer.last_modified) > moment($scope.article.last_modified)) {
+
+          if (true) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             // there's been another save since our last save, prevent saving without
             //  user validation
 
             $scope.saveArticleDeferred.reject();
 
-            $modal.open({
-              templateUrl: PARTIALS_URL + 'modals/last-modified-guard-modal.html',
-              controller: 'LastmodifiedguardmodalCtrl',
-              scope: $scope,
-              resolve: {
-                articleOnPage: function () { return $scope.article; },
-                articleOnServer: function () { return data; }
-              }
-            });
+            var modalScope = $rootScope.$new();
+            modalScope.modalOnLoadChanges = function () {
+              // pull article from server and replace whatever data we need to
+              //  show the newest version
+              _.each(articleOnServer, function (value, key) {
+                $scope.article[key] = value;
+              });
+              $scope.articleIsDirty = true;
+            };
+            modalScope.modalOnOverwriteChanges = function () {
+              $scope.postValidationSaveArticle();
+            };
+            modalScope.articleOnServer = articleOnServer;
+            modalScope.articleOnPage = $scope.article;
+
+            // open modal
+            new LastModifiedModal(modalScope);
+
           } else {
             // okay to save, move to next step
             $scope.postValidationSaveArticle();
@@ -1471,9 +1438,60 @@ angular.module('content.edit.controller', [
     };
 
     // finish initialization
-    setupUnsavedChangesGuard();
+    UnsavedChangesGuard.enable({
+      unsavedChangesCheckCallback: function () {
+        return $scope.articleIsDirty;
+      }
+    });
     $scope.getContent();
   });
+
+'use strict';
+
+angular.module('content.edit.directive', [
+  'cms.config',
+  'content.edit.activeUsers',
+  'content.edit.authors',
+  'content.edit.body',
+  'content.edit.controller',
+  'content.edit.editorItem',
+  'content.edit.linkBrowser',
+  'content.edit.mainImage',
+  'content.edit.section',
+  'content.edit.tags',
+  'content.edit.templateChooser',
+  'content.edit.title',
+  'content.edit.versionBrowser',
+  'utils'
+])
+  .directive('contentEdit', [
+    '$window', 'CmsConfig', 'COMPONENTS_URL', 'Utils',
+    function ($window, CmsConfig, COMPONENTS_URL, Utils) {
+      return {
+        controller: 'ContentEdit',
+        link: function (scope) {
+
+          scope.articleIsDirty = false;
+          scope.$watch('article', function () {
+            scope.articleIsDirty = !angular.equals(scope.article, scope.last_saved_article);
+          }, true);
+
+          scope.$watch('article.title', function () {
+            $window.document.title = CmsConfig.getCmsTitle() +
+                ' | Editing ' +
+                (scope.article && scope.article.title ? scope.article.title : '');
+          });
+        },
+        restrict: 'E',
+        templateUrl: Utils.path.join(
+          COMPONENTS_URL,
+          'content',
+          'content-edit',
+          'content-edit.html'
+        )
+      };
+    }]
+  );
 
 'use strict';
 
@@ -1522,6 +1540,197 @@ angular.module('content.edit.editorItem', [
         }
       };
     }]);
+
+'use strict';
+
+angular.module('content.edit.lastModified.modal.opener', [
+  'bulbsCmsApp.settings',
+  'content.edit.lastModified.modal.factory'
+])
+  .directive('lastModifiedModalOpener', function (LastModifiedModal) {
+    return {
+      restrict: 'A',
+      scope: {
+        modalOnCancel: '&',
+        modalOnLoadChanges: '&',
+        modalOnOverwriteChanges: '&'
+      },
+      link: function (scope, element) {
+        var modalInstance = null;
+        element.addClass('content-edit-last-modified-modal-opener');
+        element.on('click', function () {
+          modalInstance = new LastModifiedModal(scope);
+        });
+      }
+    };
+  });
+
+'use strict';
+
+angular.module('content.edit.lastModified.modal.factory', [
+  'bulbsCmsApp.settings',
+  'filters.userDisplay',
+  'lodash',
+  'ui.bootstrap.modal',
+  'utils'
+])
+  .factory('LastModifiedModal', [
+    '$modal', 'COMPONENTS_URL', 'Utils',
+    function ($modal, COMPONENTS_URL, Utils) {
+
+      var LastModifiedModal = function (scope) {
+        return (function (scope) {
+          $modal.open({
+            controller: [
+              '_', '$scope', 'ContentFactory', 'moment',
+              function (_, $scope, ContentFactory, moment) {
+
+                ContentFactory.all('log')
+                  .getList({content: $scope.articleOnPage.id})
+                  .then(function (log) {
+                    var latest = _.max(log, function (entry) { return moment(entry.action_time); });
+                    var lastSavedById = latest.user;
+                    ContentFactory.one('author', lastSavedById).get().then(function (data) {
+                      $scope.lastSavedBy = data;
+                    });
+                  });
+
+                $scope.loadFromServer = function () {
+                  $scope.$close();
+
+                  if ($scope.modalOnLoadChanges) {
+                    $scope.modalOnLoadChanges();
+                  }
+                };
+
+                $scope.saveAnyway = function () {
+                  $scope.$close();
+
+                  if ($scope.modalOnOverwriteChanges) {
+                    $scope.modalOnOverwriteChanges();
+                  }
+                };
+
+                $scope.cancelModal = function () {
+                  $scope.$dismiss();
+
+                  if ($scope.modalOnCancel) {
+                    $scope.modalOnCancel();
+                  }
+                };
+              }
+            ],
+            scope: scope,
+            templateUrl: Utils.path.join(
+              COMPONENTS_URL,
+              'content',
+              'content-edit',
+              'content-edit-last-modified',
+              'content-edit-last-modified-modal.html'
+            )
+          });
+        })(scope);
+      };
+
+      return LastModifiedModal;
+    }
+  ]);
+
+'use strict';
+
+angular.module('content.edit.lastModified', [
+  'cms.firebase',
+  'content.edit.versionBrowser.modal.opener',
+  'lodash',
+  'moment',
+  'PNotify'
+])
+  .service('ContentEditLastModifiedGuard', [
+    '_', 'FirebaseArticleFactory', 'moment', 'PNotify', 'VersionBrowserModalOpener',
+    function (_, FirebaseArticleFactory, moment, PNotify, VersionBrowserModalOpener) {
+      return {
+// HACK : figure out a better setup scheme for this service
+        setup: function ($scope) {
+
+          return FirebaseArticleFactory
+            .$retrieveArticle($scope.article.id)
+            .then(function ($article) {
+
+              var $versions = $article.$versions();
+              var currentUser;
+              var savePNotify;
+
+              $versions.$loaded(function () {
+                $versions.$watch(function (e) {
+                  if (e.event === 'child_added') {
+
+                    // order versions newest to oldest then grab the top one which should be the new version
+                    var newVersion = _.sortBy($versions, function (version) {
+                      return -version.timestamp;
+                    })[0];
+
+                    if (currentUser && newVersion.user.id !== currentUser.id) {
+
+                      // close any existing save pnotify
+                      if (savePNotify) {
+                        savePNotify.remove();
+                      }
+
+                      var msg = '<b>' +
+                                  newVersion.user.displayName +
+                                '</b> -- ' +
+                                  moment(newVersion.timestamp).format('MMM Do YYYY, h:mma') +
+                                '<br>';
+                      if ($scope.articleIsDirty) {
+                        msg += ' You have unsaved changes that may conflict when you save.';
+                      }
+                      msg += ' Open the version browser to see their latest version.';
+
+                      // this isn't the current user that saved, so someone else must have saved, notify this user
+                      savePNotify = new PNotify({
+                        title: 'Another User Saved!',
+                        text: msg,
+                        type: 'error',
+                        mouse_reset: false,
+                        hide: false,
+                        confirm: {
+                          confirm: true,
+                          buttons: [{
+                            text: 'Open Version Browser',
+                            addClass: 'btn-primary',
+                            click: function (notice) {
+                              notice.mouse_reset = false;
+                              notice.remove();
+                              VersionBrowserModalOpener.open($scope, $scope.article);
+                            }
+                          }, {
+                            addClass: 'hide'
+                          }]
+                        },
+                        buttons: {
+                          closer_hover: false,
+                          sticker: false
+                        }
+                      });
+                    }
+                  }
+                });
+              });
+
+              // register current user active with this article
+              $article.$registerCurrentUserActive()
+                .then(function (user) {
+                  currentUser = user;
+                });
+
+              // who knows what kind of promises you might have in the future? so return the article object for chains
+              return $article;
+
+            });
+        }
+      };
+    }
+  ]);
 
 'use strict';
 
@@ -1742,7 +1951,7 @@ angular.module('content.edit.versionBrowser.api.backup', [
 ])
   .factory('LocalStorageBackup', [
     '_', '$q', '$routeParams', '$window', 'CurrentUser', 'moment',
-    function ($q, $routeParams, $window, moment, _, CurrentUser) {
+    function (_, $q, $routeParams, $window, CurrentUser, moment) {
 
       var keyPrefixArticle = 'article';
       var keyPrefix = keyPrefixArticle + '.' + $routeParams.id + '.';
@@ -1832,9 +2041,9 @@ angular.module('content.edit.versionBrowser.api.backup', [
         $versions: function () {
 
           // note: using a promise here to better match the version api functionality
-          var retrieveDefer = $q.defer(),
-              retrievePromise = retrieveDefer.promise,
-              versions =
+          var retrieveDefer = $q.defer();
+          var retrievePromise = retrieveDefer.promise;
+          var versions =
                 // loop through entries of local storage
                 _.chain($window.localStorage)
                   // pick only entries that are for this particular article
@@ -1984,17 +2193,17 @@ angular.module('content.edit.versionBrowser.api', [
   'cms.firebase'
 ])
   .factory('VersionStorageApi', [
-    '_', '$q', 'FirebaseApi', 'FirebaseArticleFactory', 'LocalStorageBackup',
-    function (_, $q, FirebaseApi, FirebaseArticleFactory, LocalStorageBackup) {
+    '_', '$q', '$routeParams', 'FirebaseApi', 'FirebaseArticleFactory', 'LocalStorageBackup',
+    function (_, $q, $routeParams, FirebaseApi, FirebaseArticleFactory, LocalStorageBackup) {
 
       // set up a promise for checking if we can authorize with firebase
-      var firebaseAvailableDefer = $q.defer(),
-          $firebaseAvailable = firebaseAvailableDefer.promise;
+      var firebaseAvailableDefer = $q.defer();
+      var $firebaseAvailable = firebaseAvailableDefer.promise;
       FirebaseApi.$authorize()
         .then(function () {
 
           // we have a firebase connection, use firebase for versioning
-          firebaseAvailableDefer.resolve(FirebaseArticleFactory.$retrieveCurrentArticle());
+          firebaseAvailableDefer.resolve(FirebaseArticleFactory.$retrieveArticle($routeParams.id));
 
         })
         .catch(function () {
@@ -2202,32 +2411,15 @@ angular.module('content.edit.versionBrowser', [
 'use strict';
 
 angular.module('content.edit', [
-  'bulbsCmsApp.settings',
-  'content.edit.authors',
-  'content.edit.body',
-  'content.edit.controller',
-  'content.edit.editorItem',
-  'content.edit.linkBrowser',
-  'content.edit.mainImage',
-  'content.edit.section',
-  'content.edit.tags',
-  'content.edit.templateChooser',
-  'content.edit.title',
-  'content.edit.versionBrowser',
+  'content.edit.directive',
   'utils'
 ])
   .config([
-    '$routeProvider', 'COMPONENTS_URL', 'UtilsProvider',
-    function ($routeProvider, COMPONENTS_URL, UtilsProvider) {
+    '$routeProvider', 'UtilsProvider',
+    function ($routeProvider, UtilsProvider) {
       $routeProvider
         .when(UtilsProvider.path.join('/cms', 'app', 'edit', ':id/'), {
-          templateUrl: UtilsProvider.path.join(
-            COMPONENTS_URL,
-            'content',
-            'content-edit',
-            'content-edit.html'
-          ),
-          controller: 'ContentEdit'
+          template: '<content-edit></content-edit≥'
         });
     }]);
 
@@ -2870,56 +3062,280 @@ angular.module('content.video', [
 'use strict';
 
 angular.module('EditorsPick', [
+  'cms.config',
   'customSearch'
 ])
-  .config(function ($routeProvider, COMPONENTS_URL, CMS_NAMESPACE) {
+  .config(function ($routeProvider, COMPONENTS_URL) {
     $routeProvider
       .when('/cms/app/sod/', {
-        controller: function ($scope, $window) {
-          // set title
-          $window.document.title = CMS_NAMESPACE + ' | SoD';
+        controller: [
+          '$scope', '$window', 'CmsConfig',
+          function ($scope, $window, CmsConfig) {
+            // set title
+            $window.document.title = CmsConfig.getCmsTitle() + ' | SoD';
 
-          $scope.$watch('queryData', function () { console.log(arguments); });
+            $scope.$watch('queryData', function () { console.log(arguments); });
 
-          $scope.queryData = {};
-          $scope.updateQueryData = function () {
-            $scope.queryData = {
-              groups: [{
-                conditions: [{
-                  field: 'content-type',
-                  type: 'all',
-                  values: [{
-                    name: 'for display',
-                    value: 'actually-use-this-value-123'
-                  }]
+            $scope.queryData = {};
+            $scope.updateQueryData = function () {
+              $scope.queryData = {
+                groups: [{
+                  conditions: [{
+                    field: 'content-type',
+                    type: 'all',
+                    values: [{
+                      name: 'for display',
+                      value: 'actually-use-this-value-123'
+                    }]
+                  }],
+                  time: '1 day'
                 }],
-                time: '1 day'
-              }],
-              included_ids: [1],
-              excluded_ids: [2],
-              pinned_ids: [3],
-              page: 1,
-  	          query: 'query balh blah blahb'
+                included_ids: [1],
+                excluded_ids: [2],
+                pinned_ids: [3],
+                page: 1,
+    	          query: 'query balh blah blahb'
+              };
             };
-          };
 
-          $scope.updateConditionData = function () {
-            $scope.queryData.groups[0].conditions = [{
-              field: 'content-type',
-              type: 'all',
-              values: [{
-                name: 'ANOTHER THIGN',
-                value: 'actually-use-this-value-123'
-              }]
-            }];
-          };
+            $scope.updateConditionData = function () {
+              $scope.queryData.groups[0].conditions = [{
+                field: 'content-type',
+                type: 'all',
+                values: [{
+                  name: 'ANOTHER THIGN',
+                  value: 'actually-use-this-value-123'
+                }]
+              }];
+            };
 
-        },
+          }
+        ],
         templateUrl: COMPONENTS_URL + 'editors-pick/editors-pick.html',
         reloadOnSearch: false
       });
   });
 
+'use strict';
+
+angular.module('filterListWidget.directive', [
+  'bulbsCmsApp.settings',
+  'lodash',
+  'utils'
+])
+  .directive('filterListWidget', [
+    '_', '$http', '$location', '$timeout', '$', 'COMPONENTS_URL', 'Utils',
+    function (_, $http, $location, $timeout, $, COMPONENTS_URL, Utils) {
+      return {
+        restrict: 'E',
+        scope: {
+          filters: '='
+        },
+        templateUrl: Utils.path.join(
+          COMPONENTS_URL,
+          'filter-list-widget',
+          'filter-list-widget.html'
+        ),
+        link: function (scope, element, attrs) {
+          var $element = $(element);
+          var $input = $element.find('input');
+
+          scope.autocompleteArray = [];
+
+          var filterInputCounter = 0, filterInputTimeout;
+
+          $input.on('input', function (e) {
+            var search = $input.val();
+            scope.searchTerm = search;
+
+            $timeout.cancel(filterInputTimeout);
+            filterInputTimeout = $timeout(function () { getAutocompletes(search); }, 200);
+
+            if (filterInputCounter > 2) {
+              getAutocompletes(search);
+            }
+          });
+          function getAutocompletes(search) {
+            $timeout.cancel(filterInputTimeout);
+            filterInputCounter = 0;
+            if (search.length < 1) {
+              scope.autocompleteArray = [];
+              scope.$apply();
+              return;
+            }
+
+            $http({
+              url: '/cms/api/v1/things/?type=tag&type=feature_type&type=author',
+              method: 'GET',
+              params: {'q': search}
+            }).success(function (data) {
+              scope.autocompleteArray = data;
+            });
+          }
+
+          $input.on('keyup', function (e) {
+            if (e.keyCode === 38) { arrowSelect('up'); }//up
+            if (e.keyCode === 40) { arrowSelect('down'); } //down
+            if (e.keyCode === 13) { //enter
+              if ($element.find('.selected').length > 0) {
+                // To trigger the click we need to first break out of the
+                // current $apply() cycle. Hence the $timeout()
+                $timeout(function () {
+                  angular.element('.selected > a').triggerHandler('click');
+                }, 0);
+              } else {
+                scope.addFilter('search', $input.val());
+              }
+            }
+          });
+
+          scope.search = function () {
+            scope.addFilter('search', scope.filterInputValue);
+          };
+
+          scope.clearSearch = function () {
+            scope.filterInputValue = '';
+          };
+
+          scope.clearFilters = function () {
+            scope.filters = {};
+            scope.filterInputValue = '';
+            return applyFilterChange({});
+          };
+
+          $element.on('mouseover', '.entry', function () {
+            scope.selectEntry(this);
+          });
+
+          function arrowSelect(direction) {
+            var $entries = $element.find('.entry');
+            var $selected = $element.find('.entry.selected');
+            var $toSelect;
+            if ($selected.length > 0) {
+              if (direction === 'up') { $toSelect = $selected.first().prev(); }
+              if (direction === 'down') { $toSelect = $selected.first().next(); }
+            } else {
+              if (direction === 'up') { $toSelect = $entries.last(); }
+              if (direction === 'down') { $toSelect = $entries.first(); }
+            }
+            scope.selectEntry($toSelect);
+          }
+          scope.selectEntry = function (entry) {
+            $element.find('.selected').removeClass('selected');
+            $(entry).addClass('selected');
+          };
+
+          $input.on('blur', function () {
+            $element.find('.dropdown-menu').fadeOut(200);
+          });
+          $input.on('focus', function () {
+            $element.find('.dropdown-menu').fadeIn(200);
+          });
+
+          scope.addFilter = function (type, newFilterValue) {
+            var filterObject = $location.search();
+            if (type === 'search') {
+              filterObject.search = newFilterValue;
+            } else {
+              if (!filterObject[type]) {
+                filterObject[type] = [];
+              }
+              if (typeof(filterObject[type]) === 'string') {
+                filterObject[type] = [filterObject[type]];
+              }
+              if (!_.contains(filterObject[type], newFilterValue)) {
+                // this value is not already in
+                filterObject[type].push(newFilterValue);
+              }
+            }
+            return applyFilterChange(filterObject);
+          };
+
+          scope.deleteFilter = function (key) {
+            var filterObject = $location.search();
+            var toDelete = scope.filters[key];
+            if (typeof(filterObject[toDelete.type]) === 'string') {
+              filterObject[toDelete.type] = [filterObject[toDelete.type]];
+            }
+            var toSplice;
+            for (var i in filterObject[toDelete.type]) {
+              if (filterObject[toDelete.type][i] === toDelete.query) {
+                toSplice = i;
+                break;
+              }
+            }
+            filterObject[toDelete.type].splice(i, 1);
+            filterObject.search = $input.val();
+            delete scope.filters[key];
+            return applyFilterChange(filterObject);
+          };
+
+          function applyFilterChange(filterObject) {
+            filterObject.page = 1;
+            $location.search(filterObject);
+            scope.autocompleteArray = [];
+            $input.trigger('blur');
+          }
+
+          function getFilterObjects() {
+            var search = $location.search();
+            scope.filters = {};
+            if (typeof(search) === 'undefined') { console.log('undefined'); return; }
+            //TODO: this sucks
+            var filterParamsToTypes = {'authors': 'author', 'tags': 'tag', 'feature_types': 'feature_type'};
+            for (var filterParam in filterParamsToTypes) {
+              var filterType = filterParamsToTypes[filterParam];
+              if (typeof(search[filterParam]) === 'string') { search[filterParam] = [search[filterParam]]; }
+              for (var i in search[filterParam]) {
+                var value = search[filterParam][i];
+                scope.filters[filterType + value] = {'query': value, 'type': filterParam};
+                getQueryToLabelMappings(filterType, value);
+              }
+            }
+            if (search.search) {
+              scope.filterInputValue = search.search;
+            }
+          }
+
+          scope.$on('$routeUpdate', function () {
+            getFilterObjects();
+          });
+
+          getFilterObjects();
+
+          function getQueryToLabelMappings(type, query) {
+            //this is pretty stupid
+            //TODO: Maybe do this with some localStorage caching?
+            //TODO: Maybe just dont do this at all? I dont know if thats possible
+            //    because there is no guarantee of any state (like if a user comes
+            //    directly to a filtered search page via URL)
+            scope.queryToLabelMappings = scope.queryToLabelMappings || {};
+
+            if (query in scope.queryToLabelMappings) { return; }
+
+            $http({
+              url: '/cms/api/v1/things/?type=' + type,
+              method: 'GET',
+              params: {'q': query}
+            }).success(function (data) {
+              for (var i in data) {
+                scope.queryToLabelMappings[data[i].value] = data[i].name;
+              }
+            });
+
+          }
+
+        }
+
+      };
+    }
+  ]);
+
+'use strict';
+
+angular.module('filterListWidget', [
+  'filterListWidget.directive'
+]);
 'use strict';
 
 angular.module('filterWidget.directive', [
@@ -3372,6 +3788,25 @@ angular.module('promotedContentOperationsList.directive', [
 
         $scope.disableControls = function () {
           return PromotedContentService.isPZoneRefreshPending();
+        };
+
+        $scope.operationsStale = function () {
+          return PromotedContentService.isPZoneOperationsStale();
+        };
+
+        $scope.refreshingOperations = false;
+        $scope.refreshOperations = function () {
+
+          if (!$scope.refreshingOperations) {
+            $scope.refreshingOperations = true;
+            PromotedContentService.$refreshOperations({
+              from: $scope.scheduleDateFrom.toISOString(),
+              to: $scope.scheduleDateTo.toISOString()
+            })
+              .finally(function () {
+                $scope.refreshingOperations = false;
+              });
+          }
         };
       },
       link: function (scope, element, attr) {
@@ -3898,10 +4333,11 @@ angular.module('promotedContent.service', [
      * GOD DAMN IT RACE CONDITIONS NOTE: To avoid race conditions, only call
      *  this function as a result of user interaction.
      *
+     * @param {object} params - query parameters to append to request.
      * @returns {Promise} resolves with operation data, or rejects with an error message.
      */
-    PromotedContentService.$refreshOperations = function () {
-      return _data.selectedPZone.getList('operations')
+    PromotedContentService.$refreshOperations = function (params) {
+      return _data.selectedPZone.getList('operations', params)
         .then(function (data) {
 
           _data.operations = data;
@@ -4240,36 +4676,23 @@ angular.module('promotedContentTimePicker', [
 
 angular.module('promotedContent', [
   'bulbsCmsApp.settings',
+  'cms.config',
   'promotedContentPzoneSelect',
   'promotedContentList',
   'promotedContentSearch',
   'promotedContentTimePicker',
   'promotedContentOperationsList',
-  'promotedContent.service'
 ])
-  .config(function ($routeProvider, COMPONENTS_URL, CMS_NAMESPACE) {
+  .config(function ($routeProvider, COMPONENTS_URL) {
     $routeProvider
       .when('/cms/app/promotion/', {
-        controller: function ($scope, $window, PromotedContentService) {
-          // set title
-          $window.document.title = CMS_NAMESPACE + ' | Promotion Tool';
-
-          $scope.operationsStale = function () {
-            return PromotedContentService.isPZoneOperationsStale();
-          };
-
-          $scope.refreshingOperations = false;
-          $scope.refreshOperations = function () {
-
-            if (!$scope.refreshingOperations) {
-              $scope.refreshingOperations = true;
-              PromotedContentService.$refreshOperations()
-                .finally(function () {
-                  $scope.refreshingOperations = false;
-                });
-            }
-          };
-        },
+        controller: [
+          '$window', 'CmsConfig',
+          function ($window, CmsConfig) {
+            // set title
+            $window.document.title = CmsConfig.getCmsTitle() + ' | Promotion Tool';
+          }
+        ],
         templateUrl: COMPONENTS_URL + 'promoted-content/promoted-content.html',
         reloadOnSearch: false
       });
@@ -4475,24 +4898,718 @@ angular.module('reporting.directive', [])
 
 'use strict';
 
-angular.module('reporting', [
-  'reporting.directive'
+angular.module('lineItems.edit.directive', [
+  'apiServices.lineItem.factory',
+  'bulbsCmsApp.settings',
+  'lodash',
+  'saveButton.directive',
+  'topBar',
+  'utils'
+])
+  .directive('lineItemsEdit', [
+    'COMPONENTS_URL', 'Utils',
+    function (COMPONENTS_URL, Utils) {
+      return {
+        controller: [
+          '_', '$location', '$q', '$routeParams', '$scope', 'LineItem',
+          function (_, $location, $q, $routeParams, $scope, LineItem) {
+            if ($routeParams.id === 'new') {
+              $scope.model = LineItem.$build();
+              $scope.isNew = true;
+            } else {
+              $scope.model = LineItem.$find($routeParams.id);
+            }
+
+            window.onbeforeunload = function (e) {
+              if (!_.isEmpty($scope.model.$dirty()) || $scope.isNew || $scope.needsSave) {
+                return 'You have unsaved changes.';
+              }
+            };
+
+            $scope.$on('$destroy', function() {
+              delete window.onbeforeunload;
+            });
+
+            $scope.saveModel = function () {
+              var promise;
+
+              if ($scope.model) {
+                promise = $scope.model.$save().$asPromise().then(function (data) {
+                  $location.path('/cms/app/line-items/edit/' + data.id + '/');
+                });
+              } else {
+                var deferred = $q.defer();
+                deferred.reject();
+                promise = deferred.promise;
+              }
+
+              return promise;
+            };
+          }
+        ],
+        restrict: 'E',
+        scope: {
+          getModelId: '&modelId'
+        },
+        templateUrl: Utils.path.join(
+          COMPONENTS_URL,
+          'reporting',
+          'reporting-line-items-edit',
+          'reporting-line-items-edit.html'
+        )
+      };
+    }
+  ]);
+
+'use strict';
+
+angular.module('lineItems.edit', [
+  'lineItems.edit.directive'
 ])
   .config([
-    '$routeProvider', 'COMPONENTS_URL',
-    function ($routeProvider, COMPONENTS_URL) {
-
+    '$routeProvider',
+    function ($routeProvider) {
       $routeProvider
-        .when('/cms/app/reporting/', {
+        .when('/cms/app/line-items/edit/:id/', {
           controller: [
-            '$window', 'CMS_NAMESPACE',
-            function ($window, CMS_NAMESPACE) {
-              // set title
-              $window.document.title = CMS_NAMESPACE + ' | Reporting';
+            '$routeParams', '$scope', '$window', 'CMS_NAMESPACE',
+            function ($routeParams, $scope, $window, CMS_NAMESPACE) {
+              $window.document.title = CMS_NAMESPACE + ' | Edit Line Item';
+
+              $scope.routeId = $routeParams.id;
             }
           ],
-          templateUrl: COMPONENTS_URL + 'reporting/reporting-page.html'
+          template: '<line-items-edit id="routeId"></line-items-edit>',
+          reloadOnSearch: false
         });
+    }
+  ]);
+
+'use strict';
+
+angular.module('lineItems.list', [
+  'apiServices.lineItem.factory',
+  'bulbsCmsApp.settings',
+  'listPage',
+  'utils'
+])
+  .config([
+    '$routeProvider', 'COMPONENTS_URL', 'UtilsProvider',
+    function ($routeProvider, COMPONENTS_URL, Utils) {
+      $routeProvider
+        .when('/cms/app/line-items/', {
+          controller: [
+            '$scope', '$window', 'CMS_NAMESPACE', 'LineItem',
+            function($scope, $window, CMS_NAMESPACE, LineItem) {
+              $window.document.title = CMS_NAMESPACE + ' | Line Items';
+
+              $scope.modelFactory = LineItem;
+            }
+          ],
+          templateUrl: Utils.path.join(
+            COMPONENTS_URL,
+            'reporting',
+            'reporting-line-items-list',
+            'reporting-line-items-list.html'
+          )
+        });
+    }
+  ]);
+
+'use strict';
+
+angular.module('rateOverrides.edit.directive', [
+  'apiServices.rateOverride.factory',
+  'apiServices.featureType.factory',
+  'bulbsCmsApp.settings',
+  'lodash',
+  'saveButton.directive',
+  'topBar',
+  'utils'
+])
+  .directive('rateOverridesEdit', [
+    'COMPONENTS_URL', 'Utils',
+    function (COMPONENTS_URL, Utils) {
+      return {
+        controller: [
+          '_', '$location', '$http', '$q', '$routeParams', '$scope', 'ContentFactory',
+            'FeatureType', 'RateOverride', 'Raven',
+          function (_, $location, $http, $q, $routeParams, $scope, ContentFactory,
+              FeatureType, RateOverride, Raven) {
+                
+            var resourceUrl = '/cms/api/v1/contributions/role/';
+
+            if ($routeParams.id === 'new') {
+              $scope.model = RateOverride.$build();
+              $scope.isNew = true;
+            } else {
+              $scope.model = RateOverride.$find($routeParams.id);
+              $scope.model.$promise.then(function () {
+                if (($scope.model.hasOwnProperty('role')) && ($scope.model.role !== null)){
+                  $scope.model.role = $scope.model.role.id;
+                }
+              });
+            }
+
+            window.onbeforeunload = function (e) {
+              if (!_.isEmpty($scope.model.$dirty()) || $scope.isNew || $scope.needsSave) {
+                return 'You have unsaved changes.';
+              }
+            };
+
+            $scope.$on('$destroy', function() {
+              delete window.onbeforeunload;
+            });
+
+            $scope.getPaymentType = function (roleId) {
+              if ($scope.hasOwnProperty('roles')) {
+                for (var i = 0; i < $scope.roles.length; i++) {
+                  if ($scope.roles[i].id === roleId) {
+                    return $scope.roles[i].payment_type;
+                  }
+                }
+                return null;
+              }
+            };
+
+            $scope.isFeatureRated = function () {
+              if ($scope.getPaymentType($scope.model.role) === 'FeatureType'){
+                return true;
+              }
+              return false;
+            };
+
+            $scope.isHourlyRated = function () {
+              if ($scope.getPaymentType($scope.model.role) === 'Hourly'){
+                return true;
+              }
+              return false;
+            };
+
+            $scope.isFlatRated = function () {
+              if ($scope.getPaymentType($scope.model.role) === 'Flat Rate'){
+                return true;
+              }
+              return false;
+            };
+
+            $scope.addFeatureType = function () {
+              if (!$scope.model.hasOwnProperty('featureTypes')) {
+                $scope.model.featureTypes = [];
+              }
+
+              $scope.model.featureTypes.push({
+                featureType: null,
+                rate: 0,
+              });
+            };
+
+            $scope.getFeatureTypes = function () {
+              $http({
+                method: 'GET',
+                url: resourceUrl
+              }).success(function (data) {
+                $scope.featureTypes = data.results || data;
+              }).error(function (data, status, headers, config) {
+                Raven.captureMessage('Error fetching FeatureTypes', {extra: data});
+              });
+            };
+
+            $scope.getRoles = function () {
+              $http({
+              method: 'GET',
+              url: resourceUrl
+                }).success(function (data) {
+                  $scope.roles = data.results || data;
+                }).error(function (data, status, headers, config) {
+                  Raven.captureMessage('Error fetching Roles', {extra: data});
+                });
+            };
+
+            $scope.searchFeatureTypes = function (searchTerm) {
+              return FeatureType.simpleSearch(searchTerm);
+            };
+
+            $scope.saveModel = function () {
+              var promise;
+
+              if ($scope.model) {
+                promise = $scope.model.$save().$asPromise().then(function (data) {
+                  $location.path('/cms/app/rate-overrides/edit/' + data.id + '/');
+                  if (($scope.model.hasOwnProperty('role')) && ($scope.model.role !== null)){
+                    $scope.model.role = $scope.model.role.id;
+                  }
+                });
+              } else {
+                var deferred = $q.defer();
+                deferred.reject();
+                promise = deferred.promise;
+              }
+
+              return promise;
+            };
+
+            $scope.getRoles();
+            $scope.getFeatureTypes();
+          }
+        ],
+        restrict: 'E',
+        scope: {
+          getModelId: '&modelId'
+        },
+        templateUrl: Utils.path.join(
+          COMPONENTS_URL,
+          'reporting',
+          'reporting-rate-overrides-edit',
+          'reporting-rate-overrides-edit.html'
+        )
+      };
+    }
+  ]);
+
+'use strict';
+
+angular.module('rateOverrides.edit', [
+  'rateOverrides.edit.directive'
+])
+  .config([
+    '$routeProvider',
+    function ($routeProvider) {
+      $routeProvider
+        .when('/cms/app/rate-overrides/edit/:id/', {
+          controller: [
+            '$routeParams', '$scope', '$window', 'CMS_NAMESPACE',
+            function ($routeParams, $scope, $window, CMS_NAMESPACE) {
+              $window.document.title = CMS_NAMESPACE + ' | Edit Rate Override';
+              $scope.routeId = $routeParams.id;
+            }
+          ],
+          template: '<rate-overrides-edit id="routeId"></rate-overrides-edit>',
+          reloadOnSearch: false
+        });
+    }
+  ]);
+
+'use strict';
+
+angular.module('rateOverrides.list', [
+    'apiServices.rateOverride.factory',
+    'bulbsCmsApp.settings',
+    'listPage',
+    'utils'
+  ])
+  .config([
+    '$routeProvider', 'COMPONENTS_URL', 'UtilsProvider',
+    function ($routeProvider, COMPONENTS_URL, Utils) {
+      $routeProvider
+        .when('/cms/app/rate-overrides/', {
+          controller: [
+            '$scope', '$window', 'RateOverride', 'CMS_NAMESPACE',
+            function ($scope, $window, RateOverride, CMS_NAMESPACE) {
+              $window.document.title = CMS_NAMESPACE + ' | Rate Overrides';
+
+              $scope.modelFactory = RateOverride;
+            }
+          ],
+          templateUrl: Utils.path.join(
+            COMPONENTS_URL,
+            'reporting',
+            'reporting-rate-overrides-list',
+            'reporting-rate-overrides-list.html'
+          )
+        });
+    }
+  ]);
+
+'use strict';
+
+angular.module('roles.edit.directive', [
+  'apiServices.reporting.factory',
+  'bulbsCmsApp.settings',
+  'lodash',
+  'saveButton.directive',
+  'topBar',
+  'utils'
+])
+  .constant('PAYMENT_TYPES', [
+    {
+      name: 'Flat Rate',
+      value: 'Flat Rate'
+    },
+    {
+      name: 'FeatureType',
+      value: 'FeatureType'
+    },
+    {
+      name: 'Hourly',
+      value: 'Hourly'
+    },
+    {
+      name: 'Manual',
+      value: 'Manual'
+    }
+  ])
+  .directive('rolesEdit', [
+      'COMPONENTS_URL', 'Utils',
+      function (COMPONENTS_URL, Utils) {
+      return {
+        controller: [
+          '_', '$location', '$q', '$routeParams', '$scope', 'Role', 'PAYMENT_TYPES',
+          function (_, $location, $q, $routeParams, $scope, Role, PAYMENT_TYPES) {
+
+            $scope.page = 'contributions';
+            $scope.PAYMENT_TYPES = PAYMENT_TYPES;
+
+            if ($routeParams.id === 'new') {
+              $scope.model = Role.$build();
+              $scope.isNew = true;
+            } else {
+              $scope.model = Role.$find($routeParams.id);
+            }
+
+            window.onbeforeunload = function (e) {
+              if (!_.isEmpty($scope.model.$dirty()) || $scope.isNew || $scope.needsSave) {
+                return 'You have unsaved changes.';
+              }
+            };
+
+            $scope.$on('$destroy', function() {
+              delete window.onbeforeunload;
+            });
+
+            $scope.rateEditable = function () {
+              var paymentTypes = PAYMENT_TYPES.slice(0, 3);
+              if (paymentTypes.indexOf($scope.model.paymentType >= 0)) {
+                return true;
+              }
+
+              return false;
+            };
+
+            $scope.saveModel = function () {
+              var promise;
+
+              if ($scope.model) {
+                promise = $scope.model.$save().$asPromise().then(function (data) {
+                  $location.path('/cms/app/roles/edit/' + data.id + '/');
+                });
+              } else {
+                var deferred = $q.defer();
+                deferred.reject();
+                promise = deferred.promise;
+              }
+
+              return promise;
+            };
+          }
+        ],
+        restrict: 'E',
+        scope: {
+          getModelId: '&modelId'
+        },
+        templateUrl: Utils.path.join(
+          COMPONENTS_URL,
+          'reporting',
+          'reporting-roles-edit',
+          'reporting-roles-edit.html'
+        )
+      };
+    }
+  ]);
+
+'use strict';
+
+angular.module('roles.edit', [
+  'roles.edit.directive'
+])
+  .config([
+    '$routeProvider',
+    function ($routeProvider) {
+      $routeProvider
+        .when('/cms/app/roles/edit/:id/', {
+          controller: [
+            '$routeParams', '$scope', '$window', 'CMS_NAMESPACE',
+            function ($routeParams, $scope, $window, CMS_NAMESPACE) {
+
+              $window.document.title = CMS_NAMESPACE + ' | Edit Role';
+
+              $scope.routeId = $routeParams.id;
+            }
+          ],
+          template: '<roles-edit model-id="routeId"></roles-edit>',
+          reloadOnSearch: false
+        });
+    }
+  ]);
+
+'use strict';
+
+angular.module('roles.list', [
+    'apiServices.reporting.factory',
+    'bulbsCmsApp.settings',
+    'listPage',
+    'utils'
+  ])
+  .config([
+    '$routeProvider', 'COMPONENTS_URL', 'UtilsProvider',
+    function ($routeProvider, COMPONENTS_URL, Utils) {
+      $routeProvider
+        .when('/cms/app/roles/', {
+          controller: [
+            '$scope', '$window', 'CMS_NAMESPACE', 'Role',
+            function($scope, $window, CMS_NAMESPACE, Role) {
+              $window.document.title = CMS_NAMESPACE + ' | Roles';
+
+              $scope.modelFactory = Role;
+            }
+          ],
+          templateUrl: Utils.path.join(
+            COMPONENTS_URL,
+            'reporting',
+            'reporting-roles-list',
+            'reporting-roles-list.html'
+          )
+        });
+    }
+  ]);
+
+'use strict';
+
+angular.module('reports', [
+  'lineItems.edit',
+  'lineItems.list',
+  'rateOverrides.edit',
+  'rateOverrides.list',
+  'roles.edit',
+  'roles.list',
+  'utils'
+])
+  .config([
+    '$routeProvider', 'COMPONENTS_URL', 'UtilsProvider',
+    function ($routeProvider, COMPONENTS_URL, Utils) {
+
+      $routeProvider.when('/cms/app/reporting/', {
+        templateUrl: Utils.path.join(
+          COMPONENTS_URL,
+          'reporting',
+          'reporting.html'
+        ),
+        controller: [
+          '$scope', '$window', '$filter', '$interpolate', 'CMS_NAMESPACE', 'moment',
+            'ContributionReportingService', 'ContentReportingService',
+            'FreelancePayReportingService', 'CmsConfig',
+          function ($scope, $window, $filter, $interpolate, CMS_NAMESPACE, moment,
+              ContributionReportingService, ContentReportingService,
+              FreelancePayReportingService, CmsConfig) {
+            $window.document.title = CmsConfig.getCmsTitle() + ' | Reporting'; // set title
+
+            $scope.userFilter = '';
+            $scope.userFilters = [
+              {
+                name: 'All',
+                value: ''
+              },
+              {
+                name: 'Staff',
+                value: 'staff'
+              },
+              {
+                name: 'Freelance',
+                value: 'freelance'
+              }
+            ];
+
+            $scope.publishedFilter = '';
+            $scope.publishedFilters = [
+              {
+                name: 'All Content',
+                value: ''
+              },
+              {
+                name: 'Published',
+                value: 'published'
+              }
+            ];
+
+            $scope.reports = {
+              'Contributions': {
+                service: ContributionReportingService,
+                headings: [
+                  {'title': 'Content ID', 'expression': 'content.id'},
+                  {'title': 'Headline', 'expression': 'content.title'},
+                  {'title': 'FeatureType', 'expression': 'content.feature_type'},
+                  {'title': 'Contributor', 'expression': 'user.full_name'},
+                  {'title': 'Role', 'expression': 'role'},
+                  {'title': 'Pay', 'expression': 'pay'},
+                  {'title': 'Date', 'expression': 'content.published | date: \'MM/dd/yyyy\''}
+                ],
+                downloadURL: '/cms/api/v1/contributions/reporting/',
+                orderOptions: [
+                  {
+                    label: 'Order by User',
+                    key: 'user'
+                  },
+                  {
+                    label: 'Order by Content',
+                    key: 'content'
+                  },
+                ]
+              },
+              'Content': {
+                service: ContentReportingService,
+                headings: [
+                  {'title': 'Content ID', 'expression': 'id'},
+                  {'title': 'Headline', 'expression': 'title'},
+                  {'title': 'Feature Type', 'expression': 'feature_type'},
+                  {'title': 'Article Cost', 'expression': 'value'},
+                  {'title': 'Date Published', 'expression': 'published | date: \'MM/dd/yyyy\''}
+                ],
+                orderOptions: [],
+                downloadURL: '/cms/api/v1/contributions/contentreporting/',
+              },
+              'Freelance Pay': {
+                service: FreelancePayReportingService,
+                headings: [
+                  {'title': 'Contributor', 'expression': 'contributor.full_name'},
+                  {'title': 'Contribution #', 'expression': 'contributions_count'},
+                  {'title': 'Pay', 'expression': 'pay'},
+                  {'title': 'Payment Date', 'expression': 'payment_date | date: \'MM/dd/yyyy\''}
+                ],
+                orderOptions: [],
+                downloadURL: '/cms/api/v1/contributions/freelancereporting/'
+              }
+            };
+            $scope.items = [];
+            $scope.headings = [];
+            $scope.orderOptions = [];
+            $scope.moreFilters = [];
+
+            $scope.startOpen = false;
+            $scope.endOpen = false;
+
+            $scope.startInitial = moment().startOf('month').format('YYYY-MM-DD');
+            $scope.endInitial = moment().endOf('month').format('YYYY-MM-DD');
+
+            $scope.setReport = function ($reportingService) {
+              $scope.report = $reportingService;
+            };
+
+            $scope.setUserFilter = function (value) {
+              $scope.userFilter = value;
+              loadReport($scope.report, $scope.start, $scope.end, $scope.orderBy);
+            };
+
+            $scope.setPublishedFilter = function (value) {
+              $scope.publishedFilter = value;
+              if (value === 'published') {
+                $scope.end = moment().format('YYYY-MM-DD');
+              }
+              loadReport($scope.report, $scope.start, $scope.end, $scope.orderBy);
+            };
+
+            $scope.openStart = function ($event) {
+              $event.preventDefault();
+              $event.stopPropagation();
+              $scope.startOpen = true;
+            };
+
+            $scope.openEnd = function ($event) {
+              $event.preventDefault();
+              $event.stopPropagation();
+              $scope.endOpen = true;
+            };
+
+            $scope.orderingChange = function () {
+              loadReport($scope.report, $scope.start, $scope.end, $scope.orderBy);
+            };
+
+            $scope.$watch('report', function (report) {
+              if (!report) {
+                return;
+              }
+              $scope.orderOptions = report.orderOptions;
+              if(report.orderOptions.length > 0) {
+                $scope.orderBy = report.orderOptions[0];
+              } else {
+                $scope.orderBy = null;
+              }
+              $scope.headings = [];
+              report.headings.forEach(function (heading) {
+                $scope.headings.push(heading.title);
+              });
+
+              loadReport(report, $scope.start, $scope.end, $scope.orderBy);
+            });
+
+            $scope.$watchCollection('[start, end]', function (params) {
+              if (!$scope.report) {
+                return;
+              }
+              var start = params[0];
+              var end = params[1];
+
+              loadReport($scope.report, start, end, $scope.orderBy);
+            });
+
+            function loadReport(report, start, end, order) {
+              $scope.items = [];
+              var reportParams = {};
+              $scope.downloadURL = report.downloadURL + '?format=csv';
+              if (end) {
+                var endParam = $filter('date')(end, 'yyyy-MM-dd');
+                reportParams['end'] = endParam;
+                $scope.downloadURL += ('&end=' + endParam);
+              }
+
+              if (start) {
+                var startParam = $filter('date')(start, 'yyyy-MM-dd');
+                reportParams['start'] = startParam;
+                $scope.downloadURL += ('&start=' + startParam);
+              }
+
+              if (order) {
+                $scope.downloadURL += ('&ordering=' + order.key);
+                reportParams['ordering'] = order.key;
+              }
+
+              if ($scope.publishedFilter) {
+                $scope.downloadURL += ('&published=' + $scope.publishedFilter);
+                reportParams['published'] = $scope.publishedFilter;
+              }
+
+              if ($scope.userFilter) {
+                $scope.downloadURL += ('&staff=' + $scope.userFilter);
+                reportParams['staff'] = $scope.userFilter;
+              }
+
+              if ($scope.moreFilters) {
+                for (var key in $scope.moreFilters) {
+                  if ($scope.moreFilters[key].type === 'authors') {
+                    $scope.downloadURL += ('&' + 'contributors=' + $scope.moreFilters[key].query);
+                    reportParams['contributors'] = $scope.moreFilters[key].query;
+                  } else {
+                    $scope.downloadURL += ('&' + $scope.moreFilters[key].type + '=' + $scope.moreFilters[key].query);
+                    reportParams[$scope.moreFilters[key].type] = $scope.moreFilters[key].query;
+                  }
+                }
+              }
+
+              report.service.getList(reportParams).then(function (data) {
+                $scope.items = [];
+                data.forEach(function (lineItem) {
+                  var item = [];
+                  report.headings.forEach(function (heading) {
+                    var exp = $interpolate('{{item.' + heading.expression + '}}');
+                    var value = exp({item: lineItem});
+                    item.push(value);
+                  });
+                  $scope.items.push(item);
+                });
+              });
+            }
+          }
+        ]
+      });
     }
   ]);
 
@@ -4578,17 +5695,21 @@ angular.module('sections.edit.directive', [
 
 angular.module('sections.edit', [
   'bulbsCmsApp.settings',
+  'cms.config',
   'sections.edit.directive'
 ])
-  .config(function ($routeProvider, CMS_NAMESPACE) {
+  .config(function ($routeProvider) {
     $routeProvider
       .when('/cms/app/section/edit/:id/', {
-        controller: function ($routeParams, $scope, $window) {
-          // set title
-          $window.document.title = CMS_NAMESPACE + ' | Edit Section';
+        controller: [
+          '$routeParams', '$scope', '$window', 'CmsConfig',
+          function ($routeParams, $scope, $window, CmsConfig) {
+            // set title
+            $window.document.title = CmsConfig.getCmsTitle() + ' | Edit Section';
 
-          $scope.routeId = $routeParams.id;
-        },
+            $scope.routeId = $routeParams.id;
+          }
+        ],
         template: '<sections-edit model-id="routeId"></sections-edit>',
         reloadOnSearch: false
       });
@@ -4599,6 +5720,7 @@ angular.module('sections.edit', [
 angular.module('sections.list', [
   'apiServices.section.factory',
   'bulbsCmsApp.settings',
+  'cms.config',
   'listPage',
   'sections.settings'
 ])
@@ -4606,15 +5728,19 @@ angular.module('sections.list', [
 
     $routeProvider
       .when('/cms/app/section/', {
-        controller: function ($scope, $window, EXTERNAL_URL, SECTIONS_LIST_REL_PATH,
-            Section, CMS_NAMESPACE) {
+        controller: [
+          '$scope', '$window', 'EXTERNAL_URL', 'SECTIONS_LIST_REL_PATH', 'Section',
+            'CmsConfig',
+          function ($scope, $window, EXTERNAL_URL, SECTIONS_LIST_REL_PATH, Section,
+              CmsConfig) {
 
-          // set title
-          $window.document.title = CMS_NAMESPACE + ' | Section';
+            // set title
+            $window.document.title = CmsConfig.getCmsTitle() + ' | Section';
 
-          $scope.modelFactory = Section;
-          $scope.LIST_URL = EXTERNAL_URL + SECTIONS_LIST_REL_PATH;
-        },
+            $scope.modelFactory = Section;
+            $scope.LIST_URL = EXTERNAL_URL + SECTIONS_LIST_REL_PATH;
+          }
+        ],
         templateUrl: COMPONENTS_URL + 'sections/sections-list/sections-list-page.html'
       });
   });
@@ -4857,17 +5983,21 @@ angular.module('specialCoverage.edit.directive', [
 'use strict';
 
 angular.module('specialCoverage.edit', [
+  'cms.config',
   'specialCoverage.edit.directive'
 ])
-  .config(function ($routeProvider, CMS_NAMESPACE) {
+  .config(function ($routeProvider) {
     $routeProvider
       .when('/cms/app/special-coverage/edit/:id/', {
-        controller: function ($routeParams, $scope, $window) {
-          // set title
-          $window.document.title = CMS_NAMESPACE + ' | Edit Special Coverage';
+        controller: [
+          '$routeParams', '$scope', '$window', 'CmsConfig',
+          function ($routeParams, $scope, $window, CmsConfig) {
+            // set title
+            $window.document.title = CmsConfig.getCmsTitle() + ' | Edit Special Coverage';
 
-          $scope.routeId = $routeParams.id;
-        },
+            $scope.routeId = $routeParams.id;
+          }
+        ],
         template: '<special-coverage-edit model-id="routeId"></special-coverage-edit>'
       });
   });
@@ -4877,6 +6007,7 @@ angular.module('specialCoverage.edit', [
 angular.module('specialCoverage.list', [
   'apiServices.specialCoverage.factory',
   'bulbsCmsApp.settings',
+  'cms.config',
   'listPage',
   'specialCoverage.settings'
 ])
@@ -4884,15 +6015,19 @@ angular.module('specialCoverage.list', [
 
     $routeProvider
       .when('/cms/app/special-coverage/', {
-        controller: function ($scope, $window, EXTERNAL_URL, SPECIAL_COVERAGE_LIST_REL_PATH,
-            SpecialCoverage, CMS_NAMESPACE) {
+        controller: [
+          '$scope', '$window', 'EXTERNAL_URL', 'SPECIAL_COVERAGE_LIST_REL_PATH',
+            'SpecialCoverage', 'CmsConfig',
+          function ($scope, $window, EXTERNAL_URL, SPECIAL_COVERAGE_LIST_REL_PATH,
+            SpecialCoverage, CmsConfig) {
 
-          // set title
-          $window.document.title = CMS_NAMESPACE + ' | Special Coverage';
+            // set title
+            $window.document.title = CmsConfig.getCmsTitle() + ' | Special Coverage';
 
-          $scope.modelFactory = SpecialCoverage;
-          $scope.LIST_URL = EXTERNAL_URL + SPECIAL_COVERAGE_LIST_REL_PATH;
-        },
+            $scope.modelFactory = SpecialCoverage;
+            $scope.LIST_URL = EXTERNAL_URL + SPECIAL_COVERAGE_LIST_REL_PATH;
+          }
+        ],
         templateUrl: COMPONENTS_URL + 'special-coverage/special-coverage-list/special-coverage-list-page.html'
       });
   });
@@ -5125,7 +6260,7 @@ angular.module('topBar', [
  *    a direction--'asc'/undefined for the default direction, 'desc' for the opposite
  *    direction--and return an ordering string.
  *
- * Field display objecs are available at the model level as the $fieldDisplays function.
+ * Field display objects are available at the model level as the $fieldDisplays function.
  *  Returns a list of field displays to be used in templates.
  */
 angular.module('apiServices.mixins.fieldDisplay', [
@@ -5196,6 +6331,7 @@ angular.module('apiServices.mixins.fieldDisplay', [
             }
 
             // set up storting function if sorts was provided
+            fieldDisplay.getOrdering = function () {};
             if (fieldDisplay.sorts) {
               if (typeof fieldDisplay.sorts === 'function') {
                 // sort function was provided, use that
@@ -5215,81 +6351,22 @@ angular.module('apiServices.mixins.fieldDisplay', [
 
 'use strict';
 
-angular.module('apiServices.styles', [
-  'lodash',
-  'restmod'
-])
-  .factory('DjangoDRFPagedApi', function (_, restmod, inflector) {
-    var singleRoot = 'root';
-    var manyRoot = 'results';
-
-    return restmod.mixin('DefaultPacker', {
-      $config: {
-        style: 'DjangoDRFPagedApi',
-        primaryKey: 'id',
-        jsonMeta: '.',
-        jsonLinks: '.',
-        jsonRootMany: manyRoot,
-        jsonRootSingle: singleRoot
-      },
-
-      $extend: {
-        Collection: {
-          $page: 1,
-          $totalCount: 0
-        },
-
-        // special snakecase to camelcase renaming
-        Model: {
-          decodeName: inflector.camelize,
-          encodeName: function(_v) { return inflector.parameterize(_v, '_'); },
-          encodeUrlName: inflector.parameterize
-        }
-      },
-
-      $hooks: {
-        'before-request': function (_req) {
-          _req.url += '/';
-        },
-        'before-fetch-many': function (_req) {
-          // add paging parameter here based on collection's $page property
-          if (_.isUndefined(_req.params)) {
-            _req.params = {};
-          }
-          _req.params.page = this.$page || 1;
-        },
-        'after-request': function (_req) {
-          // check that response has data we need
-          if (!_.isUndefined(_req.data) && _.isUndefined(_req.data[manyRoot])) {
-            // a dirty hack so we don't have to copy/modify the DefaultPacker:
-            // this is not a collection, make it so the single root is accessible by the packer
-            var newData = {};
-            newData[singleRoot] = _req.data;
-            _req.data = newData;
-          }
-        },
-        'after-fetch-many': function (_req) {
-          this.$totalCount = _req.data.count;
-        }
-      }
-    });
-  });
-
-'use strict';
-
 angular.module('apiServices', [
   'apiServices.settings',
   'restmod',
   'restmod.styles.drfPaged'
 ])
-  .config(function (API_URL_ROOT, restmodProvider) {
-    restmodProvider.rebase('DjangoDRFPagedApi', {
-      $config: {
-        style: 'BulbsApi',
-        urlPrefix: API_URL_ROOT
-      }
-    });
-  });
+  .config([
+    'API_URL_ROOT', 'restmodProvider',
+    function (API_URL_ROOT, restmodProvider) {
+      restmodProvider.rebase('DjangoDRFPagedApi', {
+        $config: {
+          style: 'BulbsApi',
+          urlPrefix: API_URL_ROOT
+        }
+      });
+    }
+  ]);
 
 'use strict';
 
@@ -5422,28 +6499,36 @@ angular.module('apiServices.customSearch.factory', [
   'lodash',
   'restmod'
 ])
-  .factory('CustomSearch', function (_, restmod, CustomSearchCount, CustomSearchGroupCount,
-      CustomSearchSettings) {
+  .factory('CustomSearch', [
+    '_', 'restmod', 'CustomSearchCount', 'CustomSearchGroupCount',
+      'CustomSearchSettings',
+    function (_, restmod, CustomSearchCount, CustomSearchGroupCount,
+        CustomSearchSettings) {
 
-    var CustomSearch = restmod.model(CustomSearchSettings.searchEndpoint).mix({
-      $hooks: {
-        'before-save': function (_req) {
-          _req.url += '/?page=' + _req.data.page;
+      var CustomSearch = restmod.model(CustomSearchSettings.searchEndpoint).mix({
+        $config: {
+          jsonRootSingle: 'results'
+        },
+        $hooks: {
+          'before-save': function (_req) {
+            _req.url += '/?page=' + _req.data.page;
+          }
         }
-      }
-    });
+      });
 
-    return {
-      $retrieveResultCount: CustomSearchCount.$retrieveResultCount,
-      $retrieveGroupCount: CustomSearchGroupCount.$retrieveResultCount,
-      $retrieveContent: function (query) {
-        return CustomSearch.$create(query).$asPromise()
-          .then(function (model) {
-            return model.$response.data;
-          });
-      }
-    };
-  });
+      return {
+        $retrieveResultCount: CustomSearchCount.$retrieveResultCount,
+        $retrieveGroupCount: CustomSearchGroupCount.$retrieveResultCount,
+        $retrieveContent: function (query) {
+          // HACK : because endpoint is a POST
+          return CustomSearch.$create(query).$asPromise()
+            .then(function (model) {
+              return model.$response.data;
+            });
+        }
+      };
+    }
+  ]);
 
 'use strict';
 
@@ -5483,6 +6568,167 @@ angular.module('apiServices.customSearch.settings', [])
     };
   });
 
+'use strict';
+
+angular.module('apiServices.featureType.factory', [
+  'apiServices'
+])
+  .factory('FeatureType', [
+    'restmod',
+    function (restmod) {
+      return restmod.model('things').mix('NestedDirtyModel', {
+        $config: {
+          name: 'FeatureType',
+          plural: 'FeatureTypes',
+          primaryKey: 'id',
+        },
+
+        $extend: {
+          Model: {
+            simpleSearch: function (searchTerm) {
+              return this.$search({type: 'feature_type', q: searchTerm}).$asPromise();
+            }
+          }
+        }
+      });
+    }]
+  );
+'use strict';
+
+angular.module('apiServices.lineItem.factory', [
+  'apiServices',
+  'apiServices.mixins.fieldDisplay'
+])
+  .factory('LineItem', function (_, restmod) {
+    var contributorEndpoint = 'contributions/line-items';
+
+    return restmod.model(contributorEndpoint).mix('FieldDisplay', 'NestedDirtyModel', {
+      $config: {
+        name: 'Line Item',
+        plural: 'Line Items',
+        primaryKey: 'id',
+        fieldDisplays: [
+          {
+            title: 'Contributor',
+            value: 'record.contributor.fullName'
+          },
+          {
+            title: 'Amount $',
+            value: 'record.amount'
+          },
+          {
+            title: 'Note',
+            value: 'record.note'
+          },
+          {
+            title: 'Date',
+            value: 'record.paymentDate.format("MM/DD/YY") || "--"',
+          }
+        ]
+      },
+
+      paymentDate: {
+        decode: 'date_string_to_moment',
+        encode: 'moment_to_date_string'
+      },
+      payment_date: {
+        decode: 'date_string_to_moment',
+        encode: 'moment_to_date_string',
+      }
+
+    });
+  });
+'use strict';
+
+angular.module('apiServices.rateOverride.factory', [
+  'apiServices',
+  'apiServices.mixins.fieldDisplay'
+])
+  .factory('RateOverride', function (_, restmod) {
+    var rateOverrideEndpoint = 'contributions/rate-overrides';
+
+    return restmod.model(rateOverrideEndpoint).mix('FieldDisplay', 'NestedDirtyModel', {
+      $config: {
+        name: 'Rate Override',
+        plural: 'Rate Overrides',
+        primaryKey: 'id',
+        fieldDisplays: [
+          {
+            title: 'Name',
+            value: 'record.contributor.fullName'
+          },
+          {
+            title: 'Role',
+            value: 'record.role.name'
+          }
+        ]
+      },
+      role: {
+        init: {}
+      },
+      $hooks: {
+        'before-save': function(_req) {
+          var featureTypes = _req.data.feature_types;
+          if (featureTypes.length > 0) {
+            for (var key in featureTypes) {
+              var obj = featureTypes[key];
+              if (obj.hasOwnProperty('featureType')) {
+                if (obj.featureType.hasOwnProperty('name')) {
+                  _req.data.feature_types[key].feature_type = obj.featureType.name;
+                } else if (obj.featureType.hasOwnProperty('value')) {
+                  _req.data.feature_types[key].feature_type.slug = obj.featureType.value;
+                }
+              }
+            }
+          }
+        },
+        'before-render': function(record) {
+          if (record.hasOwnProperty('feature_types')) {
+            for (var key in record.feature_types) {
+              if (record.feature_types[key].hasOwnProperty('feature_type')){
+                if (record.feature_types[key].feature_type.hasOwnProperty('name')) {
+                  record.feature_types[key].feature_type = record.feature_types[key].feature_type.name;
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+'use strict';
+
+angular.module('apiServices.reporting.factory', [
+  'apiServices',
+  'apiServices.mixins.fieldDisplay'
+])
+  .factory('Role', function (_, restmod) {
+    // var contributionsEndpoint = 'contributions';
+    var roleEndpoint = 'contributions/role';
+
+    return restmod.model(roleEndpoint).mix('FieldDisplay', 'NestedDirtyModel', {
+      $config: {
+        name: 'Role',
+        plural: 'Roles',
+        primaryKey: 'id',
+        fieldDisplays: [
+          {
+            title: 'Role',
+            value: 'record.name'
+          },
+          {
+            title: 'Payment Type',
+            value: 'record.paymentType'
+          }
+        ]
+      },
+      rates: {
+        init: {
+          featureType: []
+        }
+      }
+    });
+  });
 'use strict';
 
 angular.module('apiServices.section.factory', [
@@ -5771,6 +7017,13 @@ angular.module('cms.config', [
     var apiPath = '';
     // root for all backend requests
     var backendRoot = '';
+    // title to display for cms
+    var cmsTitle = 'Smoove';
+    // create content modal template to use
+    var createContentTemplateUrl = '';
+    // mappings where pairs are <template-url>: <polymorphic_ctype[]>
+    //  for looking up edit page templates
+    var editPageMappings = {};
     // default width to request for images
     var imageDefaultWidth = 1200;
     // image server root
@@ -5779,15 +7032,14 @@ angular.module('cms.config', [
     var imageServerApiKey = '';
     // url to inline objects file
     var inlineObjectsUrl = '';
-    // create content modal template to use
-    var createContentTemplateUrl = '';
-    // mappings where pairs are <template-url>: <polymorphic_ctype[]>
-    //  for looking up edit page templates
-    var editPageMappings = {};
     // url for logo to display in CMS
     var logoUrl = '';
     // callback to fire when user is attempting to logout
     var logoutCallback = function () {};
+    // url where media item templates are stored, TODO : evaluate if this is necessary
+    var mediaItemsPartialsUrl = '/cms/api/partials/media_items/';
+    // urls where some templates are stored, TODO : remove this once templates are in pods
+    var partialsUrl = '/views/';
     // mappings where pairs are <name>: <template-url> for looking up toolbar templates
     var toolbarMappings = {};
 
@@ -5828,6 +7080,24 @@ angular.module('cms.config', [
       return this;
     };
 
+    this.setCmsTitle = function (value) {
+      if (_.isString(value)) {
+        cmsTitle = value;
+      } else {
+        throw error('cmsTitle must be a string!');
+      }
+      return this;
+    };
+
+    this.setCreateContentTemplateUrl = function (value) {
+      if (_.isString(value)) {
+        createContentTemplateUrl = value;
+      } else {
+        throw error('createContentTemplateUrl must be a string!');
+      }
+      return this;
+    };
+
     this.setImageDefaultWidth = function (num) {
       if (_.isNumber(num)) {
         imageDefaultWidth = num;
@@ -5864,20 +7134,29 @@ angular.module('cms.config', [
       return this;
     };
 
-    this.setCreateContentTemplateUrl = function (value) {
-      if (_.isString(value)) {
-        createContentTemplateUrl = value;
-      } else {
-        throw error('createContentTemplateUrl must be a string!');
-      }
-      return this;
-    };
-
     this.setLogoUrl = function (value) {
       if (_.isString(value)) {
         logoUrl = value;
       } else {
         throw error('logoUrl must be a string!');
+      }
+      return this;
+    };
+
+    this.setMediaItemsPartialsUrl = function (value) {
+      if (_.isString(value)) {
+        mediaItemsPartialsUrl = value;
+      } else {
+        throw error('mediaItemsPartialsUrl must be a string!');
+      }
+      return this;
+    };
+
+    this.setPartialsUrl = function (value) {
+      if (_.isString(value)) {
+        partialsUrl = value;
+      } else {
+        throw error('partialsUrl must be a string!');
       }
       return this;
     };
@@ -5970,11 +7249,14 @@ angular.module('cms.config', [
 
     this.$get = function () {
       return {
+        getCmsTitle: _.constant(cmsTitle),
         getCreateContentTemplateUrl: _.constant(createContentTemplateUrl),
         getImageDefaultWidth: _.constant(imageDefaultWidth),
         getImageServerApiKey: _.constant(imageServerApiKey),
         getInlineObjectsUrl: _.constant(inlineObjectsUrl),
         getLogoUrl: _.constant(logoUrl),
+        getMediaItemsPartialsUrl: _.constant(mediaItemsPartialsUrl),
+        getPartialsUrl: _.constant(partialsUrl),
         logoutCallback: logoutCallback,
         /**
          * Get the template url for given toolbar.
@@ -6050,7 +7332,7 @@ angular.module('cms.image', [
         if (options.crop === 'original') {
           createStyle('.image[data-image-id="' + options.id + '"]>div', {
             'padding-bottom': ((data.height / data.width) * 100) + '%'
-          }, 'image-css-' + options.id);
+          }, 'image-css-' + options.id + '-crop');
 
           cropDetails = {
             x0: 0,
@@ -6071,7 +7353,7 @@ angular.module('cms.image', [
           createStyle('.image[data-image-id="' + options.id + '"]>div', {
             'padding-bottom': '56.25%', // default to 16x9 for errors
             'background-color': 'rgba(200, 0,0, .5)'
-          }, 'image-css-' + options.id);
+          }, 'image-css-' + options.id + '-crop');
         }
       };
 
@@ -6112,7 +7394,7 @@ angular.module('cms.image', [
             '-' + scaleNumber(tmp_selection.y0, scale) + 'px',
           'background-repeat': 'no-repeat'
         };
-        createStyle(selector, rules, 'image-css-' + image.id);
+        createStyle(selector, rules, 'image-css-' + image.id + '-computed-style');
       };
 
       var createStyle = function (selector, rules, styleId) {
@@ -6121,6 +7403,7 @@ angular.module('cms.image', [
         var $styleNode;
         if ($existingStyle.length > 0) {
           $styleNode = $existingStyle;
+          $styleNode.empty();
         } else {
           $styleNode = $('<style id="' + styleId + '" type="text/css">');
           $(document).find('head').append($styleNode);
@@ -6128,7 +7411,7 @@ angular.module('cms.image', [
 
         var css = '' + selector + '{';
         for (var rule in rules) {
-          css += rule + ':' + rules[rule] + ';';
+          css += rule + ':' + rules[rule] + ' !important;';
         }
         css += '}';
 
@@ -6529,6 +7812,10 @@ angular.module('cms.firebase.api', [
     '$q', '$rootScope', 'CurrentUser', 'FirebaseConfig', 'FirebaseRefFactory',
     function ($q, $rootScope, CurrentUser, FirebaseConfig, FirebaseRefFactory) {
 
+      // set up a promise for authorization
+      var authDefer = $q.defer();
+      var $authorize = authDefer.promise;
+
       // get root reference in firebase for this site
       var rootRef;
       var connectedRef;
@@ -6538,10 +7825,6 @@ angular.module('cms.firebase.api', [
       } catch (e) {
         console.warn('Firebase url is invalid, FirebaseApi will prevent firebase from working: ' + e.message);
       }
-
-      // set up a promise for authorization
-      var authDefer = $q.defer(),
-          $authorize = authDefer.promise;
 
       // set up catch all for logging auth errors
       $authorize
@@ -6560,7 +7843,7 @@ angular.module('cms.firebase.api', [
           //  in an environment where firebase isn't set up yet
           if ('firebase_token' in user && user.firebase_token) {
             // authorize user
-            rootRef.auth(user.firebase_token, function (error) {
+            rootRef.authWithCustomToken(user.firebase_token, function (error) {
               if (error) {
                 // authorization failed
                 authDefer.reject(error);
@@ -6574,6 +7857,9 @@ angular.module('cms.firebase.api', [
             authDefer.reject();
           }
         });
+      } else {
+        // no root ref, reject authorization defer
+        authDefer.reject();
       }
 
       // emit events when firebase reconnects or disconnects, disconnect event
@@ -6588,6 +7874,8 @@ angular.module('cms.firebase.api', [
           }
           $rootScope.$emit('firebase-connection-state-changed');
         });
+      } else {
+        console.warn('No connection ref for Firebase, connection status cannot be tracked.');
       }
 
       // connection object
@@ -6634,8 +7922,8 @@ angular.module('cms.firebase.articleFactory', [
   'lodash'
 ])
   .factory('FirebaseArticleFactory', [
-    '_', '$firebase', '$q', '$routeParams', 'CurrentUser', 'FirebaseApi', 'FirebaseConfig', 'moment',
-    function (_, $firebase, $q, $routeParams, CurrentUser, FirebaseApi, FirebaseConfig, moment) {
+    '_', '$firebase', '$q', 'CurrentUser', 'FirebaseApi', 'FirebaseConfig', 'moment',
+    function (_, $firebase, $q, CurrentUser, FirebaseApi, FirebaseConfig, moment) {
 
       /**
        * Create a new article.
@@ -6792,16 +8080,6 @@ angular.module('cms.firebase.articleFactory', [
           return retrievePromise;
 
         },
-        /**
-         * Retrieve current article object that is connected to firebase.
-         *
-         * @returns   deferred promise that will resolve with the current article object.
-         */
-        $retrieveCurrentArticle: function () {
-
-          return this.$retrieveArticle($routeParams.id);
-
-        }
 
       };
 
@@ -7092,6 +8370,82 @@ angular.module('sponsoredContentModal.factory', [
 
 'use strict';
 
+angular.module('bulbs.cms.unsavedChangesGuard', [
+  'confirmationModal.factory',
+  'jquery'
+])
+  .service('UnsavedChangesGuard', [
+    '$', '$location', '$rootScope', 'ConfirmationModal',
+    function ($, $location, $rootScope, ConfirmationModal) {
+
+      var $window = $(window);
+      var locationChangeCallbackRef;
+      var windowCallbackRef;
+
+      var enableGuard = function (options) {
+        var settings = $.extend({
+          modalGuardTitle: 'Unsaved Changes!',
+          message: 'You have unsaved changes. Do you want to continue?',
+          unsavedChangesCheckCallback: function () { return false; }
+        }, options);
+
+        // remove existing hooks
+        disableGuard();
+
+        // browser navigation hook
+        windowCallbackRef = windowCallback.bind(this, settings);
+        $window.on('beforeunload', windowCallbackRef);
+
+        // angular navigation hook
+        locationChangeCallbackRef = locationChangeCallback.bind(this, settings);
+        $rootScope.$on('$locationChangeStart', locationChangeCallbackRef);
+      };
+
+      var disableGuard = function () {
+// TODO : figure this one out, how do I unbind these events?
+
+        $window.off('beforeunload', windowCallbackRef);
+        //$rootScope.$off('$locationChangeStart', locationChangeCallbackRef);
+      };
+
+      var windowCallback = function (settings) {
+        if (settings.unsavedChangesCheckCallback()) {
+          return settings.message;
+        }
+      };
+
+      var locationChangeCallback = function (settings, e, newUrl) {
+        if (settings.unsavedChangesCheckCallback()) {
+
+          // set up modal
+          var modalScope = $rootScope.$new();
+          modalScope.modalOnOk = function () {
+            // navigate user
+            disableGuard();
+            $location.url(newUrl.substring($location.absUrl().length - $location.url().length));
+          };
+          modalScope.modalTitle = settings.modalGuardTitle;
+          modalScope.modalBody = settings.message;
+          modalScope.modalOkText = 'Yes';
+          modalScope.modalCancelText = 'No';
+
+          // open modal
+          new ConfirmationModal(modalScope);
+
+          // stop immediate navigation
+          e.preventDefault();
+        }
+      };
+
+      return {
+        enable: enableGuard,
+        disable: disableGuard
+      };
+    }
+  ]);
+
+'use strict';
+
 angular.module('utils', [])
   .provider('Utils', function () {
     var Utils = this;
@@ -7303,10 +8657,10 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('addImage', function ($http, $window, PARTIALS_URL) {
+  .directive('addImage', function ($http, $window, CmsConfig) {
     return {
       restrict: 'E',
-      templateUrl: PARTIALS_URL + 'add-image.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'add-image.html',
       scope: {
         article: '='
       },
@@ -7349,10 +8703,10 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('articlecontainer', function (PARTIALS_URL, LOADING_IMG_SRC) {
+  .directive('articlecontainer', function (CmsConfig, LOADING_IMG_SRC) {
     return {
       restrict: 'E',
-      templateUrl: PARTIALS_URL + 'promotion-tool-article-container.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'promotion-tool-article-container.html',
       scope: {
         article: '='
       },
@@ -7503,10 +8857,10 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('cmsNotification', function (PARTIALS_URL) {
+  .directive('cmsNotification', function (CmsConfig) {
     return {
       restrict: 'E',
-      templateUrl: PARTIALS_URL + 'cms-notification.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'cms-notification.html',
       scope: {
         notification: '='
       },
@@ -7517,14 +8871,68 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('cmsNotifyContainer', function (PARTIALS_URL) {
+  .directive('cmsNotifyContainer', function (CmsConfig) {
     return {
       restrict: 'E',
       scope: {},
-      templateUrl: PARTIALS_URL + 'cms-notify-container.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'cms-notify-container.html',
       controller: 'CmsNotifyContainerCtrl'
     };
   });
+
+'use strict';
+
+angular.module('bulbsCmsApp')
+  .directive('contributorField', [
+    '$', 'PARTIALS_URL', 'Utils',
+    function ($, PARTIALS_URL, Utils) {
+      return {
+        templateUrl: Utils.path.join(
+          PARTIALS_URL,
+          'textlike-autocomplete-field.html'
+        ),
+        restrict: 'E',
+        replace: true,
+        scope: {
+          override: '='
+        },
+        link: function postLink(scope, element, attrs) {
+          scope.name = 'contributor';
+          scope.label = 'Contributors';
+          scope.placeholder = 'Contributors';
+          scope.resourceUrl = '/cms/api/v1/author/?ordering=name&search=';
+
+          scope.$watch('override.contributor', function () {
+            if ((scope.override.hasOwnProperty('contributor')) && (scope.override.contributor !== null)) {
+              scope.model = scope.override.contributor.full_name || scope.override.contributor.fullName;
+            }
+          });
+
+          scope.display = function (o) {
+            return (o && o.full_name) || '';
+          };
+
+          scope.add = function(o, input) {
+            if ((scope.override.hasOwnProperty('contributor')) && scope.override.contributor !== null) {
+              if (scope.override.contributor.id === o.id) {
+                return;
+              }
+            }
+
+            scope.override.contributor = o;
+            $('#feature-type-container').removeClass('newtag');
+            $('#feature-type-container').addClass('newtag');
+          };
+
+          scope.delete = function (e) {
+            scope.override.contributor = null;
+            scope.model = null;
+          };
+
+        }
+      };
+    }
+  ]);
 
 'use strict';
 
@@ -7660,7 +9068,7 @@ angular.module('bulbsCmsApp')
  *  functionality is dependent on all dates being moment objects.
  */
 angular.module('bulbsCmsApp')
-  .directive('datetimeSelectionModalOpener', function ($modal, PARTIALS_URL) {
+  .directive('datetimeSelectionModalOpener', function ($modal, CmsConfig) {
     return {
       restrict: 'A',
       scope: {
@@ -7674,7 +9082,7 @@ angular.module('bulbsCmsApp')
         element.on('click', function () {
           modalInstance = $modal
             .open({
-              templateUrl: PARTIALS_URL + 'modals/datetime-selection-modal.html',
+              templateUrl: CmsConfig.getPartialsUrl() + 'modals/datetime-selection-modal.html',
               controller: 'DatetimeSelectionModalCtrl',
               scope: scope
             });
@@ -7691,10 +9099,10 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('devicepreview', function ($, PARTIALS_URL) {
+  .directive('devicepreview', function ($, CmsConfig) {
     return {
       restrict: 'E',
-      templateUrl: PARTIALS_URL + 'devicepreview.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'devicepreview.html',
       link: function (scope, element, attrs) {
 
         var pP = $('#page-prev'),
@@ -7721,13 +9129,13 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('onionEditor', function (PARTIALS_URL, $, Zencoder, BettyCropper,
-      openImageCropModal, VIDEO_EMBED_URL, OnionEditor, CmsImage, CmsConfig) {
+  .directive('onionEditor', function (CmsConfig, $, Zencoder, BettyCropper,
+      openImageCropModal, VIDEO_EMBED_URL, OnionEditor, CmsImage) {
     return {
       require: 'ngModel',
       replace: true,
       restrict: 'E',
-      templateUrl: PARTIALS_URL + 'editor.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'editor.html',
       scope: {
         ngModel: '='
       },
@@ -7815,9 +9223,9 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('encodeStatus', function ($http, $interval, $, Zencoder, PARTIALS_URL) {
+  .directive('encodeStatus', function ($http, $interval, $, Zencoder, CmsConfig) {
     return {
-      templateUrl: PARTIALS_URL + 'encode-status.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'encode-status.html',
       restrict: 'E',
       link: function postLink(scope, element, attrs) {
         scope.encodingVideos = {};
@@ -7880,13 +9288,14 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('featuretypeField', function (PARTIALS_URL, IfExistsElse, ContentFactory,
-      Raven, $, CmsConfig) {
+  .directive('featuretypeField', function (CmsConfig, IfExistsElse, ContentFactory,
+      Raven, $) {
     return {
-      templateUrl: PARTIALS_URL + 'textlike-autocomplete-field.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'textlike-autocomplete-field.html',
       restrict: 'E',
       scope: {
-        article: '='
+        article: '=',
+        hideLabel: '='
       },
       replace: true,
       link: function postLink(scope, element, attrs) {
@@ -7967,7 +9376,7 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('lazyInclude', function (PARTIALS_URL, $, $compile, $q, $http,
+  .directive('lazyInclude', function (CmsConfig, $, $compile, $q, $http,
       $templateCache, Gettemplate) {
     /*
       this is like ng-include but it doesn't compile/render the included template
@@ -7979,7 +9388,7 @@ angular.module('bulbsCmsApp')
       restrict: 'A',
       scope: true,
       link: function (scope, element, attrs) {
-        var templateUrl = PARTIALS_URL + attrs.template;
+        var templateUrl = CmsConfig.getPartialsUrl() + attrs.template;
         var $element = $(element);
 
         scope.$evalAsync(function () {
@@ -8004,7 +9413,7 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('loggedInUser', function (PARTIALS_URL, CurrentUser, CmsConfig) {
+  .directive('loggedInUser', function (CmsConfig, CurrentUser) {
     return {
       controller: function ($scope) {
         CurrentUser.$simplified().then(function (user) {
@@ -8014,7 +9423,7 @@ angular.module('bulbsCmsApp')
       },
       restrict: 'E',
       replace: true,
-      templateUrl: PARTIALS_URL + 'logged-in-user.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'logged-in-user.html',
       scope: {}
     };
   });
@@ -8022,29 +9431,33 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('navBar', function (CmsConfig, PARTIALS_URL) {
-    var defaultView = PARTIALS_URL + 'nav.html';
+  .directive('navBar', [
+    'CmsConfig', 'CurrentUser',
+    function (CmsConfig, CurrentUser) {
+      var defaultView = CmsConfig.getPartialsUrl() + 'nav.html';
 
-    return {
-      controller: 'ContentworkflowCtrl',
-      restrict: 'E',
-      scope: false,
-      templateUrl: function (tElement, tAttrs) {
-        var template = defaultView;
-        if ('view' in tAttrs) {
-          try {
-            template = CmsConfig.getToolbarTemplateUrl(tAttrs.view);
-          } catch (e) {
-            console.error(e);
+      return {
+        controller: 'ContentworkflowCtrl',
+        restrict: 'E',
+        scope: false,
+        templateUrl: function (tElement, tAttrs) {
+          var template = defaultView;
+          if ('view' in tAttrs) {
+            try {
+              template = CmsConfig.getToolbarTemplateUrl(tAttrs.view);
+            } catch (e) {
+              console.error(e);
+            }
           }
+          return template;
+        },
+        link: function (scope) {
+          scope.NAV_LOGO = CmsConfig.getLogoUrl();
+          scope.current_user = CurrentUser;
         }
-        return template;
-      },
-      link: function (scope) {
-        scope.NAV_LOGO = CmsConfig.getLogoUrl();
-      }
-    };
-  });
+      };
+    }
+  ]);
 
 'use strict';
 
@@ -8069,11 +9482,53 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('saveButtonOld', function ($q, $timeout, $window, PARTIALS_URL) {
+  .directive('roleField', [
+    '$http', 'PARTIALS_URL', 'Raven', 'Utils',
+    function ($http, PARTIALS_URL, Raven, Utils) {
+      return {
+        templateUrl: Utils.path.join(PARTIALS_URL, 'rolefield.html'),
+        restrict: 'E',
+        replace: true,
+        scope: {
+          model: '='
+        },
+
+        link: function (scope, element, attrs) {
+          var resourceUrl = '/cms/api/v1/contributions/role/';
+
+          scope.roleValue = null;
+          scope.roleOptions = [];
+
+          scope.$watch('model.role', function () {
+            for (var i = 0; i < scope.roleOptions.length; i++) {
+              if (scope.roleOptions[i].id === Number(scope.roleValue)) {
+                scope.model.role = scope.roleOptions[i];
+              }
+            }
+            scope.roleValue = scope.model.role.id;
+          });
+
+          $http({
+            method: 'GET',
+            url: resourceUrl
+          }).success(function (data) {
+            scope.roleOptions = data.results || data;
+          }).error(function (data, status, headers, config) {
+            Raven.captureMessage('Error fetching Roles', {extra: data});
+          });
+        }
+      };
+    }
+  ]);
+
+'use strict';
+
+angular.module('bulbsCmsApp')
+  .directive('saveButtonOld', function ($q, $timeout, $window, CmsConfig) {
     return {
       replace: true,
       restrict: 'E',
-      templateUrl: PARTIALS_URL + 'save-button.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'save-button.html',
       scope: {
         'getPromise': '&',
         'saveCbk': '&onSave',
@@ -8149,10 +9604,10 @@ angular.module('bulbsCmsApp')
 
 angular.module('bulbsCmsApp')
   .directive('slideshowPane', function ($http, $window, $compile, $, LOADING_IMG_SRC,
-      PARTIALS_URL, CmsImage) {
+      CmsConfig, CmsImage) {
     return {
       restrict: 'E',
-      templateUrl: PARTIALS_URL + 'slideshow-pane.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'slideshow-pane.html',
       scope: {
         article: '=',
         image: '=',
@@ -8208,9 +9663,9 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('staticImage', function (PARTIALS_URL, CmsConfig) {
+  .directive('staticImage', function (CmsConfig) {
     return {
-      templateUrl: PARTIALS_URL + 'static-image.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'static-image.html',
       restrict: 'E',
       scope: {
         'image': '='
@@ -8235,10 +9690,10 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('tagsField', function (PARTIALS_URL, _, IfExistsElse, ContentFactory,
-      Raven, $, CmsConfig) {
+  .directive('tagsField', function (CmsConfig, _, IfExistsElse, ContentFactory,
+      Raven, $) {
     return {
-      templateUrl: PARTIALS_URL + 'taglike-autocomplete-field.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'taglike-autocomplete-field.html',
       restrict: 'E',
       scope: {
         article: '='
@@ -8291,10 +9746,10 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('targeting', function (PARTIALS_URL) {
+  .directive('targeting', function (CmsConfig) {
     return {
       restrict: 'E',
-      templateUrl: PARTIALS_URL + 'targeting.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'targeting.html',
       link: function (scope, element, attrs) {
         scope.addTargetingRow = function (index) {
           scope.targetingArray.push([]);
@@ -8310,9 +9765,9 @@ angular.module('bulbsCmsApp')
 
 angular.module('bulbsCmsApp').directive(
   'videoUpload',
-  function ($http, $window, $timeout, $sce, $, PARTIALS_URL, CmsConfig) {
+  function ($http, $window, $timeout, $sce, $, CmsConfig) {
     return {
-      templateUrl: PARTIALS_URL + 'mainvideo.html',
+      templateUrl: CmsConfig.getPartialsUrl() + 'mainvideo.html',
       scope: {
         'article': '='
       },
@@ -8528,7 +9983,7 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .directive('autocomplete', function ($timeout, $animate, $compile, PARTIALS_URL) {
+  .directive('autocomplete', function ($timeout, $animate, $compile, CmsConfig) {
     return {
       restrict: 'E',
       replace: true,
@@ -8679,7 +10134,7 @@ angular.module('bulbsCmsApp')
           });
         }
       },
-      templateUrl: PARTIALS_URL + 'autocomplete.html'
+      templateUrl: CmsConfig.getPartialsUrl() + 'autocomplete.html'
     };
   });
 
@@ -8807,10 +10262,10 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .controller('CmsNotificationsCtrl', function ($q, $window, $scope, CMS_NAMESPACE, CmsNotificationsApi, CurrentUser, _, moment) {
+  .controller('CmsNotificationsCtrl', function ($q, $window, $scope, CmsConfig, CmsNotificationsApi, CurrentUser, _, moment) {
 
     // set title
-    $window.document.title = CMS_NAMESPACE + ' | Notifications';
+    $window.document.title = CmsConfig.getCmsTitle() + ' | Notifications';
 
     // get user info
     CurrentUser.$retrieveData().then(function (user) {
@@ -8988,7 +10443,7 @@ angular.module('bulbsCmsApp')
   .controller('ContentlistCtrl', function (
     $scope, $http, $timeout, $location,
     $window, $q, $, ContentListService,
-    LOADING_IMG_SRC, CMS_NAMESPACE)
+    LOADING_IMG_SRC, CmsConfig)
   {
     $scope.contentData = [];
     ContentListService.$updateContent({page: 1})
@@ -8998,7 +10453,7 @@ angular.module('bulbsCmsApp')
 
     $scope.LOADING_IMG_SRC = LOADING_IMG_SRC;
     //set title
-    $window.document.title = CMS_NAMESPACE + ' | Content';
+    $window.document.title = CmsConfig.getCmsTitle() + ' | Content';
 
     $scope.pageNumber = $location.search().page || '1';
     $scope.myStuff = false;
@@ -9057,15 +10512,15 @@ angular.module('bulbsCmsApp')
 angular.module('bulbsCmsApp')
   .controller('ContentworkflowCtrl', [
     '$scope', '$modal', 'moment', 'VersionBrowserModalOpener',
-      'TemporaryUrlModalOpener', 'TIMEZONE_NAME', 'PARTIALS_URL',
+      'TemporaryUrlModalOpener', 'TIMEZONE_NAME', 'CmsConfig',
     function ($scope, $modal, moment, VersionBrowserModalOpener,
-        TemporaryUrlModalOpener, TIMEZONE_NAME, PARTIALS_URL) {
+        TemporaryUrlModalOpener, TIMEZONE_NAME, CmsConfig) {
 
       $scope.TIMEZONE_LABEL = moment.tz(TIMEZONE_NAME).format('z');
 
       $scope.trashContentModal = function (articleId) {
         return $modal.open({
-          templateUrl: PARTIALS_URL + 'modals/confirm-trash-modal.html',
+          templateUrl: CmsConfig.getPartialsUrl() + 'modals/confirm-trash-modal.html',
           controller: 'TrashcontentmodalCtrl',
           scope: $scope,
           resolve: {
@@ -9078,7 +10533,7 @@ angular.module('bulbsCmsApp')
 
       $scope.pubTimeModal = function (article) {
         return $modal.open({
-          templateUrl: PARTIALS_URL + 'modals/publish-date-modal.html',
+          templateUrl: CmsConfig.getPartialsUrl() + 'modals/publish-date-modal.html',
           controller: 'PubtimemodalCtrl',
           scope: $scope,
           resolve: {
@@ -9089,7 +10544,7 @@ angular.module('bulbsCmsApp')
 
       $scope.changelogModal = function (article) {
         return $modal.open({
-          templateUrl: PARTIALS_URL + 'modals/changelog-modal.html',
+          templateUrl: CmsConfig.getPartialsUrl() + 'modals/changelog-modal.html',
           controller: 'ChangelogmodalCtrl',
           scope: $scope,
           resolve: {
@@ -9101,7 +10556,7 @@ angular.module('bulbsCmsApp')
       $scope.thumbnailModal = function (article) {
         // open thumbnail modal along with its controller
         return $modal.open({
-          templateUrl: PARTIALS_URL + 'modals/thumbnail-modal.html',
+          templateUrl: CmsConfig.getPartialsUrl() + 'modals/thumbnail-modal.html',
           controller: 'ThumbnailModalCtrl',
           scope: $scope,
           resolve: {
@@ -9112,7 +10567,7 @@ angular.module('bulbsCmsApp')
 
       $scope.sponsorModal = function (article) {
         return $modal.open({
-          templateUrl: PARTIALS_URL + 'modals/sponsor-modal.html',
+          templateUrl: CmsConfig.getPartialsUrl() + 'modals/sponsor-modal.html',
           scope: $scope,
           controller: 'SponsormodalCtrl',
           resolve: {
@@ -9131,7 +10586,7 @@ angular.module('bulbsCmsApp')
 
       $scope.descriptionModal = function (article) {
         return $modal.open({
-          templateUrl: PARTIALS_URL + 'modals/description-modal.html',
+          templateUrl: CmsConfig.getPartialsUrl() + 'modals/description-modal.html',
           controller: 'DescriptionModalCtrl',
           scope: $scope,
           size: 'lg',
@@ -9164,6 +10619,7 @@ angular.module('bulbsCmsApp')
 
     $scope.NAV_LOGO = CmsConfig.getLogoUrl();
     $scope.contentId = parseInt($routeParams.id, 10);
+    $scope.paymentType = '';
     $scope.contributions = [];
     $scope.contributionLabels = [];
     $scope.roles = [];
@@ -9176,6 +10632,65 @@ angular.module('bulbsCmsApp')
     $scope.add = add;
     $scope.remove = remove;
     $scope.updateLabel = updateLabel;
+
+    $scope.isFlatRate = function(contribution) {
+      if (contribution.hasOwnProperty('roleObject')) {
+        if (contribution.roleObject.payment_type === 'Flat Rate'){
+          return true;
+        }
+      }
+
+      return false;
+    };
+
+    $scope.isFeatureType = function(contribution) {
+      if (contribution.hasOwnProperty('roleObject')) {
+        if (contribution.roleObject.payment_type === 'FeatureType'){
+          $scope.setFeatureRate(contribution);
+          return true;
+        }
+      }
+
+      return false;
+    };
+
+    $scope.setFeatureRate = function(contribution) {
+      for (var i in contribution.roleObject.rates.feature_type) {
+        var featureTypeRate = contribution.roleObject.rates.feature_type[i];
+        if ($scope.content.feature_type === featureTypeRate.feature_type) {
+          contribution.featureTypeRate = featureTypeRate.rate;
+        }
+      }
+    };
+
+    $scope.isHourly = function(contribution) {
+      if (contribution.hasOwnProperty('roleObject')) {
+        if (contribution.roleObject.payment_type === 'Hourly') {
+          return true;
+        }
+      }
+
+      return false;
+    };
+
+    $scope.isManual = function(contribution) {
+      if (contribution.hasOwnProperty('roleObject')) {
+        if (contribution.roleObject.payment_type === 'Manual') {
+          return true;
+        }
+      }
+
+      return false;
+    };
+
+    $scope.getHourlyPay = function (contribution) {
+      if (contribution.roleObject) {
+        if (!contribution.roleObject.rate) {
+          return 0;
+        }
+        return ((contribution.roleObject.rate/60) * (contribution.minutes_worked || 0));
+      }
+    };
 
     function save() {
       // I know, I'm not supposed to do DOM manipulation in controllers. TOO BAD.
@@ -9194,6 +10709,9 @@ angular.module('bulbsCmsApp')
       $scope.contributions.push({
         contributor: null,
         content: $scope.contentId,
+        rate: {
+          rate: 0
+        },
         role: null
       });
       $scope.collapsed.push(false);
@@ -9217,11 +10735,25 @@ angular.module('bulbsCmsApp')
         for (var i in contributions) {
           if (contributions[i] === null || contributions[i].role === undefined) {
             continue;
+          } else {
+
+            if ((contributions[i].hasOwnProperty('rate')) &&
+                (typeof(contributions[i].rate) === 'object') &&
+                (contributions[i].rate !== null)) {
+              contributions[i].rate = contributions[i].rate.rate;
+            }
+
+            if (typeof(contributions[i].role) === 'object') {
+              contributions[i].paymentType = contributions[i].role.payment_type;
+              contributions[i].roleObject = contributions[i].role;
+              contributions[i].role = contributions[i].role.id;
+            }
           }
         }
         $scope.contributions = contributions;
         $scope.collapsed = new Array(contributions.length);
         $scope.contributions.forEach(function (item, index) {
+
           $scope.contributionLabels[index] = _.find($scope.roles, function (role) {
             return role.id === item.role;
           }).name;
@@ -9246,6 +10778,9 @@ angular.module('bulbsCmsApp')
 
     function updateLabel(index) {
       $scope.contributionLabels[index] = _.find($scope.roles, function (role) {
+
+        $scope.contributions[index].roleObject = role;
+        $scope.contributions[index].paymentType = role.payment_type;
         return role.id === $scope.contributions[index].role;
       }).name;
     }
@@ -9492,41 +11027,8 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .controller('LastmodifiedguardmodalCtrl', function ($scope, $modalInstance, _, moment, ContentFactory, articleOnPage, articleOnServer) {
-    $scope.articleOnServer = articleOnServer;
-
-    ContentFactory.all('log').getList({content: articleOnPage.id}).then(function (log) {
-      var latest = _.max(log, function (entry) { return moment(entry.action_time); });
-      var lastSavedById = latest.user;
-      ContentFactory.one('author', lastSavedById).get().then(function (data) {
-        $scope.lastSavedBy = data;
-      });
-    });
-
-    $scope.loadFromServer = function () {
-
-      // pull article from server and replace whatever data we need to show the newest version
-      _.each($scope.articleOnServer, function (value, key) {
-        $scope.article[key] = value;
-      });
-      $scope.articleIsDirty = true;
-
-      $modalInstance.close();
-
-    };
-
-    $scope.saveAnyway = function () {
-      $modalInstance.close();
-      $scope.$parent.postValidationSaveArticle();
-    };
-
-  });
-
-'use strict';
-
-angular.module('bulbsCmsApp')
   .controller('PubtimemodalCtrl', function ($scope, $http, $modal, $modalInstance,
-      $, moment, article, TIMEZONE_NAME, Raven, CmsConfig, PARTIALS_URL) {
+      $, moment, article, TIMEZONE_NAME, Raven, CmsConfig) {
     $scope.article = article;
 
     $scope.pubButton = {
@@ -9576,7 +11078,7 @@ angular.module('bulbsCmsApp')
       if (!$scope.article.feature_type) {
         $modalInstance.dismiss();
         $modal.open({
-          templateUrl: PARTIALS_URL + 'modals/pubtime-validation-modal.html'
+          templateUrl: CmsConfig.getPartialsUrl() + 'modals/pubtime-validation-modal.html'
         });
         return;
       }
@@ -9657,6 +11159,220 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
+  .controller('ReportingCtrl', function ($scope, $window, $, $location, $filter, $interpolate, Login, routes, moment, ContributionReportingService, ContentReportingService, FreelancePayReportingService) {
+    $window.document.title = routes.CMS_NAMESPACE + ' | Reporting'; // set title
+
+    $scope.userFilter = '';
+    $scope.userFilters = [
+      {
+        name: 'All',
+        value: ''
+      },
+      {
+        name: 'Staff',
+        value: 'staff'
+      },
+      {
+        name: 'Freelance',
+        value: 'freelance'
+      }
+    ];
+
+    $scope.publishedFilter = '';
+    $scope.publishedFilters = [
+      {
+        name: 'All Content',
+        value: ''
+      },
+      {
+        name: 'Published',
+        value: 'published'
+      }
+    ];
+
+    $scope.reports = {
+      'Contributions': {
+        service: ContributionReportingService,
+        headings: [
+          {'title': 'Content ID', 'expression': 'content.id'},
+          {'title': 'Headline', 'expression': 'content.title'},
+          {'title': 'FeatureType', 'expression': 'content.feature_type'},
+          {'title': 'Contributor', 'expression': 'user.full_name'},
+          {'title': 'Role', 'expression': 'role'},
+          {'title': 'Pay', 'expression': 'pay'},
+          {'title': 'Date', 'expression': 'content.published | date: \'MM/dd/yyyy\''}
+        ],
+        downloadURL: '/cms/api/v1/contributions/reporting/',
+        orderOptions: [
+          {
+            label: 'Order by User',
+            key: 'user'
+          },
+          {
+            label: 'Order by Content',
+            key: 'content'
+          },
+        ]
+      },
+      'Content': {
+        service: ContentReportingService,
+        headings: [
+          {'title': 'Content ID', 'expression': 'id'},
+          {'title': 'Headline', 'expression': 'title'},
+          {'title': 'Feature Type', 'expression': 'feature_type'},
+          {'title': 'Video', 'expression': 'video_id'},
+          {'title': 'Article Cost', 'expression': 'value'},
+          {'title': 'Date Published', 'expression': 'published | date: \'MM/dd/yyyy\''}
+        ],
+        orderOptions: [],
+        downloadURL: '/cms/api/v1/contributions/contentreporting/',
+      },
+      'Freelance Pay': {
+        service: FreelancePayReportingService,
+        headings: [
+          {'title': 'Contributor', 'expression': 'contributor.full_name'},
+          {'title': 'Contribution #', 'expression': 'contributions_count'},
+          {'title': 'Pay', 'expression': 'pay'},
+          {'title': 'Payment Date', 'expression': 'payment_date | date: \'MM/dd/yyyy\''}
+        ],
+        orderOptions: [],
+        downloadURL: '/cms/api/v1/contributions/freelancereporting/'
+      }
+    };
+    $scope.items = [];
+    $scope.headings = [];
+    $scope.orderOptions = [];
+    $scope.moreFilters = [];
+
+    $scope.startOpen = false;
+    $scope.endOpen = false;
+
+    $scope.startInitial = moment().startOf('month').format('YYYY-MM-DD');
+    $scope.endInitial = moment().endOf('month').format('YYYY-MM-DD');
+
+    $scope.setReport = function ($reportingService) {
+      $scope.report = $reportingService;
+    };
+
+    $scope.setUserFilter = function (value) {
+      $scope.userFilter = value;
+      loadReport($scope.report, $scope.start, $scope.end, $scope.orderBy);
+    };
+
+    $scope.setPublishedFilter = function (value) {
+      $scope.publishedFilter = value;
+      if (value === 'published') {
+        $scope.end = moment().format('YYYY-MM-DD');
+      }
+      loadReport($scope.report, $scope.start, $scope.end, $scope.orderBy);
+    };
+
+    $scope.openStart = function ($event) {
+      $event.preventDefault();
+      $event.stopPropagation();
+      $scope.startOpen = true;
+    };
+
+    $scope.openEnd = function ($event) {
+      $event.preventDefault();
+      $event.stopPropagation();
+      $scope.endOpen = true;
+    };
+
+    $scope.orderingChange = function () {
+      loadReport($scope.report, $scope.start, $scope.end, $scope.orderBy);
+    };
+
+    $scope.$watch('report', function (report) {
+      if (!report) {
+        return;
+      }
+      $scope.orderOptions = report.orderOptions;
+      if(report.orderOptions.length > 0) {
+        $scope.orderBy = report.orderOptions[0];
+      } else {
+        $scope.orderBy = null;
+      }
+      $scope.headings = [];
+      report.headings.forEach(function (heading) {
+        $scope.headings.push(heading.title);
+      });
+
+      loadReport(report, $scope.start, $scope.end, $scope.orderBy);
+    });
+
+    $scope.$watchCollection('[start, end]', function (params) {
+      if (!$scope.report) {
+        return;
+      }
+      var start = params[0];
+      var end = params[1];
+
+      loadReport($scope.report, start, end, $scope.orderBy);
+    });
+
+    function loadReport(report, start, end, order) {
+      $scope.items = [];
+      var reportParams = {};
+      $scope.downloadURL = report.downloadURL + '?format=csv';
+      if (end) {
+        var endParam = $filter('date')(end, 'yyyy-MM-dd');
+        reportParams['end'] = endParam;
+        $scope.downloadURL += ('&end=' + endParam);
+      }
+
+      if (start) {
+        var startParam = $filter('date')(start, 'yyyy-MM-dd');
+        reportParams['start'] = startParam;
+        $scope.downloadURL += ('&start=' + startParam);
+      }
+
+      if (order) {
+        $scope.downloadURL += ('&ordering=' + order.key);
+        reportParams['ordering'] = order.key;
+      }
+
+      if ($scope.publishedFilter) {
+        $scope.downloadURL += ('&published=' + $scope.publishedFilter);
+        reportParams['published'] = $scope.publishedFilter;
+      }
+
+      if ($scope.userFilter) {
+        $scope.downloadURL += ('&staff=' + $scope.userFilter);
+        reportParams['staff'] = $scope.userFilter;
+      }
+
+      if ($scope.moreFilters) {
+        for (var key in $scope.moreFilters) {
+          if ($scope.moreFilters[key].type === 'authors') {
+            $scope.downloadURL += ('&' + 'contributors=' + $scope.moreFilters[key].query);
+            reportParams['contributors'] = $scope.moreFilters[key].query;
+          } else {
+            $scope.downloadURL += ('&' + $scope.moreFilters[key].type + '=' + $scope.moreFilters[key].query);
+            reportParams[$scope.moreFilters[key].type] = $scope.moreFilters[key].query;
+          }
+        }
+      }
+
+      report.service.getList(reportParams).then(function (data) {
+        $scope.items = [];
+        data.forEach(function (lineItem) {
+          var item = [];
+          report.headings.forEach(function (heading) {
+            var exp = $interpolate('{{item.' + heading.expression + '}}');
+            var value = exp({item: lineItem});
+            item.push(value);
+          });
+          $scope.items.push(item);
+        });
+      });
+    }
+
+  });
+
+'use strict';
+
+angular.module('bulbsCmsApp')
   .controller('SponsormodalCtrl', function ($scope, ContentFactory, article, Campaign) {
     $scope.article = article;
 
@@ -9679,8 +11395,8 @@ angular.module('bulbsCmsApp')
 
 angular.module('bulbsCmsApp')
   .controller('TargetingCtrl', function ($scope, $http, $window, $q, $location,
-      TAR_OPTIONS, CMS_NAMESPACE, CmsConfig) {
-    $window.document.title = CMS_NAMESPACE + ' | Targeting Editor';
+      TAR_OPTIONS, CmsConfig) {
+    $window.document.title = CmsConfig.getCmsTitle() + ' | Targeting Editor';
 
     var canceller;
     $scope.search = function (url) {
@@ -9991,14 +11707,14 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .factory('BadRequestInterceptor', function ($q, $injector, PARTIALS_URL) {
+  .factory('BadRequestInterceptor', function ($q, $injector, CmsConfig) {
     return {
       responseError: function (rejection) {
         $injector.invoke(function ($modal) {
           if (rejection.status === 400) {
             var detail = rejection.data || {'something': ['Something was wrong with your request.']};
             $modal.open({
-              templateUrl: PARTIALS_URL + 'modals/400-modal.html',
+              templateUrl: CmsConfig.getPartialsUrl() + 'modals/400-modal.html',
               controller: 'BadrequestmodalCtrl',
               resolve: {
                 detail: function () { return detail; }
@@ -10143,11 +11859,11 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .factory('openImageCropModal', function ($modal, PARTIALS_URL) {
+  .factory('openImageCropModal', function ($modal, CmsConfig) {
     var openImageCropModal = function (imageData, ratios) {
 
       return $modal.open({
-        templateUrl: PARTIALS_URL + 'image-crop-modal.html',
+        templateUrl: CmsConfig.getPartialsUrl() + 'image-crop-modal.html',
         controller: 'ImageCropModalCtrl',
         resolve: {
           imageData: function () { return imageData; },
@@ -10164,7 +11880,7 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .factory('TemporaryUrlModalOpener', function ($modal, PARTIALS_URL) {
+  .factory('TemporaryUrlModalOpener', function ($modal, CmsConfig) {
 
     var modal = null;
 
@@ -10176,7 +11892,7 @@ angular.module('bulbsCmsApp')
         }
 
         modal = $modal.open({
-          templateUrl: PARTIALS_URL + 'modals/temporary-url-modal.html',
+          templateUrl: CmsConfig.getPartialsUrl() + 'modals/temporary-url-modal.html',
           controller: 'TemporaryUrlModalCtrl',
           scope: $scope,
           resolve: {
@@ -10195,7 +11911,7 @@ angular.module('bulbsCmsApp')
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .service('Zencoder', function Zencoder($http, $q, $modal, $, CmsConfig, PARTIALS_URL) {
+  .service('Zencoder', function Zencoder($http, $q, $modal, $, CmsConfig) {
     var newVideoUrl = '/video/new';
     var fileInputId = '#bulbs-cms-hidden-video-file-input';
     var inputTemplate = '<input id="bulbs-cms-hidden-video-file-input" type="file" accept="video/*" style="position: absolute; left:-99999px;" name="video" />';
@@ -10329,7 +12045,7 @@ angular.module('bulbsCmsApp')
 
     this.openVideoThumbnailModal = function (videoId) {
       return $modal.open({
-        templateUrl: PARTIALS_URL + 'modals/video-thumbnail-modal.html',
+        templateUrl: CmsConfig.getPartialsUrl() + 'modals/video-thumbnail-modal.html',
         controller: 'VideothumbnailmodalCtrl',
         resolve: {
           videoId: function () { return videoId; }
