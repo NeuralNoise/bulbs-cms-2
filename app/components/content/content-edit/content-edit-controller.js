@@ -59,23 +59,6 @@ angular.module('content.edit.controller', [
               $scope.article.last_modified &&
               moment(articleOnServer.last_modified) > moment($scope.article.last_modified)) {
 
-          // if (true) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             // there's been another save since our last save, prevent saving without
             //  user validation
 
