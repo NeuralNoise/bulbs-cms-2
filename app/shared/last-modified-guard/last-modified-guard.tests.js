@@ -38,6 +38,7 @@ describe('LastModifiedGuard', function () {
 
   it('should reject its check when someone else has saved since last save', function () {
     var responseData;
+    var responseStatus;
 
     var articleOnServer = {
       id: testArticle.id
@@ -47,8 +48,9 @@ describe('LastModifiedGuard', function () {
       moment(testArticle[modifiedProperty]).add(1, 'minute').format();
 
     LastModifiedGuard.checkLastModified(testArticle)
-      .catch(function (data) {
-        responseData = data;
+      .catch(function (resp) {
+        responseData = resp.data;
+        responseStatus = resp.status;
       });
 
     $httpBackend.expectGET('/content/1').respond(articleOnServer);
@@ -56,22 +58,25 @@ describe('LastModifiedGuard', function () {
 
     expect(responseData.id).toBe(articleOnServer.id);
     expect(responseData[modifiedProperty]).toBe(articleOnServer[modifiedProperty]);
+    expect(responseStatus).toBe(200);
   });
 
   it('should reject its check when an error occurs during check', function () {
     var rejectStatus = 400;
     var rejectData = {message: 'failure'};
     var responseData;
+    var responseStatus;
 
     LastModifiedGuard.checkLastModified(testArticle)
-      .catch(function (data) {
-        responseData = data;
+      .catch(function (resp) {
+        responseData = resp.data;
+        responseStatus = resp.status;
       });
 
     $httpBackend.expectGET('/content/1').respond(rejectStatus, rejectData);
     $httpBackend.flush();
 
-    expect(responseData.data).toEqual(rejectData);
-    expect(responseData.status).toBe(rejectStatus);
+    expect(responseData).toEqual(rejectData);
+    expect(responseStatus).toBe(rejectStatus);
   });
 });

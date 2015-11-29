@@ -17,14 +17,20 @@ angular.module('bulbs.cms.lastModifiedGuard', [
                     article.hasOwnProperty('last_modified') &&
                     moment(articleOnServer.last_modified).isAfter(article.last_modified)) {
                   // someone else has saved since last save, reject
-                  reject(articleOnServer);
+                  reject({
+                    data: articleOnServer,
+                    status: 200
+                  });
                 } else {
                   // no save has been done since last attempt, resolve
                   resolve();
                 }
               })
               .catch(function (resp) {
-                reject(resp);
+                reject({
+                  data: resp.data,
+                  status: resp.status
+                });
               });
           });
         }

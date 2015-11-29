@@ -1,6 +1,7 @@
 'use strict';
 
 angular.module('content.edit.controller', [
+  'bulbs.cms.lastModifiedGuard',
   'bulbs.cms.unsavedChangesGuard',
   'content.edit.lastModified',
   'content.edit.lastModified.modal.factory',
@@ -10,8 +11,8 @@ angular.module('content.edit.controller', [
 ])
   .controller('ContentEdit', function (
       $, $scope, $rootScope, $routeParams, $window, $location, $timeout, $q, $modal,
-      _, moment, VersionStorageApi, ContentFactory, LastModifiedModal, LinkBrowser,
-      VersionBrowserModalOpener, CmsConfig, UnsavedChangesGuard,
+      _, moment, VersionStorageApi, ContentFactory, LastModifiedGuard, LastModifiedModal,
+      LinkBrowser, VersionBrowserModalOpener, CmsConfig, UnsavedChangesGuard,
       ContentEditLastModifiedGuard) {
 
     $scope.PARTIALS_URL = CmsConfig.getPartialsUrl();
@@ -50,21 +51,21 @@ angular.module('content.edit.controller', [
         $scope.saveArticleDeferred = $q.defer();
       }
 
-      // want to retrieve article again here to ensure that we don't overwrite
-      //   someone else's changes
-      ContentFactory.one('content', $scope.articleId).get()
-        .then(function (articleOnServer) {
-
-          if (articleOnServer.last_modified &&
-              $scope.article.last_modified &&
-              moment(articleOnServer.last_modified) > moment($scope.article.last_modified)) {
+      LastModifiedGuard.checkLastModified($scope.article)
+        .then(function () {
+          // okay to save, move to next step
+          $scope.postValidationSaveArticle();
+        })
+        .catch(function (resp) {
+          if (resp.status === 200) {
+            var articleOnServer = resp.data;
 
             // there's been another save since our last save, prevent saving without
             //  user validation
 
             $scope.saveArticleDeferred.reject();
 
-            var modalScope = $rootScope.$new();
+            var modalScope = $scope.$new(true);
             modalScope.modalOnLoadChanges = function () {
               // pull article from server and replace whatever data we need to
               //  show the newest version
@@ -81,16 +82,13 @@ angular.module('content.edit.controller', [
 
             // open modal
             new LastModifiedModal(modalScope);
-
           } else {
-            // okay to save, move to next step
-            $scope.postValidationSaveArticle();
+            // some other issue happened
+            saveArticleErrorCbk(resp);
           }
-        })
-        .catch(saveArticleErrorCbk);
+        });
 
       return $scope.saveArticleDeferred.promise;
-
     };
 
     var saveArticleErrorCbk = function (data) {
