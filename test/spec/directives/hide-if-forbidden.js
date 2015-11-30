@@ -7,7 +7,7 @@ describe('Directive: hideIfForbidden', function () {
   beforeEach(module('cms.templates'));
 
   var
-    CmsConfig,
+    ApiConfig,
     element,
     scope,
     httpBackend,
@@ -17,8 +17,8 @@ describe('Directive: hideIfForbidden', function () {
 
   html = '<div hide-if-forbidden options-url="{{OPTIONSURL}}">This might be hidden!</div>';
 
-  beforeEach(inject(function ($rootScope, $httpBackend, _CmsConfig_) {
-    CmsConfig = _CmsConfig_;
+  beforeEach(inject(function ($rootScope, $httpBackend, _ApiConfig_) {
+    ApiConfig = _ApiConfig_;
 
     scope = $rootScope.$new();
     httpBackend = $httpBackend;
@@ -28,7 +28,7 @@ describe('Directive: hideIfForbidden', function () {
   }));
 
   it('should make a not-forbidden element visible', inject(function ($compile) {
-    httpBackend.expect('OPTIONS', CmsConfig.buildBackendApiUrl(optionsUrl200)).respond(function(){
+    httpBackend.expect('OPTIONS', ApiConfig.buildBackendApiUrl(optionsUrl200)).respond(function(){
       return [200, {detail: "Great Job"}];
     });
 
@@ -41,7 +41,7 @@ describe('Directive: hideIfForbidden', function () {
   }));
 
   it('should make a forbidden element invisible', inject(function ($compile) {
-    httpBackend.expect('OPTIONS', CmsConfig.buildBackendApiUrl(optionsUrl403)).respond(function(){
+    httpBackend.expect('OPTIONS', ApiConfig.buildBackendApiUrl(optionsUrl403)).respond(function(){
       return [403, {detail: "Denied"}];
     });
 

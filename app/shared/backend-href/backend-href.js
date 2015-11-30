@@ -5,22 +5,22 @@
  *  interaction with the backend.
  */
 angular.module('backendApiHref', [
-  'cms.config',
+  'apiServices.config',
   'jquery'
 ])
   .filter('backendApiHref', [
-    'CmsConfig',
-    function(CmsConfig) {
+    'ApiConfig',
+    function(ApiConfig) {
       return function (relUrl) {
-        return CmsConfig.buildBackendApiUrl(relUrl);
+        return ApiConfig.buildBackendApiUrl(relUrl);
       };
     }]
   )
   .filter('backendHref', [
-    'CmsConfig',
-    function (CmsConfig) {
+    'ApiConfig',
+    function (ApiConfig) {
       return function (relUrl) {
-        return CmsConfig.buildBackendUrl(relUrl);
+        return ApiConfig.buildBackendUrl(relUrl);
       };
     }]
   )

@@ -1,15 +1,17 @@
 'use strict';
 
-angular.module('reporting.directive', [])
+angular.module('reporting.directive', [
+  'apiServices.config'
+])
   .directive('reporting', [
     'COMPONENTS_URL',
     function (COMPONENTS_URL) {
       return {
         controller: [
           '$filter', '$http', '$interpolate', '$scope', 'ContentReportingService',
-            'ContributionReportingService', 'CmsConfig',
+            'ContributionReportingService', 'ApiConfig',
           function ($filter, $http, $interpolate, $scope, ContentReportingService,
-              ContributionReportingService, CmsConfig) {
+              ContributionReportingService, ApiConfig) {
 
             $scope.reports = {
               Contributions: {
@@ -30,7 +32,7 @@ angular.module('reporting.directive', [])
                   title: 'Notes',
                   expression: 'notes'
                 }],
-                downloadURL: CmsConfig.buildBackendApiUrl('contributions/reporting/'),
+                downloadURL: ApiConfig.buildBackendApiUrl('contributions/reporting/'),
                 orderOptions: [
                   {
                     label: 'Order by User',
@@ -55,7 +57,7 @@ angular.module('reporting.directive', [])
                   expression: 'url'
                 }],
                 orderOptions: [],
-                downloadURL: CmsConfig.buildBackendApiUrl('contributions/contentreporting/'),
+                downloadURL: ApiConfig.buildBackendApiUrl('contributions/contentreporting/'),
               }
             };
             $scope.items = [];

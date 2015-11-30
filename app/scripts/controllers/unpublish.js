@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .controller('UnpublishCtrl', function ($scope, $http, $q, CmsConfig) {
+  .controller('UnpublishCtrl', function ($scope, $http, $q, ApiConfig) {
 
     $scope.unpubButton = {
       idle: 'Unpublish',
@@ -13,7 +13,7 @@ angular.module('bulbsCmsApp')
 
     $scope.unpublish = function () {
       return $http({
-        url: CmsConfig.buildBackendApiUrl('content/' + $scope.article.id + '/publish/'),
+        url: ApiConfig.buildBackendApiUrl('content/' + $scope.article.id + '/publish/'),
         method: 'POST',
         data: {published: false}
       });

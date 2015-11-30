@@ -2,7 +2,7 @@
 
 angular.module('bulbsCmsApp')
   .controller('PubtimemodalCtrl', function ($scope, $http, $modal, $modalInstance,
-      $, moment, article, TIMEZONE_NAME, Raven, CmsConfig, PARTIALS_URL) {
+      $, moment, article, TIMEZONE_NAME, Raven, ApiConfig, PARTIALS_URL) {
     $scope.article = article;
 
     $scope.pubButton = {
@@ -69,7 +69,7 @@ angular.module('bulbsCmsApp')
       var data = {published: newDateTime};
 
       return $http({
-        url: CmsConfig.buildBackendApiUrl('content/' + $scope.article.id + '/publish/'),
+        url: ApiConfig.buildBackendApiUrl('content/' + $scope.article.id + '/publish/'),
         method: 'POST',
         data: data
       });
@@ -100,7 +100,7 @@ angular.module('bulbsCmsApp')
 
     $scope.unpublish = function () {
       return $http({
-        url: CmsConfig.buildBackendApiUrl('content/' + $scope.article.id + '/publish/'),
+        url: ApiConfig.buildBackendApiUrl('content/' + $scope.article.id + '/publish/'),
         method: 'POST',
         data: {published: false}
       });

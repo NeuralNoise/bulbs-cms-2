@@ -8,8 +8,8 @@ describe('Filter: backendApiHref', function () {
   var cmsRoot = 'http://avclub.com';
 
   beforeEach(function () {
-    module('backendApiHref', function (CmsConfigProvider) {
-      CmsConfigProvider.setBackendRoot(cmsRoot);
+    module('backendApiHref', function (ApiConfigProvider) {
+      ApiConfigProvider.setBackendRoot(cmsRoot);
     });
 
     inject(function (_$_, _$compile_, _$filter_, _$rootScope_) {

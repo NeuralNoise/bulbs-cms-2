@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('apiServices', [
-  'apiServices.settings',
+  'apiServices.config',
   'restmod',
   'restmod.styles.drfPaged'
 ])

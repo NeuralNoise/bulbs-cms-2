@@ -2,7 +2,7 @@
 
 angular.module('bulbsCmsApp')
   .directive('featuretypeField', function (PARTIALS_URL, IfExistsElse, ContentFactory,
-      Raven, $, CmsConfig) {
+      Raven, $, ApiConfig) {
     return {
       templateUrl: PARTIALS_URL + 'textlike-autocomplete-field.html',
       restrict: 'E',
@@ -15,7 +15,7 @@ angular.module('bulbsCmsApp')
         scope.name = 'feature_type';
         scope.label = 'Feature Type';
         scope.placeholder = 'Feature Type';
-        scope.resourceUrl = CmsConfig.buildBackendApiUrl('things/?type=feature_type&q=');
+        scope.resourceUrl = ApiConfig.buildBackendApiUrl('things/?type=feature_type&q=');
 
         scope.$watch('article.feature_type', function () {
           scope.model = scope.article.feature_type;

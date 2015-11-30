@@ -2,7 +2,7 @@
 
 angular.module('bulbsCmsApp')
   .controller('TrashcontentmodalCtrl', function ($scope, $http, $modalInstance, $,
-      articleId, Raven, CmsConfig) {
+      articleId, Raven, ApiConfig) {
     $scope.deleteButton = {
       idle: 'Delete',
       busy: 'Trashing',
@@ -13,7 +13,7 @@ angular.module('bulbsCmsApp')
     $scope.trashContent = function () {
       return $http({
         'method': 'POST',
-        'url': CmsConfig.buildBackendApiUrl('content/' + articleId + '/trash/')
+        'url': ApiConfig.buildBackendApiUrl('content/' + articleId + '/trash/')
       });
     };
 

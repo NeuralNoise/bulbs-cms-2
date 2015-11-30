@@ -4,10 +4,6 @@ angular.module('cms.config', [
   'lodash'
 ])
   .provider('CmsConfig', function CmsConfigProvider (_) {
-    // relative api path, rel to backendRoot
-    var apiPath = '';
-    // root for all backend requests
-    var backendRoot = '';
     // default width to request for images
     var imageDefaultWidth = 1200;
     // image server root
@@ -45,24 +41,6 @@ angular.module('cms.config', [
           return true;
         }
       });
-    };
-
-    this.setApiPath = function (value) {
-      if (_.isString(value)) {
-        apiPath = value;
-      } else {
-        throw error('apiPath must be a string!');
-      }
-      return this;
-    };
-
-    this.setBackendRoot = function (value) {
-      if (_.isString(value)) {
-        backendRoot = value;
-      } else {
-        throw error('backendRoot must be a string!');
-      }
-      return this;
     };
 
     this.setImageDefaultWidth = function (num) {
@@ -236,24 +214,6 @@ angular.module('cms.config', [
           } else {
             throw error('Unable to find edit page template for type "' + type + '"');
           }
-        },
-        /**
-         * Create an absolute api url.
-         *
-         * @param {string} relUrl - relative url to get the absolute api url for.
-         * @returns absolute api url.
-         */
-        buildBackendApiUrl: function (relUrl) {
-          return backendRoot + apiPath + (relUrl || '');
-        },
-        /**
-         * Build a url relative to backend root.
-         *
-         * @param {string} relUrl - relative url to get the absolute url for.
-         * @returns absolute url.
-         */
-        buildBackendUrl: function (relUrl) {
-          return backendRoot + (relUrl || '');
         },
         /**
          * Build a url relative to image server root.

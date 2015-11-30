@@ -1,19 +1,20 @@
 'use strict';
 
-angular.module('apiServices.settings', []).constant('API_URL_ROOT', '/cms/api/v1/');
-
 angular.module('bulbsCmsApp')
-  .config(function (CmsConfigProvider, CONTENT_PARTIALS_URL, DIRECTIVE_PARTIALS_URL, PARTIALS_URL) {
-    CmsConfigProvider.setApiPath('/cms/api/v1/');
-    CmsConfigProvider.setLogoUrl('/images/onion-logo.png');
-    CmsConfigProvider.setToolbarMappings({
-      toolbar: PARTIALS_URL + 'toolbar.html'
-    });
-    CmsConfigProvider.addEditPageMapping(
-      CONTENT_PARTIALS_URL + 'content_content.html',
-      'content_content'
-    );
-    CmsConfigProvider.setCreateContentTemplateUrl(DIRECTIVE_PARTIALS_URL + 'create-content.html');
+  .config(function (ApiConfigProvider, CmsConfigProvider, CONTENT_PARTIALS_URL,
+      DIRECTIVE_PARTIALS_URL, PARTIALS_URL) {
+    ApiConfigProvider.setApiPath('/cms/api/v1/');
+
+    CmsConfigProvider
+      .setLogoUrl('/images/onion-logo.png')
+      .setToolbarMappings({
+        toolbar: PARTIALS_URL + 'toolbar.html'
+      })
+      .addEditPageMapping(
+        CONTENT_PARTIALS_URL + 'content_content.html',
+        'content_content'
+      )
+      .setCreateContentTemplateUrl(DIRECTIVE_PARTIALS_URL + 'create-content.html');
   });
 
 angular.module('bulbsCmsApp.settings')

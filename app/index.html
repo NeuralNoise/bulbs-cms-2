@@ -227,6 +227,7 @@
     <script src="components/top-bar/top-bar-directive.js"></script>
     <script src="components/top-bar/top-bar-item-factory.js"></script>
     <script src="components/top-bar/top-bar.js"></script>
+    <script src="shared/api-services/api-services-config.js"></script>
     <script src="shared/api-services/api-services-mixins/mixin-field-display.js"></script>
     <script src="shared/api-services/api-services.js"></script>
     <script src="shared/api-services/author/author-factory.js"></script>
@@ -345,13 +346,14 @@
         //so...
         // ¯\_(ツ)_/¯
 
-        angular.module('apiServices.settings', []).constant('API_URL_ROOT', '/cms/api/v1/');
-
         angular.module('bulbsCmsApp')
-          .config(function ($httpProvider, CmsConfigProvider, TokenAuthConfigProvider,
-              TokenAuthServiceProvider, PARTIALS_URL, DIRECTIVE_PARTIALS_URL) {
+          .config(function ($httpProvider, ApiConfigProvider, CmsConfigProvider,
+              TokenAuthConfigProvider, TokenAuthServiceProvider, PARTIALS_URL,
+              DIRECTIVE_PARTIALS_URL) {
+            ApiConfigProvider
+                .setApiPath('/cms/api/v1/');
+
             CmsConfigProvider
-                .setApiPath('/cms/api/v1/')
                 .setLogoUrl('/images/onion-logo.png')
                 .setToolbarMappings({
                   nav: PARTIALS_URL + 'nav.html',

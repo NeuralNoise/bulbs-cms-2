@@ -4,19 +4,19 @@
  * When adding links in the editor, allows searching through content to link.
  */
 angular.module('content.edit.linkBrowser', [
-  'cms.config',
+  'apiServices.config',
   'jquery'
 ])
-  .service('LinkBrowser', function ($, $http, CmsConfig) {
+  .service('LinkBrowser', function ($, $http, ApiConfig) {
      window.linkBrowser = function(term, resultsElement) {
        resultsElement.html('<div class="items"></div><hr><span class="type">Articles</span><ul class="content"></ul>');
 
-       $http.get(CmsConfig.buildBackendApiUrl('search/autocomplete?q=' + term))
+       $http.get(ApiConfig.buildBackendApiUrl('search/autocomplete?q=' + term))
          .success(function(resp) {
            $('.items', resultsElement).html(resp);
          });
 
-       $http.get(CmsConfig.buildBackendApiUrl('content/?search=' + term))
+       $http.get(ApiConfig.buildBackendApiUrl('content/?search=' + term))
          .success(function(resp) {
            for (var i=0; i < Math.min(resp.count, 20); i ++) {
              var link = $('<A>')

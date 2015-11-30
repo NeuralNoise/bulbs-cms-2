@@ -1,13 +1,15 @@
 'use strict';
 
 angular.module('sendToEditor.modal', [
-  'cms.config',
+  'apiServices.config',
   'sendToEditor.config',
   'ui.bootstrap.modal'
 ])
-  .controller('SendToEditorModal',
-    ['$scope', '$http', '$modalInstance', 'CmsConfig', 'SendToEditorConfig', 'moment', 'TIMEZONE_NAME',
-    function ($scope, $http, $modalInstance, CmsConfig, SendToEditorConfig, moment, TIMEZONE_NAME) {
+  .controller('SendToEditorModal', [
+    '$scope', '$http', '$modalInstance', 'ApiConfig', 'SendToEditorConfig',
+      'moment', 'TIMEZONE_NAME',
+    function ($scope, $http, $modalInstance, ApiConfig, SendToEditorConfig,
+        moment, TIMEZONE_NAME) {
 
       $scope.TIMEZONE_LABEL = moment.tz(TIMEZONE_NAME).format('z');
       $scope.getStatus = function (article) {
@@ -42,7 +44,7 @@ angular.module('sendToEditor.modal', [
 
       $scope.sendToEditor = function (article) {
         return $http({
-          url: CmsConfig.buildBackendApiUrl('content/' + article.id + '/send/'),
+          url: ApiConfig.buildBackendApiUrl('content/' + article.id + '/send/'),
           method: 'POST',
           data: {
             notes: $scope.noteToEditor,

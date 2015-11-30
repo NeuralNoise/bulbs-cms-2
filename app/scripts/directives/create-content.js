@@ -2,7 +2,7 @@
 
 angular.module('bulbsCmsApp')
   .directive('createContent', function ($http, $window, $, IfExistsElse, ContentFactory,
-      AUTO_ADD_AUTHOR, Raven, CmsConfig) {
+      AUTO_ADD_AUTHOR, Raven, CmsConfig, ApiConfig) {
 
     return {
       restrict: 'E',
@@ -53,7 +53,7 @@ angular.module('bulbsCmsApp')
         function saveArticle() {
           $('button.go').removeClass('btn-danger').addClass('btn-success').html('<i class="fa fa-refresh fa-spin"></i> Going');
           $http({
-            url: CmsConfig.buildBackendApiUrl('content/?doctype=' + $scope.contentType),
+            url: ApiConfig.buildBackendApiUrl('content/?doctype=' + $scope.contentType),
             method: 'POST',
             data: $scope.init
           }).success(function (resp) {

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .service('Zencoder', function Zencoder($http, $q, $modal, $, CmsConfig, PARTIALS_URL) {
+  .service('Zencoder', function Zencoder($http, $q, $modal, $, ApiConfig, PARTIALS_URL) {
     var newVideoUrl = '/video/new';
     var fileInputId = '#bulbs-cms-hidden-video-file-input';
     var inputTemplate = '<input id="bulbs-cms-hidden-video-file-input" type="file" accept="video/*" style="position: absolute; left:-99999px;" name="video" />';
@@ -56,7 +56,7 @@ angular.module('bulbsCmsApp')
 
       $http({
         method: 'POST',
-        url: CmsConfig.buildBackendApiUrl(newVideoUrl),
+        url: ApiConfig.buildBackendApiUrl(newVideoUrl),
         data: data,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
       }).success(function (data) {
@@ -117,7 +117,7 @@ angular.module('bulbsCmsApp')
 
       $http({
         method: 'POST',
-        url: CmsConfig.buildBackendApiUrl('video/' + videoObject.attrs.id + '/encode')
+        url: ApiConfig.buildBackendApiUrl('video/' + videoObject.attrs.id + '/encode')
       }).success(function (data) {
         videoObject.attrs['encode_status_endpoints'] = data;
         _encodingVideos[videoObject.attrs.id] = videoObject.attrs;
@@ -147,7 +147,7 @@ angular.module('bulbsCmsApp')
       var url = '/video/' + videoId;
       return $http({
         method: 'GET',
-        url: CmsConfig.buildBackendApiUrl(url)
+        url: ApiConfig.buildBackendApiUrl(url)
       });
     };
 
@@ -156,7 +156,7 @@ angular.module('bulbsCmsApp')
       var data = $.param(video);
       return $http({
         method: 'POST',
-        url: CmsConfig.buildBackendApiUrl(url),
+        url: ApiConfig.buildBackendApiUrl(url),
         data: data,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
       });

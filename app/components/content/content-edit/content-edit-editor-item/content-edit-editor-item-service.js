@@ -1,16 +1,16 @@
 'use strict';
 
 angular.module('content.edit.editorItem.service', [
-  'cms.config'
+  'apiServices.config'
 ])
   .service('EditorItems', [
-    '$http', 'CmsConfig',
-    function EditorItems($http, CmsConfig) {
+    '$http', 'ApiConfig',
+    function EditorItems($http, ApiConfig) {
       this.data = [];
       var self = this;
       this.getItems = function (article) {
         $http.get(
-          CmsConfig.buildBackendApiUrl('content/' + article + '/send/')
+          ApiConfig.buildBackendApiUrl('content/' + article + '/send/')
         ).success(function (data, status) {
           self.data = data.editor_items;
         });
