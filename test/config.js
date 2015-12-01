@@ -3,7 +3,8 @@
 angular.module('bulbsCmsApp')
   .config(function (ApiConfigProvider, CmsConfigProvider, CONTENT_PARTIALS_URL,
       DIRECTIVE_PARTIALS_URL, PARTIALS_URL) {
-    ApiConfigProvider.setApiPath('/cms/api/v1/');
+    ApiConfigProvider
+      .setApiPath('/cms/api/v1');
 
     CmsConfigProvider
       .setLogoUrl('/images/onion-logo.png')
@@ -28,7 +29,6 @@ angular.module('bulbsCmsApp.settings')
   .constant('PARTIALS_URL', '/views/')
   .constant('SHARED_URL', '/shared/')
   .constant('STATIC_URL', '/static/')
-  .constant('RESTANGULAR_API_URL_ROOT', '/cms/api/v1')
   .constant('TIMEZONE_NAME', 'America/Chicago')
   .constant('VIDEO_EMBED_URL', 'http://www.avclub.com/video/embed?id=')
   .constant('firebaseApiConfig', {

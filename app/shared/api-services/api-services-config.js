@@ -1,15 +1,12 @@
 'use strict';
 
 angular.module('apiServices.config', [
-  'lodash'
+  'lodash',
+  'utils'
 ])
-
-// TODO : remove API_URL_ROOT and all its references once at $http
-
-  .constant('API_URL_ROOT', '/cms/api/v1/')
   .provider('ApiConfig', [
-    '_',
-    function ApiConfigProvider (_) {
+    '_', 'UtilsProvider',
+    function ApiConfigProvider (_, Utils) {
 
       // relative api path, rel to backendRoot
       var apiPath = '';
@@ -48,7 +45,8 @@ angular.module('apiServices.config', [
            * @returns {string} absolute api url.
            */
           buildBackendApiUrl: function (relUrl) {
-            return this.buildBackendUrl(apiPath + (relUrl || ''));
+            var apiRel = Utils.path.join(apiPath, (relUrl || ''));
+            return this.buildBackendUrl(apiRel);
           },
           /**
            * Build a url relative to backend root.
@@ -57,7 +55,7 @@ angular.module('apiServices.config', [
            * @returns {string} absolute url.
            */
           buildBackendUrl: function (relUrl) {
-            return backendRoot + (relUrl || '');
+            return Utils.path.join(backendRoot, (relUrl || ''));
           },
         };
       };

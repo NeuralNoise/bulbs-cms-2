@@ -6,7 +6,9 @@ describe('Author service', function () {
   beforeEach(function () {
 
     module('bulbs.api');
-    module('bulbs.api.mock');
+    module('bulbs.api.mock', function (ApiConfigProvider) {
+      ApiConfigProvider.setBackendRoot('/cms/api/v1');
+    });
 
     inject(function ($controller, $injector) {
       AuthorService = $injector.get('AuthorService');

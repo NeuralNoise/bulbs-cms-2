@@ -2,11 +2,15 @@
 
 describe('ContentService', function () {
 
-  var ContentService, $httpBackend;
+  var ContentService;
+  var $httpBackend;
+
   beforeEach(function () {
 
     module('bulbs.api');
-    module('bulbs.api.mock');
+    module('bulbs.api.mock', function (ApiConfigProvider) {
+      ApiConfigProvider.setBackendRoot('/cms/api/v1');
+    });
 
     inject(function ($controller, $injector) {
       ContentService = $injector.get('ContentService');
@@ -49,6 +53,7 @@ describe('ContentService', function () {
       expect(contributions.length).toBe(1);
       expect(contributions[0]).toEqual(data);
     });
+
     $httpBackend.flush();
   });
 

@@ -6,7 +6,7 @@
 angular.module('apiServices.config.interceptor', [
   'apiServices.config'
 ])
-  .factory('ApiServicesConfigInterceptor', [
+  .factory('ApiConfigInterceptor', [
     'ApiConfig',
     function (ApiConfig) {
 
@@ -26,7 +26,7 @@ angular.module('apiServices.config.interceptor', [
       return {
         request: function (config) {
           // apply transformations to config object
-          applyBaseUrl(config);
+          applyBaseApiUrl(config);
 
           return config;
         }

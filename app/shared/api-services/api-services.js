@@ -1,23 +1,33 @@
 'use strict';
 
 angular.module('apiServices', [
-  'apiServices.config',
   'apiServices.config.interceptor',
+  'restangular',
   'restmod',
   'restmod.styles.drfPaged'
 ])
   .config([
-    'API_URL_ROOT', 'restmodProvider', '$httpProvider', 'ApiServicesConfigInterceptor'
-    function (API_URL_ROOT, restmodProvider, $httpProvider, ApiServicesConfigInterceptor) {
+    'RestangularProvider', 'restmodProvider', '$httpProvider',
+    function (RestangularProvider, restmodProvider, $httpProvider) {
 
 // TODO : remove this once restmod is gone
       restmodProvider.rebase('DjangoDRFPagedApi', {
         $config: {
-          style: 'BulbsApi',
-          urlPrefix: API_URL_ROOT
+          style: 'BulbsApi'
+        },
+        $hooks: {
+          'before-request': function (_req) {
+            _req.isApiCall = true;
+          }
         }
       });
 
-      $httpProvider.interceptors.push(ApiServicesConfigInterceptor)
+// TODO : remove this once restangular is gone
+      RestangularProvider.setDefaultHttpFields({
+        isApiCall: true
+      });
+      RestangularProvider.setRequestSuffix('/');
+
+      $httpProvider.interceptors.push('ApiConfigInterceptor');
     }
   ]);

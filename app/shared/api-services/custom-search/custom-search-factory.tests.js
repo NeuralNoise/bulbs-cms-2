@@ -9,14 +9,16 @@ describe('Factory: CustomSearch', function () {
   var CustomSearchSettings;
 
   beforeEach(function () {
-    module('apiServices.customSearch.factory');
+    module('apiServices.customSearch.factory', function (ApiConfigProvider) {
+      ApiConfigProvider.setBackendRoot('/cms/api/v1');
+    });
 
-    inject(function (_$httpBackend_, _$rootScope_, _API_URL_ROOT_, _CustomSearch_,
+    inject(function (_$httpBackend_, _$rootScope_, _ApiConfig_, _CustomSearch_,
         _CustomSearchSettings_) {
 
       $httpBackend = _$httpBackend_;
       $rootScope = _$rootScope_;
-      API_URL_ROOT = _API_URL_ROOT_;
+      API_URL_ROOT = _ApiConfig_.buildBackendApiUrl();
       CustomSearch = _CustomSearch_;
       CustomSearchSettings = _CustomSearchSettings_;
     });
