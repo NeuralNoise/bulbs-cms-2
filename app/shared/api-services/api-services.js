@@ -1,6 +1,8 @@
 'use strict';
 
 angular.module('apiServices', [
+  'apiServices.bugReport.interceptor',
+  'apiServices.badRequest.interceptor',
   'apiServices.config.interceptor',
   'restangular',
   'restmod',
@@ -28,6 +30,9 @@ angular.module('apiServices', [
       });
       RestangularProvider.setRequestSuffix('/');
 
+      // set interceptors
       $httpProvider.interceptors.push('ApiConfigInterceptor');
+      $httpProvider.interceptors.push('BugReportInterceptor');
+      $httpProvider.interceptors.push('BadRequestInterceptor');
     }
   ]);

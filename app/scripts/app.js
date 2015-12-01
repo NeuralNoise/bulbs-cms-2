@@ -141,9 +141,6 @@ angular.module('bulbsCmsApp', [
           window.Raven.captureException(exception);
         };
       });
-
-      $httpProvider.interceptors.push('BugReportInterceptor');
-      $httpProvider.interceptors.push('BadRequestInterceptor');
     }
   ])
   .run([
