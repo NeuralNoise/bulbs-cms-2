@@ -59,7 +59,7 @@ angular.module('apiServices.base.model', [
        * @returns {undefined}
        */
       BaseModel.prototype._abortCurrRequest = function () {
-        if (this._currRequest) {
+        if (this._currRequest !== null) {
           this._currRequest.abort();
           this._currRequest = null;
         }
@@ -75,6 +75,10 @@ angular.module('apiServices.base.model', [
        * @returns {BaseModel}
        */
       BaseModel.prototype.$get = function (id, force) {
+        if (typeof(id) !== 'number') {
+          throw new ApiError('$get requires a number id as its first argument!');
+        }
+
         var _model = this;
 
         var req = new ApiHttp({
