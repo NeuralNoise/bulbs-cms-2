@@ -11,7 +11,7 @@ angular.module('apiServices.config', [
       // relative api path, rel to backendRoot
       var apiPath = '';
       // root for all backend requests
-      var backendRoot = '';
+      var backendRoot = '/';
 
       var error = function (message) {
         return new ConfigError('CmsConfig', message);

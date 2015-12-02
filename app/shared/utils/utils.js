@@ -60,7 +60,7 @@ angular.module('utils', [])
 
         // if there's a protocol, make sure to ignore it when replacing sep
         var protocolPrefix = '';
-        if (argsArr.length > 0) {
+        if (argsArr.length > 0 && typeof(argsArr[0]) === 'string') {
           var matches = argsArr[0].match(/^(https?:)?\/\//);
           if (matches) {
             protocolPrefix = matches[0];
