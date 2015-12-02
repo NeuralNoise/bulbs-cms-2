@@ -6,35 +6,12 @@
 angular.module('apiServices.base.model', [
   'apiServices.error',
   'apiServices.http.factory',
+  'apiServices.utils',
   'utils'
 ])
   .factory('BaseModel', [
-    'ApiError', 'ApiHttp', 'Utils',
-    function (ApiError, ApiHttp, Utils) {
-
-      /**
-       * Utility to execute requests within a model framework.
-       *
-       * @param {BaseModel} model - model to execute request with.
-       * @param {ApiHttp} request - request to execute.
-       * @returns {ApiHttp} new request made.
-       */
-      var executeRequest = function (model, request, force) {
-        if (force) {
-          model._abortCurrRequest();
-        }
-
-        if (model._currRequest === null) {
-          model._currRequest = request;
-        } else {
-          throw new ApiError('Model request already pending, either abort or force a new request!');
-        }
-
-        return model._currRequest.$execute()
-          .finally(function () {
-            model.currRequest = null;
-          });
-      };
+    'ApiError', 'ApiHttp', 'ApiUtils', 'Utils',
+    function (ApiError, ApiHttp, ApiUtils, Utils) {
 
       /**
        * Base model constructor.
@@ -91,7 +68,7 @@ angular.module('apiServices.base.model', [
             }
           });
 
-        return executeRequest(this, req, force);
+        return ApiUtils.executeRequest(this, req, force);
       };
 
       /**
@@ -125,7 +102,7 @@ angular.module('apiServices.base.model', [
             }
           });
 
-        return executeRequest(this, req, force);
+        return ApiUtils.executeRequest(this, req, force);
       };
 
       /**
@@ -142,7 +119,7 @@ angular.module('apiServices.base.model', [
           url: Utils.path.join(this._endpoint, this.data.id)
         });
 
-        return executeRequest(this, req, force);
+        return ApiUtils.executeRequest(this, req, force);
       };
 
       return BaseModel;
