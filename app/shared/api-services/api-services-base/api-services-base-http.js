@@ -4,7 +4,7 @@
  * Wrapper around $http to allow room for a common interface in $http calls. All
  *  $http calls to the API should be made through here.
  */
-angular.module('apiServices.http.factory', [
+angular.module('apiServices.base.http', [
   'apiServices.error'
 ])
   .factory('ApiHttp', [

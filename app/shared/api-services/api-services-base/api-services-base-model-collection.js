@@ -4,13 +4,13 @@
  * Base that all api model collections should use.
  */
 angular.module('apiServices.base.modelCollection', [
-  'apiServices.error',
-  'apiServices.http.factory',
-  'apiServices.utils'
+  'apiServices.base.http',
+  'apiServices.base.requestor',
+  'apiServices.error'
 ])
   .factory('BaseModelCollection', [
-    'ApiError', 'ApiHttp', 'ApiUtils',
-    function (ApiError, ApiHttp, ApiUtils) {
+    'ApiError', 'ApiHttp', 'Requestor',
+    function (ApiError, ApiHttp, Requestor) {
 
       /**
        * Base collection constructor.
@@ -21,8 +21,9 @@ angular.module('apiServices.base.modelCollection', [
        * @returns {BaseModelCollection}
        */
       var BaseModelCollection = function (endpoint, model, data) {
+        Requestor.call(this);
+
         this._count = 0;
-        this._currRequest = null;
         this._page = 1;
         this._endpoint = endpoint;
         this._model = model;
@@ -31,6 +32,8 @@ angular.module('apiServices.base.modelCollection', [
 
         return this;
       };
+      BaseModelCollection.prototype = Object.create(Requestor.prototype);
+      BaseModelCollection.prototype.constructor = BaseModelCollection;
 
       /**
        * Create a GET request to retrieve a collection of models based on given
@@ -67,7 +70,7 @@ angular.module('apiServices.base.modelCollection', [
             }
           });
 
-        return ApiUtils.executeRequest(this, req, force);
+        return this._executeRequest(req, force);
       };
 
       /**

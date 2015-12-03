@@ -4,14 +4,14 @@
  * Base that all api models should use.
  */
 angular.module('apiServices.base.model', [
+  'apiServices.base.http',
+  'apiServices.base.requestor',
   'apiServices.error',
-  'apiServices.http.factory',
-  'apiServices.utils',
   'utils'
 ])
   .factory('BaseModel', [
-    'ApiError', 'ApiHttp', 'ApiUtils', 'Utils',
-    function (ApiError, ApiHttp, ApiUtils, Utils) {
+    'ApiError', 'ApiHttp', 'Requestor', 'Utils',
+    function (ApiError, ApiHttp, Requestor, Utils) {
 
       var STATES = [
         'new',
@@ -27,7 +27,8 @@ angular.module('apiServices.base.model', [
        * @returns {BaseModel}
        */
       var BaseModel = function (endpoint, data) {
-        this._currRequest = null;
+        Requestor.call(this);
+
         this._endpoint = endpoint;
 
         this.data = typeof(data) === 'object' ? data : {};
@@ -36,6 +37,8 @@ angular.module('apiServices.base.model', [
 
         return this;
       };
+      BaseModel.prototype = Object.create(Requestor.prototype);
+      BaseModel.prototype.constructor = BaseModel;
 
       /**
        * Utility function to see what state this model is in.
@@ -77,7 +80,7 @@ angular.module('apiServices.base.model', [
             }
           });
 
-        return ApiUtils.executeRequest(this, req, force);
+        return this._executeRequest(req, force);
       };
 
       /**
@@ -116,7 +119,7 @@ angular.module('apiServices.base.model', [
             }
           });
 
-        return ApiUtils.executeRequest(this, req, force);
+        return this._executeRequest(req, force);
       };
 
       /**
@@ -140,7 +143,7 @@ angular.module('apiServices.base.model', [
         });
 
         var _model = this;
-        return ApiUtils.executeRequest(this, req, force)
+        return this._executeRequest(req, force)
           .then(function () {
             _model._state = 2;
           });
