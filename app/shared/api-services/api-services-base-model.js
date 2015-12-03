@@ -13,6 +13,11 @@ angular.module('apiServices.base.model', [
     'ApiError', 'ApiHttp', 'ApiUtils', 'Utils',
     function (ApiError, ApiHttp, ApiUtils, Utils) {
 
+      var STATES = [
+        'ready',
+        'deleted'
+      ];
+
       /**
        * Base model constructor.
        *
@@ -43,6 +48,15 @@ angular.module('apiServices.base.model', [
       };
 
       /**
+       * Utility function to see what state this model is in.
+       *
+       * @returns {string} value indicating the current state of this model.
+       */
+      ApiHttp.prototype.getState = function () {
+        return STATES[this._state];
+      };
+
+      /**
        * Create a GET request to fetch data for this model based on given id.
        *
        * @param {number} id - id of model data to fetch.
@@ -52,6 +66,10 @@ angular.module('apiServices.base.model', [
        * @returns {BaseModel}
        */
       BaseModel.prototype.$get = function (id, force) {
+        if (this._state === 1) {
+          throw new ApiError('This model has already been deleted, cannot call its methods!');
+        }
+
         if (typeof(id) !== 'number') {
           throw new ApiError('$get requires a number id as its first argument!');
         }
@@ -82,6 +100,10 @@ angular.module('apiServices.base.model', [
        * @returns {BaseModel}
        */
       BaseModel.prototype.$save = function (force) {
+        if (this._state === 1) {
+          throw new ApiError('This model has already been deleted, cannot call its methods!');
+        }
+
         var _model = this;
 
         var httpMethod = 'POST';
@@ -114,6 +136,10 @@ angular.module('apiServices.base.model', [
        * @returns {undefined}
        */
       BaseModel.prototype.$delete = function (force) {
+        if (this._state === 1) {
+          throw new ApiError('This model has already been deleted, cannot call its methods!');
+        }
+
         var req = new ApiHttp({
           method: 'DELETE',
           url: Utils.path.join(this._endpoint, this.data.id)

@@ -3,8 +3,6 @@
 describe('BaseModel', function () {
 
   var $httpBackend;
-  var ApiError;
-  var ApiHttp;
   var BaseModel;
 
   beforeEach(function () {
@@ -13,10 +11,8 @@ describe('BaseModel', function () {
     });
     module('apiServices.base.model');
 
-    inject(function (_$httpBackend_, _ApiError_, _ApiHttp_, _BaseModel_) {
+    inject(function (_$httpBackend_, _BaseModel_) {
       $httpBackend = _$httpBackend_;
-      ApiError = _ApiError_;
-      ApiHttp = _ApiHttp_;
       BaseModel = _BaseModel_;
     });
   });
@@ -146,6 +142,17 @@ describe('BaseModel', function () {
 
       var model = new BaseModel('test-endpoint', {});
 
+      expect(model.$delete).toThrow();
+    });
+
+    it('should mark state as deleted, prevent other function calls', function () {
+
+      var model = new BaseModel('test-endpoint', {});
+
+      model.$delete();
+
+      expect(model.$get).toThrow();
+      expect(model.$save).toThrow();
       expect(model.$delete).toThrow();
     });
 
