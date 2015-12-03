@@ -45,7 +45,7 @@ angular.module('apiServices.base.model', [
        *
        * @returns {string} value indicating the current state of this model.
        */
-      ApiHttp.prototype.getState = function () {
+      BaseModel.prototype.getState = function () {
         return STATES[this._state];
       };
 
@@ -76,7 +76,7 @@ angular.module('apiServices.base.model', [
           .addResponseTransformer(function (data, headers, status) {
             if (status === 200) {
               _model.data = data;
-              _model._state === 1;
+              _model._state = 1;
             }
           });
 
@@ -115,7 +115,7 @@ angular.module('apiServices.base.model', [
           .addResponseTransformer(function (data, headers, status) {
             if (status === 200) {
               _model.data.id = data.id;
-              _model._state === 1;
+              _model._state = 1;
             }
           });
 

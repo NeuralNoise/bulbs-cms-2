@@ -34,7 +34,7 @@ describe('BaseModel', function () {
 
       model.$get(id);
 
-      $httpBackend.expectGET('/test-endpoint/' + id).respond({
+      $httpBackend.expectGET('/test-endpoint/' + id).respond(200, {
         id: id,
         title: title
       });
@@ -42,6 +42,7 @@ describe('BaseModel', function () {
 
       expect(model.data.id).toBe(id);
       expect(model.data.title).toBe(title);
+      expect(model.getState()).toBe('identified');
     });
 
     it('should return a promise interface', function () {
@@ -74,6 +75,7 @@ describe('BaseModel', function () {
 
       expect(model.data.id).toBe(id);
       expect(model.data.title).toBe(title);
+      expect(model.getState()).toBe('identified');
     });
 
     it('should be able to update an existing model', function () {
@@ -90,6 +92,8 @@ describe('BaseModel', function () {
         id: id
       });
       $httpBackend.flush();
+
+      expect(model.getState()).toBe('identified');
     });
 
     it('should return a promise interface', function () {
@@ -115,6 +119,8 @@ describe('BaseModel', function () {
 
       $httpBackend.expectDELETE('/test-endpoint/' + id).respond(200);
       $httpBackend.flush();
+
+      expect(model.getState()).toBe('deleted');
     });
 
     it('should fail if attempting to delete a new model', function () {
