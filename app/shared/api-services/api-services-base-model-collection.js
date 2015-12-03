@@ -22,6 +22,7 @@ angular.module('apiServices.base.modelCollection', [
        */
       var BaseModelCollection = function (endpoint, model, data) {
         this._count = 0;
+        this._currRequest = null;
         this._page = 1;
         this._endpoint = endpoint;
         this._model = model;
@@ -36,12 +37,15 @@ angular.module('apiServices.base.modelCollection', [
        *  parameters.
        *
        * @param {object} params - request parameters to use for collection retrieval.
+       * @param {boolean} force - if true, will abort any currently running request
+       *  in this model. Otherwise, if false and there is a running request, this
+       *  function will throw an error.
        * @returns {BaseModelCollection}
        */
-      BaseModelCollection.prototype.$query = function (params) {
-        var type = typeof(params);
-        if (type !== 'undefined' && type !== 'object') {
-          throw new ApiError('$query argument must be undefined or an object');
+      BaseModelCollection.prototype.$query = function (params, force) {
+        var paramType = typeof(params);
+        if (paramType !== 'undefined' && paramType !== 'object') {
+          throw new ApiError('first argument to $query must be an object if provided!');
         }
 
         var _collection = this;
@@ -53,9 +57,13 @@ angular.module('apiServices.base.modelCollection', [
         })
           .addResponseTransformer(function (data, headers, status) {
             if (status === 200) {
-              _model.data = data.results;
-              _model._count = data.count;
-              _model._page = params.page || 1;
+              _collection.data = data.results.map(function (result) {
+                return new _collection._model(result);
+              });
+              _collection._count = data.count;
+              _collection._page =
+                paramType === 'object' && params.hasOwnProperty('page') ?
+                  params.page : 1;
             }
           });
 

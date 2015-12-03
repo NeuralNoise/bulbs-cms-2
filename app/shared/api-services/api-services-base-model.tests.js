@@ -178,18 +178,18 @@ describe('BaseModel', function () {
       expect(typeof(req.finally)).toBe('function');
     });
 
+    it('should fail if model has no id', function () {
+      var model = new BaseModel('test-endpoint');
+
+      expect(function () { model.$delete(); }).toThrow();
+    });
+
     it('should prevent multiple requests', function () {
       var model = new BaseModel('test-endpoint', {
         id: 1
       });
 
       model.$delete();
-      expect(function () { model.$delete(); }).toThrow();
-    });
-
-    it('should fail if model has no id', function () {
-      var model = new BaseModel('test-endpoint');
-
       expect(function () { model.$delete(); }).toThrow();
     });
 

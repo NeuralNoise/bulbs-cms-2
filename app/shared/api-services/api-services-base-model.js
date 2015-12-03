@@ -38,18 +38,6 @@ angular.module('apiServices.base.model', [
       };
 
       /**
-       * Abort currently running request if there is one.
-       *
-       * @returns {undefined}
-       */
-      BaseModel.prototype._abortCurrRequest = function () {
-        if (this._currRequest !== null) {
-          this._currRequest.abort();
-          this._currRequest = null;
-        }
-      };
-
-      /**
        * Utility function to see what state this model is in.
        *
        * @returns {string} value indicating the current state of this model.
