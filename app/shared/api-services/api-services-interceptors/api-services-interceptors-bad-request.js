@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('apiServices.badRequest.interceptor', [
+angular.module('apiServices.interceptors.badRequest', [
   'bulbsCmsApp.settings'
 ])
   .factory('BadRequestInterceptor', [

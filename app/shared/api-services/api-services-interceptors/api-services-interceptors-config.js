@@ -3,7 +3,7 @@
 /**
  * Applies ApiConfig configurations as an $httpProvider interceptor.
  */
-angular.module('apiServices.config.interceptor', [
+angular.module('apiServices.interceptors.config', [
   'apiServices.config'
 ])
   .factory('ApiConfigInterceptor', [

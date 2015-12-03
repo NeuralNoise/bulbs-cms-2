@@ -7,7 +7,7 @@ describe('ApiHttp', function () {
   var ApiHttp;
 
   beforeEach(function () {
-    module('apiServices.config.interceptor', function (_$httpProvider_) {
+    module('apiServices.interceptors.config', function (_$httpProvider_) {
       $httpProvider = _$httpProvider_;
 
       $httpProvider.interceptors.push('ApiConfigInterceptor');

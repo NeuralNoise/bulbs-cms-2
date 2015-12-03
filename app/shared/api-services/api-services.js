@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('apiServices', [
-  'apiServices.bugReport.interceptor',
-  'apiServices.badRequest.interceptor',
-  'apiServices.config.interceptor',
+  'apiServices.interceptors.bugReport',
+  'apiServices.interceptors.badRequest',
+  'apiServices.interceptors.config',
   'restangular',
   'restmod',
   'restmod.styles.drfPaged'

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('apiServices.bugReport.interceptor', [
+angular.module('apiServices.interceptors.bugReport', [
   'PNotify'
 ])
   .factory('BugReportInterceptor', [

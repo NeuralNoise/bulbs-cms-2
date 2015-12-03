@@ -7,7 +7,7 @@ describe('BaseModel', function () {
   var BaseModelCollection;
 
   beforeEach(function () {
-    module('apiServices.config.interceptor', function ($httpProvider) {
+    module('apiServices.interceptors.config', function ($httpProvider) {
       $httpProvider.interceptors.push('ApiConfigInterceptor');
     });
     module('apiServices.base.model');
