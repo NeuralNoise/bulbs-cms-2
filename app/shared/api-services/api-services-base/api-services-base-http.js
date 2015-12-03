@@ -42,32 +42,31 @@ angular.module('apiServices.base.http', [
        * @returns {$http} $http object used for request.
        */
       ApiHttp.prototype.$execute = function () {
-        if (this._state === 0) {
-          this._state = 1;
-
-          // add response transformers
-          var respTransformersFromHttpDefaults =
-            (angular.isArray($http.defaults.transformResponse) ?
-              $http.defaults.transformResponse : [$http.defaults.transformResponse]);
-          var respTrasnformersFromConfig = this._config.transformResponse || [];
-          this._config.transformResponse = [].concat(
-            respTransformersFromHttpDefaults,
-            respTrasnformersFromConfig,
-            this._responseTransformers
-          );
-
-          // setup hook for aborting request
-          this._config.timeout = this._abortDefer.promise;
-
-          // create request, changes state once request comes back
-          var _this = this;
-          this._$http = $http(this._config)
-            .finally(function () {
-              _this._state = 2;
-            });
-        } else {
+        if (this._state !== 0) {
           throw new ApiError('$execute has already been called! Create a new ApiHttp object to make a new $http request.');
         }
+
+        this._state = 1;
+
+        // add response transformers
+        var respTransformersFromHttpDefaults =
+          (angular.isArray($http.defaults.transformResponse) ?
+            $http.defaults.transformResponse : [$http.defaults.transformResponse]);
+        this._config.transformResponse = [].concat(
+          respTransformersFromHttpDefaults,
+          this._config.transformResponse || [],
+          this._responseTransformers
+        );
+
+        // setup hook for aborting request
+        this._config.timeout = this._abortDefer.promise;
+
+        // create request, changes state once request comes back
+        var _this = this;
+        this._$http = $http(this._config)
+          .finally(function () {
+            _this._state = 2;
+          });
 
         return this._$http;
       };
@@ -78,7 +77,12 @@ angular.module('apiServices.base.http', [
        * @returns {undefined}
        */
       ApiHttp.prototype.abort = function () {
+        if (this._state !== 1) {
+          throw new ApiError('No requests pending to abort!');
+        }
+
         this._abortDefer.resolve();
+        this._state = 2;
       };
 
       /**
@@ -98,11 +102,11 @@ angular.module('apiServices.base.http', [
        * @returns {ApiHttp}
        */
       ApiHttp.prototype.addResponseTransformer = function (callback) {
-        if (this._state === 0) {
-          this._responseTransformers.push(callback);
-        } else {
+        if (this._state !== 0) {
           throw new ApiError('$execute has already been called! No modifications can be made to configuration of this request.');
         }
+
+        this._responseTransformers.push(callback);
 
         return this;
       };
