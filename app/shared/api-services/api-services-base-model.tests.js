@@ -4,16 +4,19 @@ describe('BaseModel', function () {
 
   var $httpBackend;
   var BaseModel;
+  var BaseModelCollection;
 
   beforeEach(function () {
     module('apiServices.config.interceptor', function ($httpProvider) {
       $httpProvider.interceptors.push('ApiConfigInterceptor');
     });
     module('apiServices.base.model');
+    module('apiServices.base.modelCollection');
 
-    inject(function (_$httpBackend_, _BaseModel_) {
+    inject(function (_$httpBackend_, _BaseModel_, _BaseModelCollection_) {
       $httpBackend = _$httpBackend_;
       BaseModel = _BaseModel_;
+      BaseModelCollection = _BaseModelCollection_;
     });
   });
 
@@ -51,7 +54,7 @@ describe('BaseModel', function () {
 
     it('should prevent multiple requests', function () {
       model.$get(1);
-      expect(model.$get).toThrow();
+      expect(function () { model.$get(1); }).toThrow();
     });
 
     it('should allow a new request to be forced, aborting pending request', function () {
@@ -60,7 +63,7 @@ describe('BaseModel', function () {
     });
 
     it('should fail if first input isn\'t a number', function () {
-      expect(model.$get).toThrow();
+      expect(function () { model.$get(); }).toThrow();
     });
   });
 
@@ -113,7 +116,7 @@ describe('BaseModel', function () {
       var model = new BaseModel('test-endpoint', {});
 
       model.$save();
-      expect(model.$save).toThrow();
+      expect(function () { model.$save() }).toThrow();
     });
 
     it('should allow a new request to be forced, aborting pending request', function () {
@@ -142,18 +145,25 @@ describe('BaseModel', function () {
 
       var model = new BaseModel('test-endpoint', {});
 
-      expect(model.$delete).toThrow();
+      expect(function () { model.$delete(); }).toThrow();
     });
 
     it('should mark state as deleted, prevent other function calls', function () {
+      var id = 1;
 
-      var model = new BaseModel('test-endpoint', {});
+      var model = new BaseModel('test-endpoint', {
+        id: id
+      });
 
       model.$delete();
 
-      expect(model.$get).toThrow();
-      expect(model.$save).toThrow();
-      expect(model.$delete).toThrow();
+      $httpBackend.expectDELETE('/test-endpoint/' + id).respond(200);
+      $httpBackend.flush();
+
+      expect(function () { model.$get(id); }).toThrow();
+      expect(function () { model.$save(); }).toThrow();
+      expect(function () { model.$delete(); }).toThrow();
+      expect(function () { model.toJSON(); }).toThrow();
     });
 
     it('should return a promise interface', function () {
@@ -169,17 +179,54 @@ describe('BaseModel', function () {
     });
 
     it('should prevent multiple requests', function () {
-      var model = new BaseModel('test-endpoint', {});
+      var model = new BaseModel('test-endpoint', {
+        id: 1
+      });
 
       model.$delete();
-      expect(model.$delete).toThrow();
+      expect(function () { model.$delete(); }).toThrow();
+    });
+
+    it('should fail if model has no id', function () {
+      var model = new BaseModel('test-endpoint');
+
+      expect(function () { model.$delete(); }).toThrow();
     });
 
     it('should allow a new request to be forced, aborting pending request', function () {
-      var model = new BaseModel('test-endpoint', {});
+      var model = new BaseModel('test-endpoint', {
+        id: 1
+      });
 
       model.$delete();
       expect(function () { model.$delete(true); }).not.toThrow();
+    });
+  });
+
+  describe('toJSON', function () {
+    it('should be implemented', function () {
+      var TestModel = function (data) {
+        BaseModel.call(this, 'test-endpoint', data);
+      };
+      TestModel.prototype = Object.create(BaseModel.prototype);
+      TestModel.prototype.constructor = TestModel;
+
+      var testCollection = new BaseModelCollection('test-endpoint', TestModel, [
+        new TestModel({id: 3})
+      ]);
+
+      var data = {
+        id: 1,
+        title: 'something',
+        things: testCollection
+      };
+
+      var model = new TestModel(data);
+
+      spyOn(testCollection, 'toJSON').andCallThrough();
+
+      expect(JSON.stringify(model)).toEqual(JSON.stringify(data));
+      expect(testCollection.toJSON).toHaveBeenCalled();
     });
   });
 });

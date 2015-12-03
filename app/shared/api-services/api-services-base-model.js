@@ -14,7 +14,8 @@ angular.module('apiServices.base.model', [
     function (ApiError, ApiHttp, ApiUtils, Utils) {
 
       var STATES = [
-        'ready',
+        'new',
+        'identified',
         'deleted'
       ];
 
@@ -28,9 +29,10 @@ angular.module('apiServices.base.model', [
       var BaseModel = function (endpoint, data) {
         this._currRequest = null;
         this._endpoint = endpoint;
-        this._state = 0;
 
-        this.data = data || {};
+        this.data = typeof(data) === 'object' ? data : {};
+
+        this._state = typeof(this.data.id) === 'number' ? 1 : 0;
 
         return this;
       };
@@ -66,8 +68,8 @@ angular.module('apiServices.base.model', [
        * @returns {BaseModel}
        */
       BaseModel.prototype.$get = function (id, force) {
-        if (this._state === 1) {
-          throw new ApiError('This model has already been deleted, cannot call its methods!');
+        if (this._state === 2) {
+          throw new ApiError('This model has been deleted, cannot call its methods!');
         }
 
         if (typeof(id) !== 'number') {
@@ -83,6 +85,7 @@ angular.module('apiServices.base.model', [
           .addResponseTransformer(function (data, headers, status) {
             if (status === 200) {
               _model.data = data;
+              _model._state === 1;
             }
           });
 
@@ -100,8 +103,8 @@ angular.module('apiServices.base.model', [
        * @returns {BaseModel}
        */
       BaseModel.prototype.$save = function (force) {
-        if (this._state === 1) {
-          throw new ApiError('This model has already been deleted, cannot call its methods!');
+        if (this._state === 2) {
+          throw new ApiError('This model has been deleted, cannot call its methods!');
         }
 
         var _model = this;
@@ -121,6 +124,7 @@ angular.module('apiServices.base.model', [
           .addResponseTransformer(function (data, headers, status) {
             if (status === 200) {
               _model.data.id = data.id;
+              _model._state === 1;
             }
           });
 
@@ -136,8 +140,10 @@ angular.module('apiServices.base.model', [
        * @returns {undefined}
        */
       BaseModel.prototype.$delete = function (force) {
-        if (this._state === 1) {
-          throw new ApiError('This model has already been deleted, cannot call its methods!');
+        if (this._state === 0) {
+          throw new ApiError('Cannot delete a model with no id!');
+        } else if (this._state === 2) {
+          throw new ApiError('This model has been deleted, cannot call its methods!');
         }
 
         var req = new ApiHttp({
@@ -145,7 +151,24 @@ angular.module('apiServices.base.model', [
           url: Utils.path.join(this._endpoint, this.data.id)
         });
 
-        return ApiUtils.executeRequest(this, req, force);
+        var _model = this;
+        return ApiUtils.executeRequest(this, req, force)
+          .then(function () {
+            _model._state = 2;
+          });
+      };
+
+      /**
+       * Provide correct JSON representation.
+       *
+       * @returns {string} stringified JSON representation of this model.
+       */
+      BaseModel.prototype.toJSON = function () {
+        if (this._state === 2) {
+          throw new ApiError('This model has already been deleted, cannot call its methods!');
+        }
+
+        return this.data;
       };
 
       return BaseModel;
