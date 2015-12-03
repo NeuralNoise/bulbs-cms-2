@@ -63,20 +63,6 @@ describe('BaseModelCollection', function () {
     it('should error if first argument is provided and is not an object', function () {
       expect(function () { collection.$query('abc') }).toThrow();
     });
-
-    it('should prevent multiple requests', function () {
-      var collection = new BaseModelCollection('test-endpoint', TestModel);
-
-      collection.$query();
-      expect(function () { collection.$query(); }).toThrow();
-    });
-
-    it('should allow a new request to be forced, aborting pending request', function () {
-      var collection = new BaseModelCollection('test-endpoint', TestModel);
-
-      collection.$query();
-      expect(function () { collection.$query({}, true); }).not.toThrow();
-    });
   });
 
   describe('toJSON', function () {

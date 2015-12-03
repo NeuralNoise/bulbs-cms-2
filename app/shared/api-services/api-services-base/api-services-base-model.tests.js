@@ -52,16 +52,6 @@ describe('BaseModel', function () {
       expect(typeof(req.finally)).toBe('function');
     });
 
-    it('should prevent multiple requests', function () {
-      model.$get(1);
-      expect(function () { model.$get(1); }).toThrow();
-    });
-
-    it('should allow a new request to be forced, aborting pending request', function () {
-      model.$get(1);
-      expect(function () { model.$get(1, true); }).not.toThrow();
-    });
-
     it('should fail if first input isn\'t a number', function () {
       expect(function () { model.$get(); }).toThrow();
     });
@@ -110,20 +100,6 @@ describe('BaseModel', function () {
       expect(typeof(req.then)).toBe('function');
       expect(typeof(req.catch)).toBe('function');
       expect(typeof(req.finally)).toBe('function');
-    });
-
-    it('should prevent multiple requests', function () {
-      var model = new BaseModel('test-endpoint', {});
-
-      model.$save();
-      expect(function () { model.$save() }).toThrow();
-    });
-
-    it('should allow a new request to be forced, aborting pending request', function () {
-      var model = new BaseModel('test-endpoint', {});
-
-      model.$save();
-      expect(function () { model.$save(true); }).not.toThrow();
     });
   });
 
@@ -182,24 +158,6 @@ describe('BaseModel', function () {
       var model = new BaseModel('test-endpoint');
 
       expect(function () { model.$delete(); }).toThrow();
-    });
-
-    it('should prevent multiple requests', function () {
-      var model = new BaseModel('test-endpoint', {
-        id: 1
-      });
-
-      model.$delete();
-      expect(function () { model.$delete(); }).toThrow();
-    });
-
-    it('should allow a new request to be forced, aborting pending request', function () {
-      var model = new BaseModel('test-endpoint', {
-        id: 1
-      });
-
-      model.$delete();
-      expect(function () { model.$delete(true); }).not.toThrow();
     });
   });
 
