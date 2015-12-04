@@ -6,6 +6,18 @@
 var config = require('../config');
 
 module.exports = {
+  // bootstrap with our custom overrides, mostly cause we don't want glyphicons
+  bootstrap_less_tmp_styles: {
+    expand: true,
+    flatten: true,
+    cwd: config.paths.app(),
+    dest: config.paths.tmp('bootstrap-less/'),
+    src: [
+      'styles/bootstrap/*.less',
+      '../bower_components/bootstrap/less/*.less',
+      '!../bower_components/bootstrap/less/bootstrap.less'
+    ]
+  },
   dist: {
     files: [{
       expand: true,
@@ -43,12 +55,6 @@ module.exports = {
     cwd: 'bower_components/jcrop/css',
     dest: config.paths.dist('styles/'),
     src: 'Jcrop.gif'
-  },
-  bootstrapFonts: {
-    expand: true,
-    cwd: 'bower_components/bootstrap/dist/fonts',
-    dest: config.paths.dist('fonts/'),
-    src: ['glyphicons-halflings-regular.*', 'glyphicons-halflings-regular.woff2']
   },
   font_awesome_fonts_tmp: {
     expand: true,
