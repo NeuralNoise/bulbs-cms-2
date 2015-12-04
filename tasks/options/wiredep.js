@@ -17,9 +17,9 @@ module.exports = {
           './dist/plugins/nested-dirty.js'
         ]
       },
+      // we don't want glyphicons from bootstrap, we manually compile the less
       bootstrap: {
         main: [
-          './dist/css/bootstrap.css',
           './dist/js/bootstrap.js'
         ]
       },

@@ -39,6 +39,10 @@ module.exports = function (grunt) {
       'copy:font_awesome_fonts_tmp',
       'copy:font_awesome_less_tmp_styles',
       'less:font_awesome_styles',
+      // bootstrap must go after font awesome since custom bootstrap styles rely
+      //  on font awesome variables
+      'copy:bootstrap_less_tmp_styles',
+      'less:bootstrap_styles',
       'autoprefixer',
       'injector:local_dependencies',
       'jshint:all',
@@ -72,6 +76,10 @@ module.exports = function (grunt) {
     'less:project_styles',
     'copy:font_awesome_less_tmp_styles',
     'less:font_awesome_styles',
+    // bootstrap must go after font awesome since custom bootstrap styles rely
+    //  on font awesome variables
+    'copy:bootstrap_less_tmp_styles',
+    'less:bootstrap_styles',
     'injector:local_dependencies',
     'useminPrepare',
     'concurrent:dist',
