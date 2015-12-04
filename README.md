@@ -3,8 +3,10 @@
 <!-- markdown-toc -->
 
 - [Development](#development)
-  * [Running locally](#running-locally)
-  * [Running tests](#running-tests)
+  * [Local](#local)
+    + [Running](#running)
+    + [Tests](#tests)
+    + [Test build](#test-build)
   * [Creating a new release](#creating-a-new-release)
   * [Fetching changes from bulbs-cms](#fetching-changes-from-bulbs-cms)
   * [Updating table of contents](#updating-table-of-contents)
@@ -13,17 +15,25 @@
 
 ## Development
 
-### Running locally
+### Local
+
+#### Running
 To run this project locally, based on mocked out data:
 ```bash
 $ npm install && bower install
 $ npm run example
 ```
 
-### Running tests
+#### Tests
 To run tests:
 ```bash
 $ npm test
+```
+
+#### Test build
+To check that your changes build cleanly before you do a release:
+```bash
+$ npm run build
 ```
 
 ### Creating a new release
