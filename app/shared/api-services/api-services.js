@@ -30,6 +30,8 @@ angular.module('apiServices', [
       });
       RestangularProvider.setRequestSuffix('/');
 
+// TODO : remove apiconfig interceptor once restmod and restangular are gone,
+//  will simplify design
       // set interceptors
       $httpProvider.interceptors.push('ApiConfigInterceptor');
       $httpProvider.interceptors.push('BugReportInterceptor');
