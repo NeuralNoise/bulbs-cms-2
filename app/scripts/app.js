@@ -73,10 +73,12 @@ angular.module('bulbsCmsApp', [
   .config([
     '$provide', '$httpProvider', '$locationProvider', '$routeProvider', '$sceProvider',
       'TokenAuthConfigProvider', 'TokenAuthServiceProvider', 'CmsConfigProvider',
-      'COMPONENTS_URL', 'PARTIALS_URL', 'FirebaseConfigProvider',
+      'COMPONENTS_URL', 'PARTIALS_URL', 'FirebaseConfigProvider', 'PNotify',
     function ($provide, $httpProvider, $locationProvider, $routeProvider, $sceProvider,
         TokenAuthConfigProvider, TokenAuthServiceProvider, CmsConfigProvider,
-        COMPONENTS_URL, PARTIALS_URL, FirebaseConfigProvider) {
+        COMPONENTS_URL, PARTIALS_URL, FirebaseConfigProvider, PNotify) {
+
+			PNotify.prototype.options.styling = 'fontawesome';
 
       // FirebaseConfigProvider
       //   .setDbUrl('')

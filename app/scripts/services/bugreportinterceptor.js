@@ -28,9 +28,6 @@ angular.module('bulbsCmsApp').factory('BugReportInterceptor', function ($q, $win
             },
             buttons: {
               sticker: false,
-              classes: {
-                closer: 'fa fa-close'
-              }
             },
             icon: 'fa fa-bug pnotify-error-icon',
             addclass: 'stack-bottomright',

@@ -153,10 +153,7 @@ angular.module('content.edit.controller', [
                       },
                       buttons: {
                         closer_hover: false,
-                        sticker: false
-                        classes: {
-                          closer: 'fa fa-close'
-                        }
+                        sticker: false,
                       }
                     });
                   }
