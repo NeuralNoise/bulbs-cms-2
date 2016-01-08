@@ -27,7 +27,10 @@ angular.module('bulbsCmsApp').factory('BugReportInterceptor', function ($q, $win
               }, {addClass: 'hidden'}] // removing the "Cancel" button
             },
             buttons: {
-              sticker: false
+              sticker: false,
+              classes: {
+                closer: 'fa fa-close'
+              }
             },
             icon: 'fa fa-bug pnotify-error-icon',
             addclass: 'stack-bottomright',
