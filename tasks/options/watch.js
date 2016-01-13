@@ -28,6 +28,10 @@ module.exports = {
       'less:project_styles',
       'copy:font_awesome_less_tmp_styles',
       'less:font_awesome_styles',
+      // bootstrap must go after font awesome since custom bootstrap styles rely
+      //  on font awesome variables
+      'copy:bootstrap_less_tmp_styles',
+      'less:bootstrap_styles',
       'newer:karma:ci',
       'newer:jshint:all',
       'injector:local_dependencies',

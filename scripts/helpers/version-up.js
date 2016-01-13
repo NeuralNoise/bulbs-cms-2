@@ -20,8 +20,11 @@ Versioner.getVersion(jsonFile, function (version, json) {
   var newVersionSplit = [version.major, version.minor, version.patch];
   if (versionType === 'major') {
     newVersionSplit[0]++;
+    newVersionSplit[1] = 0;
+    newVersionSplit[2] = 0;
   } else if (versionType === 'minor') {
     newVersionSplit[1]++;
+    newVersionSplit[2] = 0;
   } else if (versionType === 'patch') {
     newVersionSplit[2]++;
   } else {

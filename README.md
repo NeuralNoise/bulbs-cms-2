@@ -3,7 +3,10 @@
 <!-- markdown-toc -->
 
 - [Development](#development)
-  * [Running locally](#running-locally)
+  * [Local](#local)
+    + [Running](#running)
+    + [Tests](#tests)
+    + [Test build](#test-build)
   * [Creating a new release](#creating-a-new-release)
   * [Fetching changes from bulbs-cms](#fetching-changes-from-bulbs-cms)
   * [Updating table of contents](#updating-table-of-contents)
@@ -12,11 +15,25 @@
 
 ## Development
 
-### Running locally
+### Local
+
+#### Running
 To run this project locally, based on mocked out data:
 ```bash
 $ npm install && bower install
 $ npm run example
+```
+
+#### Tests
+To run tests:
+```bash
+$ npm test
+```
+
+#### Test build
+To check that your changes build cleanly before you do a release:
+```bash
+$ npm run build
 ```
 
 ### Creating a new release
@@ -30,7 +47,7 @@ where ```versioning-type``` is one of ```major```, ```minor```, or ```patch```.
 See [semver](http://semver.org/) for an explanation of what each of these types
 of versionings mean.
 
-Which will build, version up, push your changes to ```bulbs-cms-2-release```, then
+This will build, version up, push your changes to ```bulbs-cms-2-release```, then
 create a new release tag in that repo.
 
 ### Fetching changes from bulbs-cms
@@ -51,11 +68,11 @@ origin	git@github.com:theonion/bulbs-cms-2.git (fetch)
 origin	git@github.com:theonion/bulbs-cms-2.git (push)
 ```
 
-Now, to merge in changes from ```old-bulbs-cms/relocated-cms``` into a new branch:
+Now, to merge in changes from ```old-bulbs-cms/master``` into a new branch:
 ```bash
 $ git checkout -b <YOUR_BRANCH_NAME>
 $ git fetch old-bulbs-cms
-$ git merge old-bulbs-cms/relocated-cms
+$ git merge old-bulbs-cms/master
 ```
 
 Resolve any differences, then commit without a message (just use the default message provided):

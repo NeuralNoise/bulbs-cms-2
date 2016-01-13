@@ -30,14 +30,14 @@
     "moment": "~2.6.0",
     "moment-timezone": "~0.2.4",
     "ng-clip": "~0.2.6",
-    "onion-editor": "https://github.com/theonion/editor.git#~0.2.43",
+    "onion-editor": "https://github.com/theonion/editor.git#~0.2.44",
     "pnotify": "~2.0.0",
     "raven-js": "1.1.11",
     "restangular": "~1.4.0",
-    "restmod-style-drf-paged": "~0.0.4",
+    "restmod-style-drf-paged": "~0.1.0",
     "token-auth-frontend": "https://github.com/theonion/token-auth-frontend.git#0.0.41",
     "urlify": "theonion/urlify",
-    "videohub-client-js": "theonion/videohub-client-js#~0.1.9",
+    "videohub-client-js": "theonion/videohub-client-js#~0.2.0",
     "zeroclipboard": "~2.1.6"
   },
   "devDependencies": {

@@ -13,8 +13,20 @@ module.exports = {
        cwd: config.paths.app(),
        src: [
          'styles/**/*.less',
-         '!**/_*.less'
+         '!**/_*.less',
+         '!styles/bootstrap/*',
+         '!styles/font-awesome/*'
        ],
+       dest: config.paths.tmp('styles'),
+       ext: '.css'
+     }]
+   },
+   bootstrap_styles: {
+     files: [{
+       expand: true,
+       flatten: true,
+       cwd: config.paths.tmp(),
+       src: 'bootstrap-less/bootstrap.less',
        dest: config.paths.tmp('styles'),
        ext: '.css'
      }]
