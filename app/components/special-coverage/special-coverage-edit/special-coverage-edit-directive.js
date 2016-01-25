@@ -15,7 +15,7 @@ angular.module('specialCoverage.edit.directive', [
 ])
   .directive('specialCoverageEdit', function (COMPONENTS_URL) {
     return {
-      controller: function (_, $location, $q, $scope, $window, moment, Campaign, EXTERNAL_URL,
+      controller: function (_, $location, $q, $scope, $modal, $window, moment, Campaign, EXTERNAL_URL, PARTIALS_URL,
           SPECIAL_COVERAGE_LIST_REL_PATH, SpecialCoverage) {
 
         $scope.ACTIVE_STATES = SpecialCoverage.ACTIVE_STATES;
@@ -79,6 +79,14 @@ angular.module('specialCoverage.edit.directive', [
 
         $scope.searchCampaigns = function (searchTerm) {
           return Campaign.simpleSearch(searchTerm);
+        };
+
+        $scope.previewLinkModal = function () {
+          return $modal.open({
+            templateUrl: PARTIALS_URL + 'modals/preview-link-modal.html',
+            scope: $scope,
+            resolve: {}
+          });
         };
       },
       restrict: 'E',
