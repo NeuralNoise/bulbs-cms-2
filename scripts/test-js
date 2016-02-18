@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
 # Run js tests.
 
-./node_modules/.bin/grunt test
+
+if [ "$1" == "--single-run" ] || [ "$1" == '-s' ]; then
+  ./node_modules/.bin/grunt test
+else
+  ./node_modules/.bin/grunt karma
+fi

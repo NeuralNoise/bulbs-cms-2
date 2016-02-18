@@ -61,12 +61,5 @@
   },
   "engines": {
     "node": ">=0.8.0"
-  },
-  "scripts": {
-    "build": "grunt build",
-    "test": "grunt travis",
-    "release": "./scripts/release",
-    "example": "./node_modules/.bin/grunt serve",
-    "update-readme-toc": "node ./scripts/helpers/table-of-contents-update.js"
   }
 }

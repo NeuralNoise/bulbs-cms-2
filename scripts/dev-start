@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Enable a continuous development environment. Will watch files for changes
+#   and rebuild.
+
+./node_modules/.bin/grunt serve
