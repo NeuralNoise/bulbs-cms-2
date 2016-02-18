@@ -6,7 +6,7 @@
 angular.module('cms.firebase.api', [
   'cms.firebase.config',
   'cms.firebase.refFactory',
-  'currentUser'
+  'cmsComponents.auth.user'
 ])
   .service('FirebaseApi', [
     '$q', '$rootScope', 'CurrentUser', 'FirebaseConfig', 'FirebaseRefFactory',
@@ -37,7 +37,7 @@ angular.module('cms.firebase.api', [
 
       // log current session in when their current user data is available
       if (rootRef) {
-        CurrentUser.$retrieveData().then(function (user) {
+        CurrentUser.$get().then(function (user) {
           // attempt to login if user has firebase token, if they don't auth
           //  promise will reject with no error message which is okay if we're
           //  in an environment where firebase isn't set up yet

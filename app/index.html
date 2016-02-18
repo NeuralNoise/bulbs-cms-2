@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="/pnotify/pnotify.core.css" />
     <link rel="stylesheet" href="/pnotify/pnotify.buttons.css" />
     <link rel="stylesheet" href="/pnotify/pnotify.history.css" />
-    <link rel="stylesheet" href="/token-auth-frontend/dist/token-auth-login-form.css" />
+    <link rel="stylesheet" href="/cms-components/dist/cms-components.css" />
     <!-- endbower -->
     <link rel="stylesheet" href="/jcrop/css/jquery.Jcrop.min.css" />
     <!-- endbuild -->
@@ -67,13 +67,13 @@
     <script src="/jquery/dist/jquery.js"></script>
     <script src="/Keypress/keypress.js"></script>
     <script src="/angular/angular.js"></script>
+    <script src="/angular-cookies/angular-cookies.js"></script>
+    <script src="/angular-resource/angular-resource.js"></script>
     <script src="/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <script src="/bootstrap/dist/js/bootstrap.js"></script>
     <script src="/moment/moment.js"></script>
     <script src="/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
     <script src="/angular-cookie/angular-cookie.js"></script>
-    <script src="/angular-cookies/angular-cookies.js"></script>
-    <script src="/angular-resource/angular-resource.js"></script>
     <script src="/angular-inflector/dist/angular-inflector.min.js"></script>
     <script src="/angular-restmod/dist/angular-restmod-bundle.js"></script>
     <script src="/angular-restmod/dist/plugins/nested-dirty.js"></script>
@@ -104,10 +104,10 @@
     <script src="/raven-js/dist/raven.js"></script>
     <script src="/restangular/dist/restangular.js"></script>
     <script src="/restmod-style-drf-paged/restmod-style-drf-paged.js"></script>
-    <script src="/angular-local-storage/dist/angular-local-storage.js"></script>
-    <script src="/token-auth-frontend/dist/token-auth.js"></script>
     <script src="/urlify/urlify.js"></script>
     <script src="/videohub-client-js/dist/videohub-client.js"></script>
+    <script src="/angular-local-storage/dist/angular-local-storage.js"></script>
+    <script src="/cms-components/dist/cms-components.js"></script>
     <script src="/firebase-token-generator/build/firebase-token-generator.js"></script>
     <!-- endbower -->
     <script src="/jcrop/js/jquery.Jcrop.min.js"></script>
@@ -177,6 +177,7 @@
     <script src="components/generic-ajax-button/generic-ajax-button-directive.js"></script>
     <script src="components/generic-ajax-button/generic-ajax-button.js"></script>
     <script src="components/generic-ajax-button/save-button/save-button-directive.js"></script>
+    <script src="components/logged-in-user/logged-in-user.js"></script>
     <script src="components/promoted-content/promoted-content-article/promoted-content-article-directive.js"></script>
     <script src="components/promoted-content/promoted-content-article/promoted-content-article.js"></script>
     <script src="components/promoted-content/promoted-content-list/promoted-content-list-directive.js"></script>
@@ -249,7 +250,6 @@
     <script src="shared/content-services/content-list-service.js"></script>
     <script src="shared/content-services/content-services.js"></script>
     <script src="shared/copy-button/copy-button.js"></script>
-    <script src="shared/current-user/current-user.js"></script>
     <script src="shared/external-asset-loader/external-asset-loader.js"></script>
     <script src="shared/filters-moment/filters-moment.js"></script>
     <script src="shared/filters-user-display/filters-user-display.js"></script>
@@ -281,7 +281,6 @@
     <script src="scripts/directives/featuretypefield.js"></script>
     <script src="scripts/directives/hide-if-forbidden.js"></script>
     <script src="scripts/directives/lazyinclude.js"></script>
-    <script src="scripts/directives/logged-in-user.js"></script>
     <script src="scripts/directives/nav-bar.js"></script>
     <script src="scripts/directives/responsive-image.js"></script>
     <script src="scripts/directives/rolefield.js"></script>
@@ -339,11 +338,6 @@
     <script type="text/javascript">
         window.loggedInUser = null;
 
-        //these probably don't need to be constants
-        //but there probably isn't any reason for them to not be
-        //so...
-        // ¯\_(ツ)_/¯
-
         angular.module('apiServices.settings', []).constant('API_URL_ROOT', '/cms/api/v1/');
 
         angular.module('bulbsCmsApp')
@@ -368,8 +362,13 @@
 
             TokenAuthConfigProvider.setLogoUrl('/images/onion-logo.png');
             TokenAuthConfigProvider.setApiHost('');
-
-            $httpProvider.interceptors.push('TokenAuthInterceptor');
+            TokenAuthConfigProvider.setApiEndpointAuth('/token/auth');
+            TokenAuthConfigProvider.setApiEndpointRefresh('/token/refresh');
+            TokenAuthConfigProvider.setApiEndpointVerify('/token/verify');
+            TokenAuthConfigProvider.setApiEndpointCurrentUser('/cms/api/v1/me');
+            TokenAuthConfigProvider.setMatchers([
+              /^\/cms\/api\/v1\/.*/
+            ]);
           });
 
         angular.module('bulbsCmsApp.settings')

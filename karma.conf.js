@@ -63,8 +63,8 @@ module.exports = function(config) {
       'bower_components/angular-restmod/dist/plugins/nested-dirty.js',
       'bower_components/videohub-client-js/dist/videohub-client.js',
       'bower_components/restmod-style-drf-paged/restmod-style-drf-paged.js',
-      'bower_components/token-auth-frontend/dist/token-auth.js',
       'bower_components/videohub-client-js/src/videohub-client/videohub-api-mocks.js',
+      'bower_components/cms-components/dist/cms-components.js',
 
       'app/mocks/api.js',
       'app/mocks/api-mock-data.js',

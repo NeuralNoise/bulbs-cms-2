@@ -32,7 +32,6 @@ module.exports = {
       //  on font awesome variables
       'copy:bootstrap_less_tmp_styles',
       'less:bootstrap_styles',
-      'newer:karma:ci',
       'newer:jshint:all',
       'injector:local_dependencies',
       'ngtemplates:tmp'
