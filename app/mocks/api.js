@@ -476,11 +476,8 @@ angular.module('bulbsCmsApp.mockApi', [
     $httpBackend.whenGET('/cms/api/v1/me').respond(function () {
       window.loggedInUser = localStorageService.get(lsUserKey);
 
-// HACK : this doesn't represent the way the server actually returns user data
       if (window.loggedInUser) {
-        return [200, {
-          results: [window.loggedInUser]
-        }];
+        return [200, window.loggedInUser];
       }
       return [401];
     });

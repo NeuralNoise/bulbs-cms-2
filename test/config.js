@@ -3,7 +3,9 @@
 angular.module('apiServices.settings', []).constant('API_URL_ROOT', '/cms/api/v1/');
 
 angular.module('bulbsCmsApp')
-  .config(function (CmsConfigProvider, CONTENT_PARTIALS_URL, DIRECTIVE_PARTIALS_URL, PARTIALS_URL) {
+  .config(function ($httpProvider, CmsConfigProvider, CONTENT_PARTIALS_URL,
+      DIRECTIVE_PARTIALS_URL, PARTIALS_URL) {
+
     CmsConfigProvider.setApiPath('/cms/api/v1/');
     CmsConfigProvider.setLogoUrl('/images/onion-logo.png');
     CmsConfigProvider.setToolbarMappings({
@@ -14,6 +16,14 @@ angular.module('bulbsCmsApp')
       'content_content'
     );
     CmsConfigProvider.setCreateContentTemplateUrl(DIRECTIVE_PARTIALS_URL + 'create-content.html');
+
+    // HACK : splice out TokenAuthInterceptor so test requests can go through,
+    //  the correct way to do this would to be testing each module in isolation
+    //  so that app-level configs don't interfere with the testing of a single
+    //  module
+    var interceptors = $httpProvider.interceptors;
+    var index = $httpProvider.interceptors.indexOf('TokenAuthInterceptor');
+    interceptors.splice(index, 1);
   });
 
 angular.module('bulbsCmsApp.settings')

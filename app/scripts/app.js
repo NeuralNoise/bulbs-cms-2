@@ -163,7 +163,6 @@ angular.module('bulbsCmsApp', [
         'core_video');
 
       TokenAuthConfigProvider.setLoginPagePath('/cms/login');
-      $httpProvider.interceptors.push('TokenAuthInterceptor');
 
       //TODO: whitelist staticonion.
       $sceProvider.enabled(false);
@@ -180,6 +179,7 @@ angular.module('bulbsCmsApp', [
 
       $httpProvider.interceptors.push('BugReportInterceptor');
       $httpProvider.interceptors.push('BadRequestInterceptor');
+      $httpProvider.interceptors.push('TokenAuthInterceptor');
     }
   ])
   .run([

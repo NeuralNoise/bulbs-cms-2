@@ -22,7 +22,7 @@ describe('Controller: CmsNotificationsCtrl', function () {
 
     beforeEach(inject(function () {
 
-      $httpBackend.expectGET('/cms/api/v1/me/').respond({
+      $httpBackend.expectGET('/api/me').respond({
         id: 0,
         username: 'admin',
         email: 'webtech@theonion.com',
@@ -30,7 +30,7 @@ describe('Controller: CmsNotificationsCtrl', function () {
         last_name: 'Zweibel',
         is_superuser: true
       });
-      CurrentUser.getItems();
+      CurrentUser.$get();
 
     }));
 
@@ -144,14 +144,14 @@ describe('Controller: CmsNotificationsCtrl', function () {
 
     beforeEach(inject(function () {
 
-      $httpBackend.expectGET('/cms/api/v1/me/').respond({
+      $httpBackend.expectGET('/api/me').respond({
         id: 0,
         username: 'regularguy',
         email: 'regularguy@aol.com',
         first_name: 'John',
         last_name: 'Smath'
       });
-      CurrentUser.getItems();
+      CurrentUser.$get();
 
     }));
 
