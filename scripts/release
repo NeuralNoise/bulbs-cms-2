@@ -82,7 +82,7 @@ node $HELPERS_DIR/version-up.js $RELEASE_DIR/bower.json $RELEASE_TYPE
 secho "Committing release"
 NEW_VERSION="$(node $HELPERS_DIR/version-read.js $RELEASE_DIR/package.json)"
 (
-  cd dist
+  cd $RELEASE_DIR
   git add --all && git commit -m "Version up to $NEW_VERSION"
   git tag -a $NEW_VERSION -m "Version up to $NEW_VERSION"
   git push origin && git push origin --tags
