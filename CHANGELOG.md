@@ -2,6 +2,7 @@
 
 <!-- markdown-toc -->
 
+- [0.6.0](#060)
 - [0.5.1](#051)
 - [0.5.0](#050)
   * [Updated](#updated)
@@ -12,6 +13,10 @@
 <!-- markdown-toc-stop -->
 
 <sub>**Note**: update table of contents with `./scripts/update-changelog-toc`.</sub>
+
+## 0.6.0
+
+Version [`cms-components`](https://github.com/theonion/cms-components) to `0.5.0`.
 
 ## 0.5.1
 
