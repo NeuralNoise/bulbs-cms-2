@@ -45,12 +45,12 @@
       <div
           class="form-group"
           hide-if-forbidden
-          options-url="{{'content/' + article.id + '/publish/'}}">
+          options-url="{{'content/' + article.id + '/publish/'}}"
+          ng-controller="UnpublishCtrl">
         <save-button-old
             class="form-control"
             color-styling="btn-warning"
             ng-show="article.published"
-            ng-controller="UnpublishCtrl"
             get-promise="unpublish()"
             on-save="unpublishCbk(promise)"
             confirm-click-with="Are you sure you want to unpublish this article?"
