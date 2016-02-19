@@ -2,7 +2,7 @@
 
 <!-- markdown-toc -->
 
-- [0.4.2](#042)
+- [0.5.0](#050)
   * [Updated](#updated)
     + [`CurrentUser` Changes](#-currentuser--changes)
     + [Token Auth](#token-auth)
@@ -12,7 +12,7 @@
 
 <sub>**Note**: update table of contents with `./scripts/update-changelog-toc`.</sub>
 
-## 0.4.2
+## 0.5.0
 
 PR [#16](https://github.com/theonion/bulbs-cms-2/pull/16)
 
