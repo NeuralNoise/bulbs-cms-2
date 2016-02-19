@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Update table of contents for README.md
+
+node ./scripts/helpers/table-of-contents-update.js CHANGELOG.md

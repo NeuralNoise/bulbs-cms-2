@@ -69,8 +69,9 @@ secho "Running tests"
 secho "Building sources"
 ./scripts/build
 
-secho "Ensure README.md table of contents is updated"
+secho "Ensure README.md and CHANGELOG.md table of contents is updated"
 ./scripts/update-readme-toc
+./scripts/update-changelog-toc
 
 secho "Copy bower dependencies and resolutions from development to dist"
 node $HELPERS_DIR/copy-json-keys ./bower.json $RELEASE_DIR/bower.json dependencies,resolutions
@@ -78,6 +79,9 @@ node $HELPERS_DIR/copy-json-keys ./bower.json $RELEASE_DIR/bower.json dependenci
 secho "Increasing $RELEASE_TYPE version"
 node $HELPERS_DIR/version-up.js $RELEASE_DIR/package.json $RELEASE_TYPE
 node $HELPERS_DIR/version-up.js $RELEASE_DIR/bower.json $RELEASE_TYPE
+
+secho "Copy misc files into dist"
+cp CHANGELOG.md $RELEASE_DIR/
 
 secho "Committing release"
 NEW_VERSION="$(node $HELPERS_DIR/version-read.js $RELEASE_DIR/package.json)"

@@ -9,10 +9,9 @@ var toc = require('markdown-toc');
 
 var ConsoleHelper = require('./console-helper');
 
+var MD_PATH = process.argv[2] || 'README.md';
 
-var README_PATH = 'README.md';
-
-fs.readFile(README_PATH, 'utf-8', function (error, data) {
+fs.readFile(MD_PATH, 'utf-8', function (error, data) {
   if (error) {
     ConsoleHelper.exitWithError(error);
   }
@@ -23,7 +22,7 @@ fs.readFile(README_PATH, 'utf-8', function (error, data) {
     close: '<!-- markdown-toc-stop -->'
   });
 
-  fs.writeFile(README_PATH, withToc, function () {
-    console.log('Table of contents updated in ' + README_PATH);
+  fs.writeFile(MD_PATH, withToc, function () {
+    console.log('Table of contents updated in ' + MD_PATH);
   });
 });
