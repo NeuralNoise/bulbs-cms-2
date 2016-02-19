@@ -12,6 +12,10 @@
 
 <sub>**Note**: update table of contents with `./scripts/update-changelog-toc`.</sub>
 
+## 0.4.3
+
+Version [`cms-components`](https://github.com/theonion/cms-components) to `0.4.2`.
+
 ## 0.4.2
 
 PR [#16](https://github.com/theonion/bulbs-cms-2/pull/16)
