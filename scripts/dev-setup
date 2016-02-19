@@ -2,5 +2,5 @@
 # Prepare your environment for development by installing dependencies and running
 #   an initial build.
 
-npm install && bower install
+npm install && ./node_modules/.bin/bower install
 ./scripts/build
