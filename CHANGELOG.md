@@ -2,6 +2,7 @@
 
 <!-- markdown-toc -->
 
+- [0.5.1](#051)
 - [0.5.0](#050)
   * [Updated](#updated)
     + [`CurrentUser` Changes](#-currentuser--changes)

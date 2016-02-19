@@ -162,8 +162,6 @@ angular.module('bulbsCmsApp', [
         '/components/edit-pages/video/video-container.html',
         'core_video');
 
-      TokenAuthConfigProvider.setLoginPagePath('/cms/login');
-
       //TODO: whitelist staticonion.
       $sceProvider.enabled(false);
       /*.resourceUrlWhitelist([
