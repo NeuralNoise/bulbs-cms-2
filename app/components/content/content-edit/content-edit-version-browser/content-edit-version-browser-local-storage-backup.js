@@ -6,13 +6,14 @@
  *  yesterday.
  */
 angular.module('content.edit.versionBrowser.api.backup', [
-  'currentUser',
+  'cmsComponents.auth.user',
+  'cmsComponents.filters.userDisplay',
   'lodash',
   'moment'
 ])
   .factory('LocalStorageBackup', [
-    '_', '$q', '$routeParams', '$window', 'CurrentUser', 'moment',
-    function ($q, $routeParams, $window, moment, _, CurrentUser) {
+    '_', '$filter', '$q', '$routeParams', '$window', 'CurrentUser', 'moment',
+    function (_, $filter, $q, $routeParams, $window, CurrentUser, moment) {
 
       var keyPrefixArticle = 'article';
       var keyPrefix = keyPrefixArticle + '.' + $routeParams.id + '.';
@@ -32,12 +33,15 @@ angular.module('content.edit.versionBrowser.api.backup', [
 
           // check if we have local storage
           if ($window.localStorage) {
-            CurrentUser.$simplified().then(function (user) {
+            CurrentUser.$get().then(function (user) {
 
               // create new version object
               var version = {
                 timestamp: moment().valueOf(),
-                user: user,
+                user: {
+                  id: user.id,
+                  displayName: $filter('userDisplay')(user)
+                },
                 content: articleData
               };
 

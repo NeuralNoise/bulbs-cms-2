@@ -24,8 +24,11 @@ angular.module('bulbsCmsApp', [
   // unorganized
   'bulbsCmsApp.settings',
   'bulbs.api',
+
   // external
   'BettyCropper',
+  'cmsComponents.auth',
+  'cmsComponents.navUser',
   'ipCookie',
   'jquery',
   'keypress',
@@ -38,10 +41,10 @@ angular.module('bulbsCmsApp', [
   'PNotify',
   'Raven',
   'restangular',
-  'tokenAuth',
   'ui.bootstrap',
   'ui.bootstrap.datetimepicker',
   'URLify',
+
   // shared
   'backendApiHref',
   'contentServices',
@@ -49,11 +52,12 @@ angular.module('bulbsCmsApp', [
   'cms.firebase.config',
   'cms.image',
   'cms.templates',
-  'currentUser',
+
   // components
   'bettyEditable',
   'bugReporter',
   'campaigns',
+  'cms.loggedInUser',
   'content',
   'content.video',
   'filterWidget',
@@ -70,19 +74,55 @@ angular.module('bulbsCmsApp', [
   // TODO : remove these, here because they are used by unrefactored compontents
   'content.edit.versionBrowser.modal.opener'
 ])
+  .provider('AuthRouter', [
+    'TokenAuthConfigProvider',
+    function AuthRouter (TokenAuthConfigProvider) {
+      // this is an unfortunate construct of the $state service not being
+      //  accessible in any way at config time, or injected later at run time.
+      //  there's probably a better, unexplored way to do this.
+      return {
+        $get: [
+          '$location',
+          function ($location) {
+            var loginPath = '/cms/login/';
+
+            return {
+              init: function () {
+                TokenAuthConfigProvider.addAuthFailureHandler(function () {
+                  $location.path(loginPath);
+                });
+                TokenAuthConfigProvider.addAuthSuccessHandler(function () {
+                  // since this isn't truly single-page, route to root only if
+                  //  currently on the login page
+                  var currPath = $location.path();
+                  if (currPath === loginPath) {
+                    $location.path('/');
+                  }
+                });
+                TokenAuthConfigProvider.addUnauthHandler(function () {
+                  $location.path(loginPath);
+                });
+              }
+            };
+          }
+        ]
+      };
+    }
+  ])
   .config([
-    '$provide', '$httpProvider', '$locationProvider', '$routeProvider', '$sceProvider',
-      'TokenAuthConfigProvider', 'TokenAuthServiceProvider', 'CmsConfigProvider',
-      'COMPONENTS_URL', 'PARTIALS_URL', 'FirebaseConfigProvider', 'PNotify',
-    function ($provide, $httpProvider, $locationProvider, $routeProvider, $sceProvider,
-        TokenAuthConfigProvider, TokenAuthServiceProvider, CmsConfigProvider,
+    '$provide', '$httpProvider', '$locationProvider', '$routeProvider',
+      '$sceProvider', 'TokenAuthConfigProvider', 'TokenAuthServiceProvider',
+      'CmsConfigProvider', 'COMPONENTS_URL', 'PARTIALS_URL', 'FirebaseConfigProvider',
+      'PNotify',
+    function ($provide, $httpProvider, $locationProvider, $routeProvider,
+        $sceProvider, TokenAuthConfigProvider, TokenAuthServiceProvider, CmsConfigProvider,
         COMPONENTS_URL, PARTIALS_URL, FirebaseConfigProvider, PNotify) {
 
 			PNotify.prototype.options.styling = 'fontawesome';
 
       // FirebaseConfigProvider
       //   .setDbUrl('')
-      //   .setSiteRoot('sites/bulbs-cms-testing');
+      //   .setSiteRoot('');
 
       $locationProvider.html5Mode(true);
 
@@ -112,24 +152,17 @@ angular.module('bulbsCmsApp', [
           controller: 'PzoneCtrl'
         })
         .when('/cms/login/', {
-          templateUrl: COMPONENTS_URL + 'login/login.html'
+          template: '<cms-token-auth-login-form></cms-token-auth-login-form>'
         })
         .otherwise({
           templateUrl: '/404.html'
         });
 
-      CmsConfigProvider.setLogoutCallback(function () {
-        TokenAuthServiceProvider.$get().logout();
-      });
-
       CmsConfigProvider.addEditPageMapping(
         '/components/edit-pages/video/video-container.html',
         'core_video');
 
-      TokenAuthConfigProvider.setApiEndpointAuth('/token/auth');
-      TokenAuthConfigProvider.setApiEndpointRefresh('/token/refresh');
-      TokenAuthConfigProvider.setApiEndpointVerify('/token/verify');
-      TokenAuthConfigProvider.setLoginPagePath('/cms/login/');
+      TokenAuthConfigProvider.setLoginPagePath('/cms/login');
 
       //TODO: whitelist staticonion.
       $sceProvider.enabled(false);
@@ -146,15 +179,19 @@ angular.module('bulbsCmsApp', [
 
       $httpProvider.interceptors.push('BugReportInterceptor');
       $httpProvider.interceptors.push('BadRequestInterceptor');
+      $httpProvider.interceptors.push('TokenAuthInterceptor');
     }
   ])
   .run([
-    '$rootScope', '$http', '$cookies',
-    function ($rootScope, $http, $cookies) {
+    '$http', '$cookies', 'AuthRouter', 'TokenAuthService',
+    function ($http, $cookies, AuthRouter, TokenAuthService) {
       // set the CSRF token here
       $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
       var deleteHeaders = $http.defaults.headers.delete || {};
       deleteHeaders['X-CSRFToken'] = $cookies.csrftoken;
       $http.defaults.headers.delete = deleteHeaders;
+
+      AuthRouter.init();
+      TokenAuthService.tokenVerify();
     }
   ]);

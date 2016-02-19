@@ -23,7 +23,22 @@ angular.module('bulbsCmsApp')
         },
         link: function (scope) {
           scope.NAV_LOGO = CmsConfig.getLogoUrl();
-          scope.current_user = CurrentUser;
+
+          var onLogin = function (user) {
+            scope.showManagementLinks = user.is_manager;
+          };
+
+          var onLogout = function () {
+            scope.showManagementLinks = false;
+          };
+
+          CurrentUser.addLoginHandler(onLogin);
+          CurrentUser.addLogoutHandler(onLogout);
+
+          scope.$on('$destroy', function () {
+            CurrentUser.removeLoginHandler(onLogin);
+            CurrentUser.removeLogoutHandler(onLogout);
+          });
         }
       };
     }

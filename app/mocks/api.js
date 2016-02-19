@@ -399,12 +399,12 @@ angular.module('bulbsCmsApp.mockApi', [
         first_name: 'Herman',
         last_name: 'Zweibel',
         is_superuser: true,
-      //  firebase_token: tokenGenerator.createToken({
-      //    id: 0,
-      //    username: 'admin',
-      //    email: 'webtech@theonion.com',
-      //    is_staff: true
-      //  })
+        // firebase_token: tokenGenerator.createToken({
+        //   id: 0,
+        //   username: 'admin',
+        //   email: 'webtech@theonion.com',
+        //   is_staff: true
+        // })
       },
       {
         id: 1,
@@ -414,12 +414,12 @@ angular.module('bulbsCmsApp.mockApi', [
         first_name: 'John',
         last_name: 'Adams',
         is_manager: true
-//        firebase_token: tokenGenerator.createToken({
-//          id: 1,
-//          username: 'jadams',
-//          email: 'jadams@theonion.com',
-//          is_staff: true
-//        })
+        // firebase_token: tokenGenerator.createToken({
+        //   id: 1,
+        //   username: 'jadams',
+        //   email: 'jadams@theonion.com',
+        //   is_staff: true
+        // })
       },
       {
         id: 2,
@@ -429,12 +429,12 @@ angular.module('bulbsCmsApp.mockApi', [
         first_name: 'Bob',
         last_name: 'Dole Dole Dole Dole Dole Dole',
         is_manager: false
-//        firebase_token: tokenGenerator.createToken({
-//          id: 2,
-//          username: 'bdoledoledoledoledoledole',
-//          email: 'bdole@theonion.com',
-//          is_staff: true
-//        })
+        // firebase_token: tokenGenerator.createToken({
+        //   id: 2,
+        //   username: 'bdoledoledoledoledoledole',
+        //   email: 'bdole@theonion.com',
+        //   is_staff: true
+        // })
       }
     ];
 
@@ -451,7 +451,9 @@ angular.module('bulbsCmsApp.mockApi', [
         localStorageService.set(lsUserKey, window.loggedInUser);
         return [200, {token: 'abc123'}];
       }
-      return [400];
+      return [400, {
+        non_field_errors: ['Username/pass not valid.']
+      }];
     });
     $httpBackend.whenPOST('/token/refresh').respond(function (method, url, data) {
       var parsed = JSON.parse(data);
@@ -471,8 +473,9 @@ angular.module('bulbsCmsApp.mockApi', [
       }
       return [400];
     });
-    $httpBackend.whenGET('/cms/api/v1/me/').respond(function () {
+    $httpBackend.whenGET('/cms/api/v1/me').respond(function () {
       window.loggedInUser = localStorageService.get(lsUserKey);
+
       if (window.loggedInUser) {
         return [200, window.loggedInUser];
       }

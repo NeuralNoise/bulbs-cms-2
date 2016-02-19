@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Build the project.
+
+./node_modules/.bin/grunt build

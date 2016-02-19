@@ -9,9 +9,10 @@
     + [Test build](#test-build)
   * [Creating a new release](#creating-a-new-release)
   * [Fetching changes from bulbs-cms](#fetching-changes-from-bulbs-cms)
-  * [Updating table of contents](#updating-table-of-contents)
 
 <!-- markdown-toc-stop -->
+
+<sub>**Note**: update table of contents with `./scripts/update-readme-toc`</sub>
 
 ## Development
 
@@ -20,20 +21,20 @@
 #### Running
 To run this project locally, based on mocked out data:
 ```bash
-$ npm install && bower install
-$ npm run example
+$ ./scripts/dev-setup
+$ ./scripts/dev-start
 ```
 
 #### Tests
 To run tests:
 ```bash
-$ npm test
+$ ./scripts/test-js
 ```
 
 #### Test build
 To check that your changes build cleanly before you do a release:
 ```bash
-$ npm run build
+$ ./scripts/build
 ```
 
 ### Creating a new release
@@ -41,7 +42,7 @@ Releases are located in [bulbs-cms-2-release](https://github.com/theonion/bulbs-
 
 To create a new release there, first ensure you're on the ```master``` branch, then:
 ```bash
-$ npm run release <versioning-type>
+$ ./scripts/release <versioning-type>
 ```
 where ```versioning-type``` is one of ```major```, ```minor```, or ```patch```.
 See [semver](http://semver.org/) for an explanation of what each of these types
@@ -86,11 +87,3 @@ $ git push
 ```
 
 Now, create a PR and get verification to merge into master.
-
-### Updating table of contents
-To update the table of contents based on new content in this README.md:
-```bash
-$ npm run update-readme-toc
-```
-
-Then commit your changes.

@@ -23,8 +23,6 @@ angular.module('cms.config', [
     var editPageMappings = {};
     // url for logo to display in CMS
     var logoUrl = '';
-    // callback to fire when user is attempting to logout
-    var logoutCallback = function () {};
     // mappings where pairs are <name>: <template-url> for looking up toolbar templates
     var toolbarMappings = {};
 
@@ -196,15 +194,6 @@ angular.module('cms.config', [
       return this;
     };
 
-    this.setLogoutCallback = function (func) {
-      if (_.isFunction(func)) {
-        logoutCallback = func;
-      } else {
-        throw error('logoutCallback must be a function!');
-      }
-      return this;
-    };
-
     this.$get = function () {
       return {
         getCreateContentTemplateUrl: _.constant(createContentTemplateUrl),
@@ -212,7 +201,6 @@ angular.module('cms.config', [
         getImageServerApiKey: _.constant(imageServerApiKey),
         getInlineObjectsUrl: _.constant(inlineObjectsUrl),
         getLogoUrl: _.constant(logoUrl),
-        logoutCallback: logoutCallback,
         /**
          * Get the template url for given toolbar.
          *

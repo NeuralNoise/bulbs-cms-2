@@ -37,14 +37,15 @@ else
   exit 1
 fi
 
-if [ ! -d $RELEASE_DIR ]; then
-  secho "No release directory, creating it"
+if [ ! -d $RELEASE_DIR/.git ]; then
+  rm -r $RELEASE_DIR
+  secho "No release directory connected to release git repo, creating it"
   git clone $RELEASE_REPO $RELEASE_DIR
 fi
 
 secho "Pulling latest from release repo"
 (
-  cd dist
+  cd $RELEASE_DIR
   git pull
 )
 
@@ -62,11 +63,14 @@ else
   $NODE_BIN/bower update
 fi
 
+secho "Running tests"
+./scripts/test-js -s
+
 secho "Building sources"
-$NODE_BIN/grunt build
+./scripts/build
 
 secho "Ensure README.md table of contents is updated"
-node $HELPERS_DIR/table-of-contents-update.js
+./scripts/update-readme-toc
 
 secho "Copy bower dependencies and resolutions from development to dist"
 node $HELPERS_DIR/copy-json-keys ./bower.json $RELEASE_DIR/bower.json dependencies,resolutions
@@ -78,7 +82,7 @@ node $HELPERS_DIR/version-up.js $RELEASE_DIR/bower.json $RELEASE_TYPE
 secho "Committing release"
 NEW_VERSION="$(node $HELPERS_DIR/version-read.js $RELEASE_DIR/package.json)"
 (
-  cd dist
+  cd $RELEASE_DIR
   git add --all && git commit -m "Version up to $NEW_VERSION"
   git tag -a $NEW_VERSION -m "Version up to $NEW_VERSION"
   git push origin && git push origin --tags

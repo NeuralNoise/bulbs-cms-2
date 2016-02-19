@@ -6,13 +6,16 @@
 angular.module('cms.firebase.articleFactory', [
   'cms.firebase.api',
   'cms.firebase.config',
-  'currentUser',
+  'cmsComponents.auth.user',
+  'cmsComponents.filters.userDisplay',
   'firebase',
   'lodash'
 ])
   .factory('FirebaseArticleFactory', [
-    '_', '$firebase', '$q', '$routeParams', 'CurrentUser', 'FirebaseApi', 'FirebaseConfig', 'moment',
-    function (_, $firebase, $q, $routeParams, CurrentUser, FirebaseApi, FirebaseConfig, moment) {
+    '_', '$filter', '$firebase', '$q', '$routeParams', 'CurrentUser', 'FirebaseApi',
+      'FirebaseConfig', 'moment',
+    function (_, $filter, $firebase, $q, $routeParams, CurrentUser, FirebaseApi,
+      FirebaseConfig, moment) {
 
       /**
        * Create a new article.
@@ -32,18 +35,23 @@ angular.module('cms.firebase.articleFactory', [
           var registeredDeferred = $q.defer(),
               registeredPromise = registeredDeferred.promise;
 
-          CurrentUser.$simplified()
+          CurrentUser.$get()
             .then(function (user) {
 
+              var simplifiedUser = {
+                id: user.id,
+                displayName: $filter('userDisplay')(user)
+              };
+
               $activeUsers
-                .$add(user)
+                .$add(simplifiedUser)
                 .then(function (userRef) {
 
                   // ensure user is removed on disconnect
                   userRef.onDisconnect().remove();
 
                   // resolve registration
-                  registeredDeferred.resolve(user);
+                  registeredDeferred.resolve(simplifiedUser);
 
                 })
                 .catch(function (error) {
@@ -104,7 +112,12 @@ angular.module('cms.firebase.articleFactory', [
                 $createPromise = createDefer.promise;
 
             // get simplified version of user then use that when creating version
-            CurrentUser.$simplified().then(function (user) {
+            CurrentUser.$get().then(function (user) {
+
+              var simplifiedUser = {
+                id: user.id,
+                displayName: $filter('userDisplay')(user)
+              };
 
               // if we will have more than the max versions allowed, delete until we're one below the max
               var numVersions = $versions.length;
@@ -125,7 +138,7 @@ angular.module('cms.firebase.articleFactory', [
               // make version data
               var versionData = {
                 timestamp: moment().valueOf(),
-                user: user,
+                user: simplifiedUser,
                 content: articleData
               };
 
