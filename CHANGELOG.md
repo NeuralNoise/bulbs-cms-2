@@ -2,6 +2,12 @@
 
 <!-- markdown-toc -->
 
+- [0.4.2](#042)
+  * [Updated](#updated)
+    + [`CurrentUser` Changes](#-currentuser--changes)
+    + [Token Auth](#token-auth)
+  * [Breaking](#breaking)
+
 <!-- markdown-toc-stop -->
 
 <sub>**Note**: update table of contents with `./scripts/update-changelog-toc`.</sub>
