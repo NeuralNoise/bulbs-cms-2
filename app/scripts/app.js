@@ -62,6 +62,7 @@ angular.module('bulbsCmsApp', [
   'content.video',
   'filterWidget',
   'filterListWidget',
+  'polls',
   'promotedContent',
   'sections',
   'sendToEditor',
