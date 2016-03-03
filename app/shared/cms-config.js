@@ -1,9 +1,10 @@
 'use strict';
 
 angular.module('cms.config', [
+  'utils',
   'lodash'
 ])
-  .provider('CmsConfig', function CmsConfigProvider (_) {
+  .provider('CmsConfig', function CmsConfigProvider (_, UtilsProvider) {
     // relative api path, rel to backendRoot
     var apiPath = '';
     // root for all backend requests
@@ -232,7 +233,7 @@ angular.module('cms.config', [
          * @returns absolute api url.
          */
         buildBackendApiUrl: function (relUrl) {
-          return backendRoot + apiPath + (relUrl || '');
+          return UtilsProvider.path.join(backendRoot, apiPath , relUrl || '');
         },
         /**
          * Build a url relative to backend root.
@@ -241,7 +242,7 @@ angular.module('cms.config', [
          * @returns absolute url.
          */
         buildBackendUrl: function (relUrl) {
-          return backendRoot + (relUrl || '');
+          return UtilsProvider.path.join(backendRoot, relUrl || '');
         },
         /**
          * Build a url relative to image server root.
@@ -250,7 +251,7 @@ angular.module('cms.config', [
          * @returns absolute url on image server.
          */
         buildImageServerUrl: function (relUrl) {
-          return imageServerRoot + (relUrl || '');
+          return UtilsProvider.path.join(imageServerRoot, relUrl || '');
         }
      };
     };
