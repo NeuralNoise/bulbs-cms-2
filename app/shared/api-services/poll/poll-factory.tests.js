@@ -20,7 +20,7 @@ describe('Poll Factory', function () {
     moment = _moment_;
     Poll = _Poll_;
 
-    pollUrl = '/cms/api/v1/poll/';
+    pollUrl = '/poll/';
     mockPayload = {
       id: 231272,
       authors: [ ],
@@ -65,7 +65,7 @@ describe('Poll Factory', function () {
   describe('getPolls()', function () {
     it('makes a get request', function () {
       Poll.getPolls();
-      $httpBackend.expectGET('/cms/api/v1/poll/').respond(200, mockPayload);
+      $httpBackend.expectGET('/poll/').respond(200, mockPayload);
       $httpBackend.flush();
     });
   });

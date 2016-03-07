@@ -4,12 +4,13 @@ angular.module('apiServices.poll.factory', [
   'apiServices',
   'apiServices.mixins.fieldDisplay',
   'bulbsCmsApp.nonRestmodListPage',
+  'cms.config',
   'filters.moment',
   'lodash'
 ])
 .factory('Poll',
-  ['$filter', '$http', '$q', '_', 'moment', 'Utils',
-  function ($filter, $http, $q, _, moment, Utils) {
+  ['$filter', '$http', '$q', '_', 'CmsConfig', 'moment', 'Utils',
+  function ($filter, $http, $q, _, CmsConfig, moment, Utils) {
 
   var error = function(message) {
     return new Error('Poll Error: ' + message);
@@ -33,7 +34,7 @@ angular.module('apiServices.poll.factory', [
   }];
   var name = 'Poll';
   var namePlural = 'Polls';
-  var pollUrl = '/cms/api/v1/poll/';
+  var pollUrl = CmsConfig.buildBackendApiUrl('poll/');
 
   function parsePayload (payload) {
     var data = _.clone(payload);
@@ -81,8 +82,7 @@ angular.module('apiServices.poll.factory', [
   }
 
   function getPolls(params) {
-    var url = Utils.path.join(pollUrl);
-    return $http.get(url)
+    return $http.get(pollUrl)
       .then(function (response) {
         response.data.results = _.map(response.data.results, function (poll) {
           return parsePayload(poll);
