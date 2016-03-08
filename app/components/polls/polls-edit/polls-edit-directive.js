@@ -7,15 +7,6 @@ angular.module('polls.edit.directive', [
   'lodash',
   'saveButton.directive',
   'topBar'
-]).constant('RESPONSE_TYPES', [
-  {
-    name: 'Text Only',
-    value: 'Text'
-  },
-  {
-    name: 'Image + Text',
-    value: 'Image'
-  }
 ])
 .directive('pollsEdit', function (COMPONENTS_URL) {
   return {
@@ -25,11 +16,17 @@ angular.module('polls.edit.directive', [
       if ($routeParams.id === 'new') {
         $scope.model = {};
         $scope.isNew = true;
+        $scope.responseType = 'text';
       } else {
         Poll.getPoll($routeParams.id)
           .then(function successCallback(response) {
             $scope.model = response;
-            $scope.answers = response.answers;
+            $scope.answers = _.cloneDeep(response.answers);
+            if(_.isNull(response.answers[0].answer_image)) {
+              $scope.responseType = 'text';
+            } else {
+              $scope.responseType = 'imageText';
+            }
           });
       }
 

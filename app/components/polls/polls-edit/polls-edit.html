@@ -114,15 +114,46 @@
 
 <div class="row">
   <div class="col-md-4"></div>
-    <div class="col-md-4">
+    <div class="col-md-1">
       <h4 for="pollAnswers">Responses</h4>
     </div>
+    <select ng-model="responseType">
+      <option value='text'>Text Only</option>
+      <option value='imageText'>Image + Text</option>
+    </select>
   <div>
     <fieldset
+      ng-if="responseType === 'text'"
       class="row col-md-12 response-text-field"
       data-ng-repeat="answer in answers">
       <div class="col-md-4"></div>
       <div class="col-md-8">
+        <label for="answerText">Response Text</label>
+        <div class="answer-text form-inline">
+          <textarea
+            class="form-control"
+            ng-model="answer.answer_text">
+          </textarea>
+          <a
+            ng-click="removeAnswer(answer.id)">
+            <i class="fa fa-minus-circle"></i>
+          </a>
+        </div>
+      </fieldset>
+    <fieldset
+      ng-if="responseType === 'imageText'"
+      class="row col-md-12 response-text-field"
+      data-ng-repeat="answer in answers">
+      <div class="col-md-4"></div>
+      <div class="col-md-2">
+        <label for="answerImage">Response Photo</label>
+        <betty-editable
+            image="answer.answer_image"
+            ratio="16x9"
+            add-styles="fa fa-picture-o">
+        </betty-editable>
+      </div>
+      <div class="col-md-6">
         <label for="answerText">Response Text</label>
         <div class="answer-text form-inline">
           <textarea
