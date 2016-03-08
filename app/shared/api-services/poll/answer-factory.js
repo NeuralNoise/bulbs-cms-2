@@ -16,7 +16,7 @@ angular.module('apiServices.answer.factory', [
 
   function deleteAnswers(deletedAnswers) {
     var deletePromise = _.map(deletedAnswers, function(deletedAnswer) {
-      return $http.delete(answerUrl + deletedAnswer.id);
+      return $http.delete(answerUrl + deletedAnswer.id + '/');
     });
     $q.all(deletePromise).then(function(response) {
       return response;
@@ -25,9 +25,14 @@ angular.module('apiServices.answer.factory', [
 
   function putAnswer(oldAnswers, newAnswer) {
     var oldAnswer = _.filter(oldAnswers, {id: newAnswer.id})[0];
-    if(newAnswer.answer_text !== oldAnswer.answer_text) {
-      return $http.put(answerUrl + newAnswer.id, {
-        answer_text: newAnswer.answer_text
+    var oldImgId = oldAnswer.answer_image ? oldAnswer.answer_image.id : undefined;
+    var newImgId= newAnswer.answer_image ? newAnswer.answer_image.id : undefined;
+
+    if(newAnswer.answer_text !== oldAnswer.answer_text ||
+       _.isNumber(newImgId) && newImgId !== oldImgId) {
+      return $http.put(answerUrl + newAnswer.id + '/', {
+        answer_text: newAnswer.answer_text,
+        answer_image: newAnswer.answer_image
       }).then(function(response) {
         return response.data;
       });
@@ -40,7 +45,8 @@ angular.module('apiServices.answer.factory', [
     }
     return $http.post(answerUrl, {
       poll: pollId,
-      answer_text: answer.answer_text
+      answer_text: answer.answer_text,
+      answer_image: answer.answer_image
     }).then(function(response) {
       return response.data;
     });
@@ -48,11 +54,11 @@ angular.module('apiServices.answer.factory', [
 
   function updatePollAnswers(scope) {
     deleteAnswers(scope.deletedAnswers);
-    _.forEach(scope.model.answers, function(answer) {
+    _.forEach(scope.answers, function(answer) {
       if(answer.notOnSodahead) {
         postAnswer(answer, scope.model.id);
       } else {
-        putAnswer(scope.answers, answer);
+        putAnswer(scope.model.answers, answer);
       }
     });
   }
