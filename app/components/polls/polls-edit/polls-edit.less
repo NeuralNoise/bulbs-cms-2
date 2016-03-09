@@ -3,8 +3,18 @@ polls-edit {
     font-weight: initial;
   }
 
+  label .error-message {
+    background-color: lightgray;
+    color: white;
+    padding: 4px;
+  }
+
   input.form-control {
     border-radius: 0;
+  }
+
+  .ng-invalid {
+    box-shadow: #ff0000 0 0 3px inset;
   }
 
   .poll-question {
@@ -29,7 +39,7 @@ polls-edit {
     .form-inline,
     .form-control {
       height: 90px;
-      width:72%;
+      width: 80%;
     }
 
     .fa-minus-circle {
@@ -48,7 +58,50 @@ polls-edit {
   }
 
   select {
-    width: 10%;
-    margin: 13px 0 0 -50px;
+    margin: 13px 0 0 -35px;
+  }
+
+  .text-image-responses {
+    ng-form {
+      background: #e8e8e8;
+      display: flex;
+      flex-direction: row;
+    }
+
+    .response-photo {
+      display: flex;
+      flex-direction: column;
+      margin: 25px 0 0 15px;
+      width: 30%;
+
+      .fa {
+        color: gray;
+      }
+
+      betty-editable {
+        button {
+         width: 100%;
+        }
+
+        .betty-editable-add-image {
+          background: #d8d8d8;
+          height: 175px;
+        }
+      }
+    }
+
+    .response-text {
+      flex-grow: 1;
+      margin: 25px 0 0 15px;
+
+      textarea {
+        height: 175px;
+        width: 100%;
+      }
+
+      a {
+        padding-left: 22px;
+      }
+    }
   }
 }
