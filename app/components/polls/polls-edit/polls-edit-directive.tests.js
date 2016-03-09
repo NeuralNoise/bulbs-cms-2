@@ -44,8 +44,8 @@ describe('Directive: pollsEdit', function () {
     expect(element.html()).toContain('Responses');
   });
 
-  it('scope initializes with 3 empty answer objects', function () {
-    var response = [jasmine.any(Object), jasmine.any(Object), jasmine.any(Object)];
+  it('scope initializes with 2 empty answer objects', function () {
+    var response = [jasmine.any(Object), jasmine.any(Object)];
     expect(scope.answers).toEqual(response);
   });
 
@@ -53,11 +53,11 @@ describe('Directive: pollsEdit', function () {
     it('adds answer text fields', function () {
       // sanity check
       var answerTextAreaCount = element.find('.answer-text').length;
-      expect(answerTextAreaCount).toEqual(3);
+      expect(answerTextAreaCount).toEqual(2);
       scope.addAnswer();
       scope.$apply();
       answerTextAreaCount = element.find('.answer-text').length;
-      expect(answerTextAreaCount).toEqual(4);
+      expect(answerTextAreaCount).toEqual(3);
     });
 
     it('creates field notOnSodahead for answer', function () {
@@ -74,12 +74,12 @@ describe('Directive: pollsEdit', function () {
     it('removes answer text fields', function () {
       // sanity check
       var answerTextAreaCount = element.find('.answer-text').length;
-      expect(answerTextAreaCount).toEqual(3);
+      expect(answerTextAreaCount).toEqual(2);
 
       scope.removeAnswer(1);
       scope.$apply();
       answerTextAreaCount = element.find('.answer-text').length;
-      expect(answerTextAreaCount).toEqual(2);
+      expect(answerTextAreaCount).toEqual(1);
     });
 
     it('adds answers not on sodahead to scope.deletedAnswers', function () {

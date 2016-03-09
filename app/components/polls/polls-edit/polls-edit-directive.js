@@ -102,7 +102,7 @@ angular.module('polls.edit.directive', [
       // create 3 blank answer objects if this is a new poll
       if($scope.isNew) {
         $scope.answers = [];
-        _.times(3, $scope.addAnswer);
+        _.times(2, $scope.addAnswer);
       }
 
 
