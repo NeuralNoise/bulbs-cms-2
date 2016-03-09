@@ -29,7 +29,7 @@ angular.module('apiServices.answer.factory', [
     var newImgId= newAnswer.answer_image ? newAnswer.answer_image.id : undefined;
 
     if(newAnswer.answer_text !== oldAnswer.answer_text ||
-       _.isNumber(newImgId) && newImgId !== oldImgId) {
+      newImgId !== oldImgId) {
       return $http.put(answerUrl + newAnswer.id + '/', {
         answer_text: newAnswer.answer_text,
         answer_image: newAnswer.answer_image

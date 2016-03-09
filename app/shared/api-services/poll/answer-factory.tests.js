@@ -155,5 +155,29 @@ describe('Answer Factory', function () {
       $httpBackend.expectPUT('/poll-answer/5/').respond(201);
       $httpBackend.flush();
     });
+
+    it('deletes existing answer images', function () {
+      scope = {
+        deletedAnswers:  [],
+        model: {
+          id: 777,
+          answers: [{
+            id: 5,
+            notOnSodahead: false,
+            answer_text: 'nothing',
+            answer_image: { id: 12345 }
+          }]
+        },
+        answers: [{
+          id: 5,
+          notOnSodahead: false,
+          answer_text: 'nothing',
+          answer_image: undefined
+        }]
+      };
+      Answer.updatePollAnswers(scope);
+      $httpBackend.expectPUT('/poll-answer/5/').respond(201);
+      $httpBackend.flush();
+    });
   });
 });
