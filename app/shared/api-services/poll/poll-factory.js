@@ -70,7 +70,8 @@ angular.module('apiServices.poll.factory', [
       'title',
       'question_text',
       'published',
-      'end_date'
+      'end_date',
+      'answer_type'
     ]);
   }
 

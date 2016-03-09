@@ -153,7 +153,7 @@
       </div>
       <select
           class="col-lg-push-3 col-lg-1"
-          ng-model="responseType">
+          ng-model="model.answer_type">
           <option value='text'>Text Only</option>
           <option value='imageText'>Image + Text</option>
       </select>
@@ -164,7 +164,7 @@
         <fieldset
             class="response-text-field"
             data-ng-repeat="answer in answers"
-            ng-if="responseType === 'text'">
+            ng-if="model.answer_type === 'text'">
             <ng-form name="answerForm{{ $index }}">
               <div>
                 <label for="answerText">
@@ -194,7 +194,7 @@
           <fieldset
             class="response-text-field"
             data-ng-repeat="answer in answers"
-            ng-if="responseType === 'imageText'">
+            ng-if="model.answer_type === 'imageText'">
             <div class="text-image-responses">
             <ng-form name="answerForm{{ $index }}">
               <div class="response-photo">

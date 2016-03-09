@@ -10,4 +10,3 @@ before_script:
 script:
   - "./scripts/lint-js"
   - "./scripts/test-js --single-run"
-

@@ -16,17 +16,12 @@ angular.module('polls.edit.directive', [
       if ($routeParams.id === 'new') {
         $scope.model = {};
         $scope.isNew = true;
-        $scope.responseType = 'text';
+        $scope.model.answer_type = 'text';
       } else {
         Poll.getPoll($routeParams.id)
           .then(function successCallback(response) {
             $scope.model = response;
             $scope.answers = _.cloneDeep(response.answers);
-            if(_.isNull(response.answers[0].answer_image)) {
-              $scope.responseType = 'text';
-            } else {
-              $scope.responseType = 'imageText';
-            }
           });
       }
 
