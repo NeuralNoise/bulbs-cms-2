@@ -174,19 +174,19 @@
                       ng-show="answerForm{{ $index }}.answer_text.$error.required">
                     cannot be blank.
                   </span>
-                  </label>
-                  <div class="answer-text form-inline">
-                    <textarea
-                        class="form-control"
-                        name="answer_text"
-                        ng-model="answer.answer_text"
-                        required>
-                    </textarea>
-                    <a
-                      ng-click="removeAnswer(answer.id)">
-                      <i class="fa fa-minus-circle"></i>
-                    </a>
-                  </div>
+                </label>
+                <div class="answer-text form-inline">
+                  <textarea
+                      class="form-control"
+                      name="answer_text"
+                      ng-model="answer.answer_text"
+                      required>
+                  </textarea>
+                  <a
+                    ng-click="removeAnswer(answer.id)">
+                    <i class="fa fa-minus-circle"></i>
+                  </a>
+                </div>
               </div>
             </ng-form>
           </fieldset>
@@ -220,7 +220,8 @@
                   <textarea
                       class="form-control"
                       name="answer_text"
-                      ng-model="answer.answer_text">
+                      ng-model="answer.answer_text"
+                      required>
                   </textarea>
                 </div>
                 <a
