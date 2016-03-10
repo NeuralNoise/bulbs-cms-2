@@ -56,10 +56,11 @@ angular.module('polls.edit.directive', [
             !(endDate && !published)
           );
 
-          var comesAfterPublishedValid = true;
-          if (endDate && published) {
-            comesAfterPublishedValid = published.isBefore(endDate);
-          }
+         var comesAfterPublishedValid = true;
+           if (endDate && published) {
+             comesAfterPublishedValid = published.isBefore(endDate);
+           }
+
           endDateField.$setValidity(
             'comesAfterPublished',
             comesAfterPublishedValid
