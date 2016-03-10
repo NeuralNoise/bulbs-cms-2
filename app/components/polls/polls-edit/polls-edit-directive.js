@@ -26,7 +26,7 @@ angular.module('polls.edit.directive', [
       }
 
       window.onbeforeunload = function (e) {
-        if(!_.isEmpty($scope.model.$dirty()) || $scope.isNew || $scope.needsSave) {
+        if($scope.pollForm.$dirty || $scope.isNew || $scope.needsSave) {
           // show confirmation alert
           return 'You have unsaved changes.';
         }
