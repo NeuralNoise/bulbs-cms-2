@@ -27,10 +27,17 @@ describe('Directive: pollsEdit', function () {
 
     $routeParams.id = 'new';
 
+
     element = $compile(html)($rootScope);
     $rootScope.$digest();
     scope = element.isolateScope();
   }));
+
+  afterEach(function () {
+    scope.pollForm.$dirty = false;
+    scope.isNew = false;
+    scope.needsSave = false;
+  });
 
   it('creates a new poll object on the scope', function () {
     expect(scope.model).toEqual(jasmine.any(Object));
