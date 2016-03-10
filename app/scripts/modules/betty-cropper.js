@@ -132,7 +132,7 @@
       }
     }
 
-  function BettyImageFactory($interpolate, $http, CmsConfig, Selection, $) {
+  function BettyImageFactory($interpolate, $http, CmsConfig, Selection, Utils, $) {
     function BettyImage(data) {
       this.id = data.id;
       this.name = data.name;
@@ -190,9 +190,6 @@
     };
 
     BettyImage.prototype.url = function (ratio, width, format) {
-      var exp = $interpolate(
-        '{{ base_url }}/{{ id }}/{{ ratio }}/{{ width }}.{{ format }}'
-      );
       var idStr = this.id.toString();
       var segmentedId = '';
       for (var i = 0; i < idStr.length; i++) {
@@ -201,13 +198,7 @@
         }
         segmentedId += idStr.substr(i, 1);
       }
-      return exp({
-        base_url: CmsConfig.buildImageServerUrl(),
-        id: segmentedId,
-        ratio: ratio,
-        width: width,
-        format: format
-      });
+      return Utils.path.join(CmsConfig.buildImageServerUrl(), segmentedId, ratio, width) + '.' + format;
     };
 
     BettyImage.prototype.updateSelection = function (ratio, selection) {

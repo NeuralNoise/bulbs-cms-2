@@ -1,12 +1,18 @@
 language: node_js
 node_js:
-  - "5"
+- '5'
 cache:
   directories:
   - node_modules
   - bower_components
 before_script:
-  - "./scripts/dev-setup"
+- ./scripts/dev-setup
 script:
-  - "./scripts/lint-js"
-  - "./scripts/test-js --single-run"
+- ./scripts/lint-js
+- ./scripts/test-js --single-run
+addons:
+  sauce_connect: true
+env:
+  global:
+  - secure: YFYngwBOwyX5ePexac+hGTH85aZTsQkMG/NryBcuvejyHR9DOHWRcR+9wD2XORJCvBo9FJuRRfQBetib1S4+QRLmCWJRmlAnv9Yea+iTWryy6fnMfQLK4S9IKbLN984UaxVUbUqSCPbmQP3rJSbTGc4EJTZrJkKXgS3ANge60uRk7OYehHywDAVJcEP0ACVycBiyPd+4HoSRddxkPoR2XpM9puMRNlGOp7BabBdZQsR1FnodNJyNcO0qVi7DlAtnauMeen2mfaHp6Ci4nEW1+ai3VeKrViwiwmKAW2FzDYFdqih1VAllbQI6gvXHg/O4xDdkNWGUIrreE+E/W14F0B3OyyRB7EpRgWSJecjq0qDSI4BhKl/UK8y+uUo13WsZMYV+7zTl7ZfSg7W2frSe2SMGghoiVISZp6ICU7MHnHPliAtjxNnshKWsmugaQTdZAh3PB6lAS56xKQ/RxvCyt1hN9QskSz7FqnkcdU/uGbmRjTWTSGSFtq0jwEA3cdiK/GCVLeuwMrbAq40qCJNoF79Fzd19DCDS3Rmf0qS2d+58wqTJc+4B6U5f1rPVhEiAoijLjGfliTj6D6SKHe87guzQ/DTFl+YDa7csNoERS5HM7rvpQVkJx6tXhm9JHoH/R5ab/3CvoR4gkoUVAfIF14vnCjJJNaO8AtYh6DBZHTg=
+  - secure: LNIZFeyMod3IqBG7HXyGSzQD4IRhWAQhLpuwwNnJSt4XCllwZPDDaGAe2Vl15LnpY4w15jMoQFvgvGnTo8V6NssFe/x9iwhliKuk12kFqCxqdxls7tjr3vQNlc1ZiDspBPFuOYSPMJpyXnMfqc5SfLeQTAoHPwwyDzIs24Mm11zeiEu8SRVuH34NZONmvJD9VZO0gjYoofFQpvtb173yJUTlxJuVk/Ly66+jenGR4vtL9AtqQ2Cmn9X2yCRFdbWDBNrBmh8Fqr/j5H/0Et6klKKFzTtzXYKUOFk6d98WiKcb+OUJ+xdyExtGAfnvVXotxZmd8TGLD4ld+GKN6Z+BGgNeGtuolGl+OavFxCPYxnDVj/zQiOYgjpItB9jzdiG0QaBdjEvvm97PpVuk50cdqs31ZpHVjyNA6o//RC7E/abMW3eeof2KoudhjvHVx4UWUxA7bzpRj5bFgDhCULEyZIxIfmHAi8NVCm/dt7H1583CeCcWYf4VbEJCa7hQACKcwiUHEF+lx97+0Xu21Cb8S6ISHzCMidy68rAq+9VKdlaAYnQ21bL62l0EZrHX6R25224hPOQCxbvxhGVY/BqcpxIqGB9cwLAxTgY9HuJiCwK5a2wod6aNNMVUxIM1avPxdRmbIOAS3v6nUYs6vcZ/uC+Uyaakr9nT3VUPa6ainIg=
