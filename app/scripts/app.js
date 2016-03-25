@@ -52,6 +52,7 @@ angular.module('bulbsCmsApp', [
   'cms.firebase.config',
   'cms.image',
   'cms.templates',
+  'cms.tunic',
 
   // components
   'bettyEditable',
@@ -60,6 +61,7 @@ angular.module('bulbsCmsApp', [
   'cms.loggedInUser',
   'content',
   'content.video',
+  'evergreenField',
   'filterWidget',
   'filterListWidget',
   'polls',
@@ -75,6 +77,7 @@ angular.module('bulbsCmsApp', [
   // TODO : remove these, here because they are used by unrefactored compontents
   'content.edit.versionBrowser.modal.opener'
 ])
+  .constant('TIMEZONE_NAME', 'America/Chicago')
   .provider('AuthRouter', [
     'TokenAuthConfigProvider',
     function AuthRouter (TokenAuthConfigProvider) {
@@ -119,7 +122,7 @@ angular.module('bulbsCmsApp', [
         $sceProvider, TokenAuthConfigProvider, TokenAuthServiceProvider, CmsConfigProvider,
         COMPONENTS_URL, PARTIALS_URL, FirebaseConfigProvider, PNotify) {
 
-			PNotify.prototype.options.styling = 'fontawesome';
+      PNotify.prototype.options.styling = 'fontawesome';
 
       // FirebaseConfigProvider
       //   .setDbUrl('')
@@ -179,6 +182,7 @@ angular.module('bulbsCmsApp', [
       $httpProvider.interceptors.push('BugReportInterceptor');
       $httpProvider.interceptors.push('BadRequestInterceptor');
       $httpProvider.interceptors.push('TokenAuthInterceptor');
+      $httpProvider.interceptors.push('TunicInterceptor');
     }
   ])
   .run([

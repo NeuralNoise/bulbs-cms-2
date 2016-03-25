@@ -17,12 +17,14 @@ angular.module('specialCoverage.edit.directive', [
   .directive('specialCoverageEdit', function (COMPONENTS_URL) {
     return {
       controller: function (_, $location, $q, $scope, $modal, $window, moment, Campaign, EXTERNAL_URL, PARTIALS_URL,
-          SPECIAL_COVERAGE_LIST_REL_PATH, SpecialCoverage) {
+          routes, SPECIAL_COVERAGE_LIST_REL_PATH, SpecialCoverage) {
 
         $scope.ACTIVE_STATES = SpecialCoverage.ACTIVE_STATES;
         $scope.LIST_URL = EXTERNAL_URL + SPECIAL_COVERAGE_LIST_REL_PATH;
 
         $scope.needsSave = false;
+
+        $scope.tunicCampaignIdMapping = {};
 
         var modelId = $scope.getModelId();
         if (modelId === 'new') {
@@ -31,10 +33,15 @@ angular.module('specialCoverage.edit.directive', [
           $scope.isNew = true;
         } else {
           // this is an existing special coverage, find it
-          $scope.model = SpecialCoverage.$find($scope.getModelId());
+          $scope.model = SpecialCoverage.$find($scope.getModelId()).$then(function () {
+            $scope.model.$loadTunicCampaign().then(function (campaign) {
+              $scope.tunicCampaignIdMapping[campaign.id] = campaign;
+            });
+          });
         }
 
-        window.onbeforeunload = function (e) {
+
+        window.onbeforeunload = function () {
           if (!_.isEmpty($scope.model.$dirty()) || $scope.isNew || $scope.needsSave) {
             // unsaved changes, show confirmation alert
             return 'You have unsaved changes.';
@@ -78,8 +85,29 @@ angular.module('specialCoverage.edit.directive', [
           return promise;
         };
 
+        $scope.previewLinkModal = function () {
+          return $modal.open({
+            templateUrl: routes.PARTIALS_URL + 'modals/preview-link-modal.html',
+            scope: $scope,
+            resolve: {}
+          });
+        };
+
+        $scope.tunicCampaignFormatter = function (campaignId) {
+          if (campaignId in $scope.tunicCampaignIdMapping) {
+            var campaign = $scope.tunicCampaignIdMapping[campaignId];
+            return campaign.name + ' - ' + campaign.number;
+          }
+        };
+
         $scope.searchCampaigns = function (searchTerm) {
-          return Campaign.simpleSearch(searchTerm);
+          return $scope.model.$searchCampaigns({search: searchTerm}).then(function (campaigns) {
+            campaigns.forEach(function (campaign) {
+              $scope.tunicCampaignIdMapping[campaign.id] = campaign;
+            });
+            // Formatter expects list of IDs
+            return campaigns.map(function (campaign) { return campaign.id; });
+          });
         };
 
         $scope.previewLinkModal = function () {

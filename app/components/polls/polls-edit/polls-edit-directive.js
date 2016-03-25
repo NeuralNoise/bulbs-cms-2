@@ -116,6 +116,6 @@ angular.module('polls.edit.directive', [
       };
     },
     restrict: 'E',
-    scope: { getModelId: '&modelId' },
+    scope: { getModelId: '&modelId' }
   };
 });

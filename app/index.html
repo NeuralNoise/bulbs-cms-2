@@ -14,12 +14,12 @@
     <!-- build:css(app) styles/vendor.css -->
     <!-- bower:css -->
     <link rel="stylesheet" href="/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" />
+    <link rel="stylesheet" href="/cms-components/dist/cms-components.css" />
     <link rel="stylesheet" href="/jcrop/css/jquery.Jcrop.css" />
     <link rel="stylesheet" href="/onion-editor/build/editor-main.css" />
     <link rel="stylesheet" href="/pnotify/pnotify.core.css" />
     <link rel="stylesheet" href="/pnotify/pnotify.buttons.css" />
     <link rel="stylesheet" href="/pnotify/pnotify.history.css" />
-    <link rel="stylesheet" href="/cms-components/dist/cms-components.css" />
     <!-- endbower -->
     <link rel="stylesheet" href="/jcrop/css/jquery.Jcrop.min.css" />
     <!-- endbuild -->
@@ -65,15 +65,14 @@
     <!-- build:js(app) scripts/vendor.js -->
     <!-- bower:js -->
     <script src="/jquery/dist/jquery.js"></script>
-    <script src="/Keypress/keypress.js"></script>
     <script src="/angular/angular.js"></script>
-    <script src="/angular-cookies/angular-cookies.js"></script>
-    <script src="/angular-resource/angular-resource.js"></script>
     <script src="/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <script src="/bootstrap/dist/js/bootstrap.js"></script>
     <script src="/moment/moment.js"></script>
     <script src="/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
     <script src="/angular-cookie/angular-cookie.js"></script>
+    <script src="/angular-cookies/angular-cookies.js"></script>
+    <script src="/angular-resource/angular-resource.js"></script>
     <script src="/angular-inflector/dist/angular-inflector.min.js"></script>
     <script src="/angular-restmod/dist/angular-restmod-bundle.js"></script>
     <script src="/angular-restmod/dist/plugins/nested-dirty.js"></script>
@@ -89,7 +88,10 @@
     <script src="/lodash/lodash.js"></script>
     <script src="/bulbs-autocomplete/dist/bulbs-autocomplete.js"></script>
     <script src="/bulbs-public-embed-instagram/dist/jquery.instagram-embed-processor.js"></script>
+    <script src="/angular-local-storage/dist/angular-local-storage.js"></script>
+    <script src="/cms-components/dist/cms-components.js"></script>
     <script src="/jcrop/js/jquery.Jcrop.js"></script>
+    <script src="/Keypress/keypress.js"></script>
     <script src="/moment-timezone/builds/moment-timezone-with-data-2010-2020.js"></script>
     <script src="/zeroclipboard/dist/ZeroClipboard.js"></script>
     <script src="/ng-clip/src/ngClip.js"></script>
@@ -106,8 +108,6 @@
     <script src="/restmod-style-drf-paged/restmod-style-drf-paged.js"></script>
     <script src="/urlify/urlify.js"></script>
     <script src="/videohub-client-js/dist/videohub-client.js"></script>
-    <script src="/angular-local-storage/dist/angular-local-storage.js"></script>
-    <script src="/cms-components/dist/cms-components.js"></script>
     <script src="/firebase-token-generator/build/firebase-token-generator.js"></script>
     <!-- endbower -->
     <script src="/jcrop/js/jquery.Jcrop.min.js"></script>
@@ -169,6 +169,8 @@
     <script src="components/custom-search/custom-search.js"></script>
     <script src="components/edit-pages/video/video.js"></script>
     <script src="components/editors-pick/editors-pick.js"></script>
+    <script src="components/evergreen-field/evergreen-field-directive.js"></script>
+    <script src="components/evergreen-field/evergreen-field.js"></script>
     <script src="components/filter-list-widget/filter-list-widget-directive.js"></script>
     <script src="components/filter-list-widget/filter-list-widget.js"></script>
     <script src="components/filter-widget/filter-widget-directive.js"></script>
@@ -269,6 +271,9 @@
     <script src="shared/non-restmod-list-page/non-restmod-list-page.js"></script>
     <script src="shared/sponsored-content-modal/sponsored-content-modal-opener.js"></script>
     <script src="shared/sponsored-content-modal/sponsored-content-modal.js"></script>
+    <script src="shared/tunic/tunic-config.js"></script>
+    <script src="shared/tunic/tunic-interceptor.js"></script>
+    <script src="shared/tunic/tunic.js"></script>
     <script src="shared/utils/utils.js"></script>
     <script src="shared/video-list/video-list-video/video-list-video-directive.js"></script>
     <script src="shared/video-list/video-list.js"></script>
@@ -429,6 +434,7 @@
     <script src="mocks/api/api-custom-search.js"></script>
     <script src="mocks/api/api-line-item.js"></script>
     <script src="mocks/api/api-override.js"></script>
+    <script src="mocks/api/api-poll.js"></script>
     <script src="mocks/api/api-role.js"></script>
     <script src="mocks/api/api-special-coverage.js"></script>
     <script src="mocks/api/api-sections.js"></script>
