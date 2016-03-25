@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('bulbsCmsApp')
-  .controller('ReportingCtrl', function ($http, $scope, $window, $, $location, $filter, $interpolate, Login, routes, moment, ContributionReportingService, ContentReportingService, FreelancePayReportingService) {
-    $window.document.title = routes.CMS_NAMESPACE + ' | Reporting'; // set title
+  .controller('ReportingCtrl', function ($http, $scope, $window, $, $location, $filter, $interpolate, Login, CMS_NAMESPACE, moment, ContributionReportingService, ContentReportingService, FreelancePayReportingService) {
+    $window.document.title = CMS_NAMESPACE + ' | Reporting'; // set title
 
     $scope.userFilter = '';
     $scope.userFilters = [
