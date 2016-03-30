@@ -82,7 +82,11 @@ describe('Answer Factory', function () {
         }
       };
       Answer.updatePollAnswers(scope);
+<<<<<<< HEAD
       $httpBackend.expectDELETE('/poll-answer/1/').respond(201);
+=======
+      $httpBackend.expectDELETE('/cms/api/v1/answer/1').respond(201);
+>>>>>>> old-bulbs-cms/master
       $httpBackend.flush();
     });
 

@@ -129,6 +129,7 @@
     <script src="components/autocomplete-basic/autocomplete-basic.js"></script>
     <script src="components/betty-editable/betty-editable.js"></script>
     <script src="components/bug-reporter/bug-reporter.js"></script>
+    <script src="components/campaign-autocomplete/campaign-autocomplete.js"></script>
     <script src="components/campaigns/campaigns-edit/campaigns-edit-directive.js"></script>
     <script src="components/campaigns/campaigns-edit/campaigns-edit-sponsor-pixel/campaigns-edit-sponsor-pixel-directive.js"></script>
     <script src="components/campaigns/campaigns-edit/campaigns-edit-sponsor-pixel/campaigns-edit-sponsor-pixel.js"></script>
@@ -169,6 +170,8 @@
     <script src="components/custom-search/custom-search.js"></script>
     <script src="components/edit-pages/video/video.js"></script>
     <script src="components/editors-pick/editors-pick.js"></script>
+    <script src="components/evergreen-field/evergreen-field-directive.js"></script>
+    <script src="components/evergreen-field/evergreen-field.js"></script>
     <script src="components/filter-list-widget/filter-list-widget-directive.js"></script>
     <script src="components/filter-list-widget/filter-list-widget.js"></script>
     <script src="components/filter-widget/filter-widget-directive.js"></script>
@@ -269,6 +272,9 @@
     <script src="shared/non-restmod-list-page/non-restmod-list-page.js"></script>
     <script src="shared/sponsored-content-modal/sponsored-content-modal-opener.js"></script>
     <script src="shared/sponsored-content-modal/sponsored-content-modal.js"></script>
+    <script src="shared/tunic/tunic-config.js"></script>
+    <script src="shared/tunic/tunic-interceptor.js"></script>
+    <script src="shared/tunic/tunic.js"></script>
     <script src="shared/utils/utils.js"></script>
     <script src="shared/video-list/video-list-video/video-list-video-directive.js"></script>
     <script src="shared/video-list/video-list.js"></script>
@@ -394,7 +400,6 @@
           .constant('SHARED_URL', '/shared/')
           .constant('STATIC_URL', '/static/')
           .constant('TAR_OPTIONS', { endpoint: '/ads/targeting' })
-          .constant('TIMEZONE_NAME', 'America/Chicago')
           .constant('VIDEO_EMBED_URL', 'http://www.avclub.com/videos/embed?id=')
           .constant('VIDEO_THUMBNAIL_URL', 'http://v.theonion.com/avclubmedia/video/{{video}}/frame_{{thumbnail}}.jpg')
           .constant('ZERO_CLIPBOARD_SWF', '/zeroclipboard/dist/ZeroClipboard.swf');
@@ -429,6 +434,7 @@
     <script src="mocks/api/api-custom-search.js"></script>
     <script src="mocks/api/api-line-item.js"></script>
     <script src="mocks/api/api-override.js"></script>
+    <script src="mocks/api/api-poll.js"></script>
     <script src="mocks/api/api-role.js"></script>
     <script src="mocks/api/api-special-coverage.js"></script>
     <script src="mocks/api/api-sections.js"></script>

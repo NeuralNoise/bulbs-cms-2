@@ -1,10 +1,11 @@
 'use strict';
 
 angular.module('specialCoverage.edit.directive', [
+  'apiServices.campaign.factory',
   'apiServices.specialCoverage.factory',
-  'autocompleteBasic',
   'bulbsCmsApp.settings',
   'apiServices.campaign.factory',
+  'campaignAutocomplete',
   'copyButton',
   'customSearch',
   'lodash',
@@ -24,6 +25,8 @@ angular.module('specialCoverage.edit.directive', [
 
         $scope.needsSave = false;
 
+        $scope.tunicCampaignIdMapping = {};
+
         var modelId = $scope.getModelId();
         if (modelId === 'new') {
           // this is a new special coverage, build it
@@ -31,7 +34,11 @@ angular.module('specialCoverage.edit.directive', [
           $scope.isNew = true;
         } else {
           // this is an existing special coverage, find it
-          $scope.model = SpecialCoverage.$find($scope.getModelId());
+          $scope.model = SpecialCoverage.$find($scope.getModelId()).$then(function () {
+            $scope.model.$loadTunicCampaign().then(function (campaign) {
+              $scope.tunicCampaignIdMapping[campaign.id] = campaign;
+            });
+          });
         }
 
         window.onbeforeunload = function (e) {
@@ -78,8 +85,29 @@ angular.module('specialCoverage.edit.directive', [
           return promise;
         };
 
+        $scope.previewLinkModal = function () {
+          return $modal.open({
+            templateUrl: routes.PARTIALS_URL + 'modals/preview-link-modal.html',
+            scope: $scope,
+            resolve: {}
+          });
+        };
+
+        $scope.tunicCampaignFormatter = function (campaignId) {
+          if (campaignId in $scope.tunicCampaignIdMapping) {
+            var campaign = $scope.tunicCampaignIdMapping[campaignId];
+            return campaign.name + ' - ' + campaign.number;
+          }
+        };
+
         $scope.searchCampaigns = function (searchTerm) {
-          return Campaign.simpleSearch(searchTerm);
+          return $scope.model.$searchCampaigns({search: searchTerm}).then(function (campaigns) {
+            campaigns.forEach(function (campaign) {
+              $scope.tunicCampaignIdMapping[campaign.id] = campaign;
+            });
+            // Formatter expects list of IDs
+            return campaigns.map(function (campaign) { return campaign.id; });
+          });
         };
 
         $scope.previewLinkModal = function () {

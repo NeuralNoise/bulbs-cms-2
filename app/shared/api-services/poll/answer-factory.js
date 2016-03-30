@@ -5,11 +5,12 @@ angular.module('apiServices.answer.factory', [
   'cms.config',
   'lodash'
 ])
-.factory('Answer',
-  ['$http', '$q', '_', 'CmsConfig',
+.factory('Answer', [
+  '$http', '$q', '_', 'CmsConfig',
   function ($http, $q, _, CmsConfig) {
 
   var answerUrl = CmsConfig.buildBackendApiUrl('poll-answer/');
+
   var error = function(message) {
     return new Error('Poll Error: ' + message);
   };

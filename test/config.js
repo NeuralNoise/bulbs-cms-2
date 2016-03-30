@@ -38,7 +38,6 @@ angular.module('bulbsCmsApp.settings')
   .constant('SHARED_URL', '/shared/')
   .constant('STATIC_URL', '/static/')
   .constant('RESTANGULAR_API_URL_ROOT', '/cms/api/v1')
-  .constant('TIMEZONE_NAME', 'America/Chicago')
   .constant('VIDEO_EMBED_URL', 'http://www.avclub.com/video/embed?id=')
   .constant('firebaseApiConfig', {
       FIREBASE_ROOT: 'bulbs-cms-test',
