@@ -4,14 +4,13 @@ describe('Directive: activeNav', function () {
 
   beforeEach(module('bulbsCmsApp'));
 
-  var element,
-    inactiveElement,
-    scope,
-    compile,
-    html,
-    $location,
-    $browser,
-    path;
+  var element;
+  var inactiveElement;
+  var scope;
+  var html;
+  var $location;
+  var $browser;
+  var path;
 
   path = '/cms/app/list';
   html = '<active-nav href="' + path + '" label="Content"></active-nav>';
@@ -38,5 +37,4 @@ describe('Directive: activeNav', function () {
   it('should not add the active class to an element that is not for the current path', function () {
     expect(inactiveElement.hasClass('active')).toBe(false);
   });
-
 });

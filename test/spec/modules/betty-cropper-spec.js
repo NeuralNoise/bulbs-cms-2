@@ -112,8 +112,8 @@ describe('Image object', function () {
 
     expect(styles['background-size']).toBe('439px');
     expect(styles['background-position']).toBe('-39px -24px');
-    expect(styles['height']).toBe('225px');
-    expect(styles['width']).toBe('400px');
+    expect(styles.height).toBe('225px');
+    expect(styles.width).toBe('400px');
   });
 
   afterEach(function() {
@@ -124,10 +124,11 @@ describe('Image object', function () {
 });
 
 describe('BettyCropper service', function () {
+  var BettyImage;
+  var $httpBackend;
+  var BettyCropper;
 
-  var BettyImage, $httpBackend, BettyCropper;
   beforeEach(function() {
-
     module('BettyCropper');
     module('BettyCropper.mockApi');
 
@@ -161,7 +162,7 @@ describe('BettyCropper service', function () {
     var fileList = {
       0: file,
       length: 1,
-      item: function (index) { return file; }
+      item: function () { return file; }
     };
 
     var input = $('#bulbs-cms-hidden-image-file-input').first();
@@ -173,5 +174,4 @@ describe('BettyCropper service', function () {
     });
     $httpBackend.flush();
   });
-
 });

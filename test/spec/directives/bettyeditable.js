@@ -1,13 +1,13 @@
 'use strict';
 describe('Testing bettyeditable directive', function() {
 
-  var scope,
-      elem,
-      compiled,
-      html,
-      $httpBackend,
-      $compile,
-      BettyImage;
+  var scope;
+  var elem;
+  var compiled;
+  var html;
+  var $httpBackend;
+  var $compile;
+  var BettyImage;
 
   beforeEach(function () {
     module('bulbsCmsApp');
@@ -22,7 +22,6 @@ describe('Testing bettyeditable directive', function() {
       BettyImage = $injector.get('BettyImage');
 
       scope = $rootScope.$new();
-
     });
   });
 
@@ -61,7 +60,7 @@ describe('Testing bettyeditable directive', function() {
       id: 66,
       caption: null,
       alt: null
-    }
+    };
     $httpBackend.flush();
     imageContainer = elem.find('.image-edit-container');
     expect(imageContainer.css('background-image')).toContain('//localimages.avclub.com/66/original/1200.jpg');
@@ -89,7 +88,7 @@ describe('Testing bettyeditable directive', function() {
     var fileList = {
       0: file,
       length: 1,
-      item: function (index) { return file; }
+      item: function () { return file; }
     };
 
     var input = $('#bulbs-cms-hidden-image-file-input').first();

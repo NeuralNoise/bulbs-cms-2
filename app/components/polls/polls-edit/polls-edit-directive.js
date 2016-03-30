@@ -20,7 +20,7 @@ angular.module('polls.edit.directive', [
         $scope.model.answer_type = 'text';
       } else {
         Poll.getPoll($routeParams.id)
-          .then(function successCallback(responseg) {
+          .then(function successCallback(response) {
             $scope.model = response;
             $scope.answers = _.cloneDeep(response.answers);
           });

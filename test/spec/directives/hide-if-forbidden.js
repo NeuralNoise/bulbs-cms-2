@@ -29,10 +29,10 @@ describe('Directive: hideIfForbidden', function () {
 
   it('should make a not-forbidden element visible', inject(function ($compile) {
     httpBackend.expect('OPTIONS', CmsConfig.buildBackendApiUrl(optionsUrl200)).respond(function(){
-      return [200, {detail: "Great Job"}];
+      return [200, { detail: 'Great Job' }];
     });
 
-    var thisHtml = html.replace("{{OPTIONSURL}}", optionsUrl200)
+    var thisHtml = html.replace('{{OPTIONSURL}}', optionsUrl200);
     element = angular.element($compile(thisHtml)(scope));
 
     httpBackend.flush();
@@ -42,10 +42,10 @@ describe('Directive: hideIfForbidden', function () {
 
   it('should make a forbidden element invisible', inject(function ($compile) {
     httpBackend.expect('OPTIONS', CmsConfig.buildBackendApiUrl(optionsUrl403)).respond(function(){
-      return [403, {detail: "Denied"}];
+      return [403, {detail: 'Denied'}];
     });
 
-    var thisHtml = html.replace("{{OPTIONSURL}}", optionsUrl403);
+    var thisHtml = html.replace('{{OPTIONSURL}}', optionsUrl403);
     element = angular.element($compile(thisHtml)(scope));
 
     httpBackend.flush();
