@@ -10,7 +10,7 @@ describe('Directive: specialCoverageEdit', function () {
   beforeEach(function () {
     module('bulbsCmsApp');
     module('bulbsCmsApp.mockApi');
-    module('jsTemplates');
+    module('cms.templates');
 
     angular.module('specialCoverage.edit').constant('EXTERNAL_URL', 'onion.local');
 

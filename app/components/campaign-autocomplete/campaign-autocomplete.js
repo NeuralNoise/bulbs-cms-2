@@ -7,8 +7,8 @@ angular.module('campaignAutocomplete', [
   'uuid4'
 ])
   .directive('campaignAutocomplete', [
-    '$http', 'routes', 'TunicConfig', 'uuid4', '_',
-    function ($http, routes, TunicConfig, uuid4, _) {
+    '$http', 'COMPONENTS_URL', 'TunicConfig', 'uuid4', '_',
+    function ($http, COMPONENTS_URL, TunicConfig, uuid4, _) {
       return {
         controller: [
           '$scope',
@@ -52,13 +52,13 @@ angular.module('campaignAutocomplete', [
               }
             };
 
-            scope.onSelect = function (selection) {
+            scope.onSelect = function () {
               ngModelCtrl.$commitViewValue();
             };
           }
         },
         restrict: 'E',
-        templateUrl: routes.COMPONENTS_URL + 'campaign-autocomplete/campaign-autocomplete.html',
+        templateUrl: COMPONENTS_URL + 'campaign-autocomplete/campaign-autocomplete.html',
         require: 'ngModel',
         scope: {
           label: '@campaignAutocompleteLabel',      // label for the autocomplete imput

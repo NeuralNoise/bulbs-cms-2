@@ -181,7 +181,6 @@ angular.module('bulbsCmsApp', [
 
       $httpProvider.interceptors.push('BugReportInterceptor');
       $httpProvider.interceptors.push('BadRequestInterceptor');
-      $httpProvider.interceptors.push('PermissionsInterceptor');
       $httpProvider.interceptors.push('TokenAuthInterceptor');
       $httpProvider.interceptors.push('TunicInterceptor');
     }

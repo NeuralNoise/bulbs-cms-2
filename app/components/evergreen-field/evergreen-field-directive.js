@@ -3,17 +3,17 @@
 angular.module('evergreenField.directive', [
   'bulbsCmsApp.settings',
   'lodash',
-  'saveButton.directive',
+  'saveButton.directive'
 ])
   .directive('evergreenField', [
-    'routes',
-    function (routes) {
+    'COMPONENTS_URL',
+    function (COMPONENTS_URL) {
       return {
         restrict: 'E',
         scope: {
           article: '='
         },
-        templateUrl: routes.COMPONENTS_URL + 'evergreen-field/evergreen-field.html'
+        templateUrl: COMPONENTS_URL + 'evergreen-field/evergreen-field.html'
       };
     }
   ]);

@@ -87,7 +87,7 @@ angular.module('specialCoverage.edit.directive', [
 
         $scope.previewLinkModal = function () {
           return $modal.open({
-            templateUrl: routes.PARTIALS_URL + 'modals/preview-link-modal.html',
+            templateUrl: PARTIALS_URL + 'modals/preview-link-modal.html',
             scope: $scope,
             resolve: {}
           });
