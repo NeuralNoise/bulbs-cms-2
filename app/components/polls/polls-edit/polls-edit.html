@@ -49,8 +49,8 @@
     </div>
 
     <div
-      ng-if="model.id"
-      class="row poll-startdate">
+        ng-if="model.id"
+        class="row poll-startdate">
       <div class="form-group col-lg-push-3 col-lg-6">
         <label for="pollStartDate">
           Poll Start Date
@@ -89,8 +89,8 @@
     </div>
 
     <div
-      ng-if="model.id"
-      class="row poll-end-date">
+        ng-if="model.id"
+        class="row poll-end-date">
       <div class="form-group col-lg-push-3 col-lg-6">
         <label for="pollEndDate">
           Poll End Date
@@ -143,6 +143,7 @@
             ng-model="model.question_text"
             class="form-control"
             required>
+            can not be blank.
         </textarea>
       </div>
     </div>
@@ -196,46 +197,47 @@
           </fieldset>
 
           <fieldset
-            class="response-text-field"
-            data-ng-repeat="answer in answers"
-            ng-if="model.answer_type === 'imageText'">
+              class="response-text-field"
+              data-ng-repeat="answer in answers"
+              ng-if="model.answer_type === 'imageText'">
+
             <div class="text-image-responses">
-            <ng-form name="answerForm{{ $index }}">
-              <div class="response-photo">
-                <label for="answerImage">
-                  Response Photo
-                </label>
-                <betty-editable
-                    image="answer.answer_image"
-                    ratio="16x9"
-                    add-styles="fa fa-picture-o">
-                </betty-editable>
-              </div>
-              <div class="response-text">
-                <label for="answerText">
-                  Response Text
-                  <span
-                      class="error-message"
-                      ng-show="answerForm{{ $index }}.answer_text.$error.required">
-                    cannot be blank.
-                  </span>
-                </label>
-                <div class="answer-text form-inline">
-                  <textarea
-                      class="form-control"
-                      name="answer_text"
-                      ng-model="answer.answer_text"
-                      required>
-                  </textarea>
+              <ng-form name="answerForm{{ $index }}">
+                <div class="response-photo">
+                  <label for="answerImage">
+                    Response Photo
+                  </label>
+                  <betty-editable
+                      image="answer.answer_image"
+                      ratio="16x9"
+                      add-styles="fa fa-picture-o">
+                  </betty-editable>
                 </div>
-                <a
-                  class="col-lg-push-9 col-lg-1"
-                  ng-click="removeAnswer(answer.id)">
-                  <i class="fa fa-minus-circle"></i>
-                </a>
-              </div>
-            </ng-form>
-          </div>
+                <div class="response-text">
+                  <label for="answerText">
+                    Response Text
+                    <span
+                        class="error-message"
+                        ng-show="answerForm{{ $index }}.answer_text.$error.required">
+                      cannot be blank.
+                    </span>
+                  </label>
+                  <div class="answer-text form-inline">
+                    <textarea
+                        class="form-control"
+                        name="answer_text"
+                        ng-model="answer.answer_text"
+                        required>
+                    </textarea>
+                  </div>
+                  <a
+                    class="col-lg-push-9 col-lg-1"
+                    ng-click="removeAnswer(answer.id)">
+                    <i class="fa fa-minus-circle"></i>
+                  </a>
+                </div>
+              </ng-form>
+            </div>
           </fieldset>
         </div>
       </div>

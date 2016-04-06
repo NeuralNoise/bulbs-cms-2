@@ -5,10 +5,9 @@ describe('Directive: lazyInclude', function () {
   // load the directive's module
   beforeEach(module('bulbsCmsApp'));
 
-  var element,
-    scope,
-    _Gettemplate,
-    _compile;
+  var scope;
+  var _Gettemplate;
+  var _compile;
 
   var html = '<div style="display: none;" lazy-include template="test.html"></div>';
 
@@ -20,10 +19,7 @@ describe('Directive: lazyInclude', function () {
 
   it('should not call getTemplate if the element is not visible', function(){
     spyOn(_Gettemplate, 'get');
-    element = angular.element(_compile('<div style="display: none;" lazy-include template="test.html"></div>')(scope));
+    angular.element(_compile(html)(scope));
     expect(_Gettemplate.get).not.toHaveBeenCalled();
   });
-
-
-
 });

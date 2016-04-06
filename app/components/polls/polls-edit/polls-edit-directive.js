@@ -11,6 +11,7 @@ angular.module('polls.edit.directive', [
 .directive('pollsEdit', function (COMPONENTS_URL) {
   return {
     templateUrl: COMPONENTS_URL + 'polls/polls-edit/polls-edit.html',
+
     controller: function (_, $http, $location, $q, $routeParams, $scope, $timeout, Answer, Poll) {
       // populate model for use
       if ($routeParams.id === 'new') {
@@ -60,7 +61,6 @@ angular.module('polls.edit.directive', [
            if (endDate && published) {
              comesAfterPublishedValid = published.isBefore(endDate);
            }
-
           endDateField.$setValidity(
             'comesAfterPublished',
             comesAfterPublishedValid
@@ -100,7 +100,7 @@ angular.module('polls.edit.directive', [
         $scope.answers.push({id: newId++, notOnSodahead: true});
       };
 
-      // create 3 blank answer objects if this is a new poll
+      // create 2 blank answer objects if this is a new poll
       if($scope.isNew) {
         $scope.answers = [];
         _.times(2, $scope.addAnswer);

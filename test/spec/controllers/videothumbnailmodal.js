@@ -6,11 +6,11 @@ describe('Controller: VideothumbnailmodalCtrl', function () {
   beforeEach(module('bulbsCmsApp'));
   beforeEach(module('cms.templates'));
 
-  var VideothumbnailmodalCtrl,
-    scope,
-    modalService,
-    modal,
-    zencoderService;
+  var VideothumbnailmodalCtrl;
+  var scope;
+  var modalService;
+  var modal;
+  var zencoderService;
 
   var thumbnailUrlString = 'thumbnails4you.com/{{video}}/thumbnail_{{thumbnail}}';
   var customVideoPosterUrlString = '{{ratio}}_{{image}}';
@@ -21,18 +21,18 @@ describe('Controller: VideothumbnailmodalCtrl', function () {
     zencoderService = Zencoder;
 
     zencoderService.getVideo = function () {
-      return {then: function () {}}
-    }
+      return {then: function () {}};
+    };
 
     var modalUrl = PARTIALS_URL + 'modals/last-modified-guard-modal.html';
     modal = $modal.open({
       templateUrl: modalUrl
     });
 
-    modal.dismiss = function () { return true; }
-    modal.close = function () { return true; }
-    modalService = $modal
-    modalService.open = function () { return true; }
+    modal.dismiss = function () { return true; };
+    modal.close = function () { return true; };
+    modalService = $modal;
+    modalService.open = function () { return true; };
 
     VideothumbnailmodalCtrl = $controller('VideothumbnailmodalCtrl', {
       $scope: scope,
@@ -50,7 +50,7 @@ describe('Controller: VideothumbnailmodalCtrl', function () {
       //note: 4 is just a number that we guessed would be high enough to give a good 'preview' thumbnail
       scope.video = {};
       scope.defaultThumb();
-      expect(scope.video.poster).toBe('thumbnails4you.com/1/thumbnail_0004')
+      expect(scope.video.poster).toBe('thumbnails4you.com/1/thumbnail_0004');
     });
   });
 
@@ -61,7 +61,7 @@ describe('Controller: VideothumbnailmodalCtrl', function () {
       scope.nextThumb();
       scope.$digest();
       expect(scope.currentThumbnail).toBe(6);
-      expect(scope.video.poster).toBe('thumbnails4you.com/1/thumbnail_0006')
+      expect(scope.video.poster).toBe('thumbnails4you.com/1/thumbnail_0006');
     });
     it('should have a function nextThumb that goes to zero instead of going above max thumbnail (19)', function () {
       scope.currentThumbnail = 19;
@@ -69,7 +69,7 @@ describe('Controller: VideothumbnailmodalCtrl', function () {
       scope.nextThumb();
       scope.$digest();
       expect(scope.currentThumbnail).toBe(0);
-      expect(scope.video.poster).toBe('thumbnails4you.com/1/thumbnail_0000')
+      expect(scope.video.poster).toBe('thumbnails4you.com/1/thumbnail_0000');
     });
 
     it('should have a function prevThumb that decrements thumbnail', function () {
@@ -78,7 +78,7 @@ describe('Controller: VideothumbnailmodalCtrl', function () {
       scope.prevThumb();
       scope.$digest();
       expect(scope.currentThumbnail).toBe(7);
-      expect(scope.video.poster).toBe('thumbnails4you.com/1/thumbnail_0007')
+      expect(scope.video.poster).toBe('thumbnails4you.com/1/thumbnail_0007');
     });
 
     it('should have a function prevThumb that goes to max thumbnail (19) instead of below zero', function () {
@@ -87,7 +87,7 @@ describe('Controller: VideothumbnailmodalCtrl', function () {
       scope.prevThumb();
       scope.$digest();
       expect(scope.currentThumbnail).toBe(19);
-      expect(scope.video.poster).toBe('thumbnails4you.com/1/thumbnail_0019')
+      expect(scope.video.poster).toBe('thumbnails4you.com/1/thumbnail_0019');
     });
 
   });
@@ -109,7 +109,7 @@ describe('Controller: VideothumbnailmodalCtrl', function () {
       spyOn(zencoderService, 'encode');
       scope.reencode();
       expect(zencoderService.encode).toHaveBeenCalledWith(1);
-    })
+    });
   });
 
 });

@@ -7,12 +7,12 @@ describe('Controller: ChangelogmodalCtrl', function () {
   beforeEach(module('bulbsCmsApp.mockApi'));
   beforeEach(module('cms.templates'));
 
-  var ChangelogmodalCtrl,
-    scope,
-    httpBackend,
-    modal,
-    modalService,
-    mockChangelog;
+  var ChangelogmodalCtrl;
+  var scope;
+  var httpBackend;
+  var modal;
+  var modalService;
+  var mockChangelog;
 
   var article = {id: 1};
 
@@ -20,16 +20,16 @@ describe('Controller: ChangelogmodalCtrl', function () {
   beforeEach(inject(function ($controller, $rootScope, $httpBackend, $modal, PARTIALS_URL, mockApiData) {
     httpBackend = $httpBackend;
 
-    mockChangelog = mockApiData['changelog'];
+    mockChangelog = mockApiData.changelog;
 
     var modalUrl = PARTIALS_URL + 'modals/changelog-modal.html';
     modal = $modal.open({
       templateUrl: modalUrl
-    })
+    });
 
-    modal.dismiss = function () { return true; }
-    modalService = $modal
-    modalService.open = function () { return true; }
+    modal.dismiss = function () { return true; };
+    modalService = $modal;
+    modalService.open = function () { return true; };
     httpBackend = $httpBackend;
 
     scope = $rootScope.$new();

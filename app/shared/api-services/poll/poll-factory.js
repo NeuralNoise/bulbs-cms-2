@@ -8,8 +8,8 @@ angular.module('apiServices.poll.factory', [
   'filters.moment',
   'lodash'
 ])
-.factory('Poll',
-  ['$filter', '$http', '$q', '_', 'CmsConfig', 'moment', 'Utils',
+.factory('Poll', [
+  '$filter', '$http', '$q', '_', 'CmsConfig', 'moment', 'Utils',
   function ($filter, $http, $q, _, CmsConfig, moment, Utils) {
 
   var error = function(message) {
@@ -44,9 +44,9 @@ angular.module('apiServices.poll.factory', [
     return data;
   }
 
-  function cleanPayload (payload) {
+  function cleanPayload (originalPayload) {
     var momentToDateString = $filter('moment_to_date_string');
-    payload = _.clone(payload);
+    var payload = _.clone(originalPayload);
 
     if(_.isUndefined(payload.title) && _.isUndefined(payload.question_text)) {
       throw error('title and question text required');

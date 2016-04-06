@@ -8,9 +8,9 @@ describe('Controller: ThumbnailModalCtrl', function () {
 
   describe('test modal functionality', function () {
 
-    var mockModalInstance,
-        scope,
-        ThumbnailModalCtrl;
+    var mockModalInstance;
+    var scope;
+    var ThumbnailModalCtrl;
 
     // initialize controller and mock scope
     beforeEach(inject(function ($controller, $rootScope, $modal, BettyCropper) {
@@ -21,7 +21,7 @@ describe('Controller: ThumbnailModalCtrl', function () {
         then: function (successCallback) {
           successCallback({
             id: 1
-          })
+          });
         }
       });
 
