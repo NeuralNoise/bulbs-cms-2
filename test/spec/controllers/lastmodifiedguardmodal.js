@@ -6,19 +6,16 @@ describe('Controller: LastmodifiedguardmodalCtrl', function () {
   beforeEach(module('bulbsCmsApp'));
   beforeEach(module('cms.templates'));
 
-  var LastmodifiedguardmodalCtrl,
-    scope,
-    httpBackend,
-    lastSavedBy,
-    modalService,
-    modal,
-    routeService;
+  var LastmodifiedguardmodalCtrl;
+  var scope;
+  var httpBackend;
+  var lastSavedBy;
+  var modalService;
+  var modal;
 
   // Initialize the controller and a mock scope
-  beforeEach(inject(function ($controller, $rootScope, $httpBackend, PARTIALS_URL, $modal, $route) {
+  beforeEach(inject(function ($controller, $rootScope, $httpBackend, PARTIALS_URL, $modal) {
     lastSavedBy = {id: 1, username: 'whatever'};
-
-    routeService = $route;
 
     var modalUrl = PARTIALS_URL + 'modals/last-modified-guard-modal.html';
     modal = $modal.open({

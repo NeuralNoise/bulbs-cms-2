@@ -38,7 +38,7 @@ else
 fi
 
 if [ ! -d $RELEASE_DIR/.git ]; then
-  rm -r $RELEASE_DIR
+  rm -rf $RELEASE_DIR
   secho "No release directory connected to release git repo, creating it"
   git clone $RELEASE_REPO $RELEASE_DIR
 fi

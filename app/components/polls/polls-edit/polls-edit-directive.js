@@ -100,7 +100,7 @@ angular.module('polls.edit.directive', [
         $scope.answers.push({id: newId++, notOnSodahead: true});
       };
 
-      // create 3 blank answer objects if this is a new poll
+      // create 2 blank answer objects if this is a new poll
       if($scope.isNew) {
         $scope.answers = [];
         _.times(2, $scope.addAnswer);

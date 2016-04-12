@@ -53,7 +53,7 @@ angular.module('bulbsCmsApp')
           {
             label: 'Order by Content',
             key: 'content'
-          },
+          }
         ]
       },
       'Content': {

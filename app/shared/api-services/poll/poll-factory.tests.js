@@ -19,7 +19,6 @@ describe('Poll Factory', function () {
     $q = _$q_;
     moment = _moment_;
     Poll = _Poll_;
-
     pollUrl = '/poll/';
     mockPayload = {
       id: 231272,

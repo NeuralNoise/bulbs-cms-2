@@ -14,7 +14,6 @@ angular.module('polls.list', [
           $window.document.title = CMS_NAMESPACE + ' | Poll';
 
           $scope.modelFactory = Poll;
-
         },
         templateUrl: COMPONENTS_URL + 'polls/polls-list/polls-list-page.html'
       });

@@ -53,17 +53,6 @@ angular.module('bulbsCmsApp')
       });
     };
 
-    $scope.sponsorModal = function (article) {
-      return $modal.open({
-        templateUrl: PARTIALS_URL + 'modals/sponsor-modal.html',
-        scope: $scope,
-        controller: 'SponsormodalCtrl',
-        resolve: {
-          article: function () { return article; }
-        }
-      });
-    };
-
     $scope.versionBrowserModal = function (article) {
       VersionBrowserModalOpener.open($scope, article);
     };

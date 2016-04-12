@@ -27,7 +27,6 @@ describe('Directive: pollsEdit', function () {
 
     $routeParams.id = 'new';
 
-
     element = $compile(html)($rootScope);
     $rootScope.$digest();
     scope = element.isolateScope();
@@ -44,7 +43,7 @@ describe('Directive: pollsEdit', function () {
     expect(scope.isNew).toBe(true);
   });
 
-  it('has appropriate poll new fields', function () {
+  it('has appropriate new poll fields', function () {
     expect(element.html()).toContain('Question');
     expect(element.html()).toContain('Responses');
   });

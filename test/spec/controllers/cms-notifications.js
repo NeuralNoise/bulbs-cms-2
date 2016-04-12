@@ -5,10 +5,10 @@ describe('Controller: CmsNotificationsCtrl', function () {
   beforeEach(module('bulbsCmsApp'));
   beforeEach(module('bulbsCmsApp.mockApi'));
 
-  var CmsNotificationsCtrl,
-      CurrentUser,
-      $httpBackend,
-      $scope;
+  var CmsNotificationsCtrl;
+  var CurrentUser;
+  var $httpBackend;
+  var $scope;
 
   beforeEach(inject(function (_CurrentUser_, _$httpBackend_, $rootScope) {
 
@@ -64,8 +64,8 @@ describe('Controller: CmsNotificationsCtrl', function () {
 
       $scope.newNotification();
 
-      var newLength = $scope.notifications.length,
-          newNotification = $scope.notifications[0];
+      var newLength = $scope.notifications.length;
+      var newNotification = $scope.notifications[0];
 
       expect(newLength).toBe(prevLength + 1);
 
@@ -77,9 +77,9 @@ describe('Controller: CmsNotificationsCtrl', function () {
 
     it('should provide a function to save a notification', function () {
 
-      var notificationToSave = $scope.newNotification(),
-          newPostDate = moment('2014-09-25T16:00:00-0500'),
-          newNotifyEndDate = moment('2014-09-28T16:00:00-0500');
+      var notificationToSave = $scope.newNotification();
+      var newPostDate = moment('2014-09-25T16:00:00-0500');
+      var newNotifyEndDate = moment('2014-09-28T16:00:00-0500');
 
       notificationToSave.title = 'A New Notification';
       notificationToSave.body = 'Whatever balhb alhblahb.';
@@ -120,9 +120,9 @@ describe('Controller: CmsNotificationsCtrl', function () {
 
     it('should provide a function to remove a notification', function () {
 
-      var notificationToDelete = $scope.notifications[0],
-          deleted = false,
-          oldLength = $scope.notifications.length;
+      var notificationToDelete = $scope.notifications[0];
+      var deleted = false;
+      var oldLength = $scope.notifications.length;
 
       $httpBackend.expectDELETE('/cms/api/v1/notifications/0/').respond(200);
 
@@ -185,12 +185,8 @@ describe('Controller: CmsNotificationsCtrl', function () {
     }));
 
     it('should not show notifications that aren\'t editable if their post date is in the future', function () {
-
       expect($scope.notifications.length).toBe(1);
       expect($scope.notifications[0].id).toBe(0);
-
     });
-
   });
-
 });

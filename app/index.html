@@ -16,10 +16,10 @@
     <link rel="stylesheet" href="/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" />
     <link rel="stylesheet" href="/cms-components/dist/cms-components.css" />
     <link rel="stylesheet" href="/jcrop/css/jquery.Jcrop.css" />
-    <link rel="stylesheet" href="/onion-editor/build/editor-main.css" />
     <link rel="stylesheet" href="/pnotify/pnotify.core.css" />
     <link rel="stylesheet" href="/pnotify/pnotify.buttons.css" />
     <link rel="stylesheet" href="/pnotify/pnotify.history.css" />
+    <link rel="stylesheet" href="/onion-editor/build/editor-main.css" />
     <!-- endbower -->
     <link rel="stylesheet" href="/jcrop/css/jquery.Jcrop.min.css" />
     <!-- endbuild -->
@@ -95,7 +95,6 @@
     <script src="/moment-timezone/builds/moment-timezone-with-data-2010-2020.js"></script>
     <script src="/zeroclipboard/dist/ZeroClipboard.js"></script>
     <script src="/ng-clip/src/ngClip.js"></script>
-    <script src="/onion-editor/build/onion-editor.js"></script>
     <script src="/pnotify/pnotify.core.js"></script>
     <script src="/pnotify/pnotify.buttons.js"></script>
     <script src="/pnotify/pnotify.callbacks.js"></script>
@@ -103,6 +102,7 @@
     <script src="/pnotify/pnotify.desktop.js"></script>
     <script src="/pnotify/pnotify.history.js"></script>
     <script src="/pnotify/pnotify.nonblock.js"></script>
+    <script src="/onion-editor/build/onion-editor.js"></script>
     <script src="/raven-js/dist/raven.js"></script>
     <script src="/restangular/dist/restangular.js"></script>
     <script src="/restmod-style-drf-paged/restmod-style-drf-paged.js"></script>
@@ -129,6 +129,7 @@
     <script src="components/autocomplete-basic/autocomplete-basic.js"></script>
     <script src="components/betty-editable/betty-editable.js"></script>
     <script src="components/bug-reporter/bug-reporter.js"></script>
+    <script src="components/campaign-autocomplete/campaign-autocomplete.js"></script>
     <script src="components/campaigns/campaigns-edit/campaigns-edit-directive.js"></script>
     <script src="components/campaigns/campaigns-edit/campaigns-edit-sponsor-pixel/campaigns-edit-sponsor-pixel-directive.js"></script>
     <script src="components/campaigns/campaigns-edit/campaigns-edit-sponsor-pixel/campaigns-edit-sponsor-pixel.js"></script>
@@ -320,7 +321,6 @@
     <script src="scripts/controllers/lastmodifiedguardmodal.js"></script>
     <script src="scripts/controllers/pubtimemodal.js"></script>
     <script src="scripts/controllers/reporting.js"></script>
-    <script src="scripts/controllers/sponsormodal.js"></script>
     <script src="scripts/controllers/targeting.js"></script>
     <script src="scripts/controllers/temporary-url-modal.js"></script>
     <script src="scripts/controllers/thumbnailmodal.js"></script>
@@ -399,7 +399,6 @@
           .constant('SHARED_URL', '/shared/')
           .constant('STATIC_URL', '/static/')
           .constant('TAR_OPTIONS', { endpoint: '/ads/targeting' })
-          .constant('TIMEZONE_NAME', 'America/Chicago')
           .constant('VIDEO_EMBED_URL', 'http://www.avclub.com/videos/embed?id=')
           .constant('VIDEO_THUMBNAIL_URL', 'http://v.theonion.com/avclubmedia/video/{{video}}/frame_{{thumbnail}}.jpg')
           .constant('ZERO_CLIPBOARD_SWF', '/zeroclipboard/dist/ZeroClipboard.swf');

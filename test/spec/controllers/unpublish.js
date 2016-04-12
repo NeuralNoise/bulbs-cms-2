@@ -5,9 +5,9 @@ describe('Controller: UnpublishCtrl', function () {
   // load the controller's module
   beforeEach(module('bulbsCmsApp'));
 
-  var UnpublishCtrl,
-    scope,
-    httpBackend;
+  var UnpublishCtrl;
+  var scope;
+  var httpBackend;
 
   // Initialize the controller and a mock scope
   beforeEach(inject(function ($controller, $rootScope, $httpBackend) {
@@ -17,7 +17,7 @@ describe('Controller: UnpublishCtrl', function () {
       $scope: scope
     });
   }));
-  
+
   afterEach (function () {
     httpBackend.verifyNoOutstandingExpectation ();
     httpBackend.verifyNoOutstandingRequest ();
@@ -27,7 +27,6 @@ describe('Controller: UnpublishCtrl', function () {
     scope.article = {id: 1};
     httpBackend.expectPOST('/cms/api/v1/content/1/publish/').respond([200, {id: 1}]);
     scope.unpublish();
-    httpBackend.flush()
+    httpBackend.flush();
   });
-
 });

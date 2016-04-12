@@ -3,7 +3,7 @@
 angular.module('evergreenField.directive', [
   'bulbsCmsApp.settings',
   'lodash',
-  'saveButton.directive',
+  'saveButton.directive'
 ])
   .directive('evergreenField', [
     'COMPONENTS_URL',

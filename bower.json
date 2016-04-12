@@ -19,7 +19,7 @@
     "bootstrap": "~3.1.1",
     "bulbs-autocomplete": "~0.2.3",
     "bulbs-public-embed-instagram": "https://github.com/theonion/bulbs-public-embed-instagram.git#~0.0.8",
-    "cms-components": "https://github.com/theonion/cms-components.git#0.5.0",
+    "cms-components": "https://github.com/theonion/cms-components.git#0.7.0",
     "es5-shim": "~2.1.0",
     "firebase": "1.0.21",
     "font-awesome": "~4.4.0",
@@ -31,14 +31,13 @@
     "moment": "~2.6.0",
     "moment-timezone": "~0.2.4",
     "ng-clip": "~0.2.6",
-    "onion-editor": "https://github.com/theonion/editor.git#~0.2.46",
     "pnotify": "~2.0.0",
+    "onion-editor": "https://github.com/theonion/editor.git#~0.2.46",
     "raven-js": "1.1.11",
     "restangular": "~1.4.0",
     "restmod-style-drf-paged": "~0.1.0",
     "urlify": "theonion/urlify",
-    "videohub-client-js": "theonion/videohub-client-js#~0.2.0",
-    "zeroclipboard": "~2.1.6"
+    "videohub-client-js": "theonion/videohub-client-js#~0.2.0"
   },
   "devDependencies": {
     "angular-mocks": "1.4.9",
