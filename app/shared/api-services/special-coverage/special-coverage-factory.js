@@ -44,15 +44,15 @@ angular.module('apiServices.specialCoverage.factory', [
 
       // fields from frontend to backend
       end_date: {
-        encode: 'moment_to_date_string',
+        encode: 'moment_to_date_string'
       },
       start_date: {
-        encode: 'moment_to_date_string',
+        encode: 'moment_to_date_string'
       },
 
       // fields from backend to frontend
       endDate: {
-        decode: 'date_string_to_moment',
+        decode: 'date_string_to_moment'
       },
       startDate: {
         decode: 'date_string_to_moment'
@@ -178,6 +178,6 @@ angular.module('apiServices.specialCoverage.factory', [
         Model: {
           ACTIVE_STATES: _.clone(ACTIVE_STATES)
         }
-      },
+      }
     });
   });

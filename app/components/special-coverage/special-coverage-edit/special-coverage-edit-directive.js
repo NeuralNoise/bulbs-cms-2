@@ -41,7 +41,8 @@ angular.module('specialCoverage.edit.directive', [
           });
         }
 
-        window.onbeforeunload = function (e) {
+
+        window.onbeforeunload = function () {
           if (!_.isEmpty($scope.model.$dirty()) || $scope.isNew || $scope.needsSave) {
             // unsaved changes, show confirmation alert
             return 'You have unsaved changes.';

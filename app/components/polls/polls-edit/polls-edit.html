@@ -170,31 +170,31 @@
             class="response-text-field"
             data-ng-repeat="answer in answers"
             ng-if="model.answer_type === 'text'">
-            <ng-form name="answerForm{{ $index }}">
-              <div>
-                <label for="answerText">
-                  Response Text
-                  <span
-                      class="error-message"
-                      ng-show="answerForm{{ $index }}.answer_text.$error.required">
-                    cannot be blank.
-                  </span>
-                </label>
-                <div class="answer-text form-inline">
-                  <textarea
-                      class="form-control"
-                      name="answer_text"
-                      ng-model="answer.answer_text"
-                      required>
-                  </textarea>
-                  <a
-                    ng-click="removeAnswer(answer.id)">
-                    <i class="fa fa-minus-circle"></i>
-                  </a>
-                </div>
+          <ng-form name="answerForm{{ $index }}">
+            <div>
+              <label for="answerText">
+                Response Text
+                <span
+                    class="error-message"
+                    ng-show="answerForm{{ $index }}.answer_text.$error.required">
+                  cannot be blank.
+                </span>
+              </label>
+              <div class="answer-text form-inline">
+                <textarea
+                    class="form-control"
+                    name="answer_text"
+                    ng-model="answer.answer_text"
+                    required>
+                </textarea>
+                <a
+                  ng-click="removeAnswer(answer.id)">
+                  <i class="fa fa-minus-circle"></i>
+                </a>
               </div>
-            </ng-form>
-          </fieldset>
+            </div>
+          </ng-form>
+        </fieldset>
 
           <fieldset
               class="response-text-field"
@@ -239,7 +239,6 @@
               </ng-form>
             </div>
           </fieldset>
-        </div>
       </div>
     </div>
     <div class="row">

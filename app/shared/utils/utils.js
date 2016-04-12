@@ -46,29 +46,6 @@ angular.module('utils', [])
       return list.splice(index, 1).length > 0;
     };
 
-    /**
-    * Transform an object into url params.
-    * ONLY knows what to do with a flat params object.
-    * Similar to jQuery.param
-    * @param {Object} params - Object of params to serialize.
-    * @returns {String} query - a url querystring (is prefixed with '?')
-    */
-    Utils.param = function (params) {
-      if (!params) {
-        params = {};
-      }
-      var keys = Object.keys(params);
-      var query = '';
-      if (keys.length > 0) {
-        query += '?';
-        query += keys.map(function (key) {
-          return key + '=' + params[key];
-        })
-        .join('&');
-      }
-      return query;
-    };
-
     Utils.path = {
       /**
        * Join path strings.
@@ -91,6 +68,29 @@ angular.module('utils', [])
         }
         return protocolPrefix + argsArr.join(sep).replace(replace, sep);
       }
+    };
+
+    /**
+    * Transform an object into url params.
+    * ONLY knows what to do with a flat params object.
+    * Similar to jQuery.param
+    * @param {Object} params - Object of params to serialize.
+    * @returns {String} query - a url querystring (is prefixed with '?')
+    */
+    Utils.param = function (params) {
+      if (!params) {
+        params = {};
+      }
+      var keys = Object.keys(params);
+      var query = '';
+      if (keys.length > 0) {
+        query += '?';
+        query += keys.map(function (key) {
+          return key + '=' + params[key];
+        })
+        .join('&');
+      }
+      return query;
     };
 
     // allow this to be used anywhere

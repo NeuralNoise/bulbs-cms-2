@@ -9,8 +9,8 @@ module.exports = function(config) {
     // Only supporting Chrome
     'SL_Chrome': {
       base: 'SauceLabs',
-      browserName: 'chrome',
-    },
+      browserName: 'chrome'
+    }
   };
 
   config.set({
@@ -56,8 +56,6 @@ module.exports = function(config) {
       'bower_components/videohub-client-js/src/videohub-client/videohub-api-mocks.js',
       'bower_components/cms-components/dist/cms-components.js',
       'bower_components/pnotify/pnotify.core.js',
-
-      'test/test-helper.js',
 
       'app/mocks/api.js',
       'app/mocks/api-mock-data.js',
@@ -124,8 +122,7 @@ module.exports = function(config) {
     coverageReporter: {
       type: 'lcov',
       dir: 'coverage/'
-    },
-
+    }
   });
 
   if (process.env.TRAVIS) {

@@ -27,8 +27,8 @@ angular.module('roles.edit.directive', [
     }
   ])
   .directive('rolesEdit', [
-      'COMPONENTS_URL', 'Utils',
-      function (COMPONENTS_URL, Utils) {
+    'COMPONENTS_URL', 'Utils',
+    function (COMPONENTS_URL, Utils) {
       return {
         controller: [
           '_', '$location', '$q', '$routeParams', '$scope', 'Role', 'PAYMENT_TYPES',
@@ -110,8 +110,7 @@ angular.module('roles.edit.directive', [
               }
               return promise;
             };
-          }
-        ],
+          }],
         restrict: 'E',
         scope: {
           getModelId: '&modelId'

@@ -29,6 +29,14 @@ angular.module('content.edit.controller', [
     var saveHTML =  '<i class=\'fa fa-floppy-o\'></i> Save';
     var navbarSave = '.navbar-save';
 
+    // keep track of if article is dirty or not
+    $scope.articleIsDirty = false;
+    $scope.$watch(function () {
+      return !angular.equals($scope.article, $scope.last_saved_article);
+    }, function (isDirty) {
+      $scope.articleIsDirty = isDirty;
+    });
+
     $scope.$watch('article.title', function () {
       $window.document.title = CMS_NAMESPACE + ' | Editing ' + ($scope.article && $('<span>' + $scope.article.title + '</span>').text());
     });
@@ -290,14 +298,6 @@ angular.module('content.edit.controller', [
       $location.search('rating_type', null); //maybe just kill the whole query string with $location.url($location.path())
       $scope.saveArticleDeferred.resolve(resp);
     };
-
-    // keep track of if article is dirty or not
-    $scope.articleIsDirty = false;
-    $scope.$watch(function () {
-      return !angular.equals($scope.article, $scope.last_saved_article);
-    }, function (isDirty) {
-      $scope.articleIsDirty = isDirty;
-    });
 
     $scope.postValidationSaveArticle = function () {
       if ($scope.article.status !== 'Published') {

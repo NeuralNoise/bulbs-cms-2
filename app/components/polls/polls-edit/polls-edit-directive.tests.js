@@ -26,6 +26,7 @@ describe('Directive: pollsEdit', function () {
     momentjs = moment;
 
     $routeParams.id = 'new';
+
     element = $compile(html)($rootScope);
     $rootScope.$digest();
     scope = element.isolateScope();
