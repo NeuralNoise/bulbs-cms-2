@@ -56,8 +56,7 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('test', [
-    'travis',
-    'protractor'
+    'travis'
   ]);
 
   grunt.registerTask('travis', [

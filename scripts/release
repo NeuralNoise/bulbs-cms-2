@@ -63,8 +63,8 @@ else
   $NODE_BIN/bower update
 fi
 
-secho "Running tests"
-./scripts/test-js -s
+secho "Checking code integrity"
+./scripts/check-code-integrity
 
 secho "Building sources"
 ./scripts/build
