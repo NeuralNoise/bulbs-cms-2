@@ -28,7 +28,7 @@ angular.module('bulbsCmsApp')
             templateUrl = defaultView;
           }
 
-          return templateUrl
+          return templateUrl;
         },
         link: function (scope) {
           scope.NAV_LOGO = CmsConfig.getLogoUrl();
