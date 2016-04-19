@@ -6,6 +6,8 @@
   * [Local](#local)
     + [Running](#running)
     + [Tests](#tests)
+    + [Linting](#linting)
+    + [Running all code checks](#running-all-code-checks)
     + [Test build](#test-build)
   * [Creating a new release](#creating-a-new-release)
   * [Fetching changes from bulbs-cms](#fetching-changes-from-bulbs-cms)
@@ -29,6 +31,18 @@ $ ./scripts/dev-start
 To run tests:
 ```bash
 $ ./scripts/test-js
+```
+
+#### Linting
+To run the linter:
+```bash
+$ ./scripts/lint
+```
+
+#### Running all code checks
+To do all code integrity checks, as Travis and the release process will:
+```bash
+$ ./scripts/check-code-integrity
 ```
 
 #### Test build

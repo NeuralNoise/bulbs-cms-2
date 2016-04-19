@@ -8,8 +8,7 @@ cache:
 before_script:
 - ./scripts/dev-setup
 script:
-- ./scripts/lint-js
-- ./scripts/test-js --single-run
+- ./scripts/check-code-integrity
 addons:
   sauce_connect: true
 env:

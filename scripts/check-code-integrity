@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Do all code checks necessary to verify integrity.
+
+./scripts/lint-js && \
+  ./scripts/test-js --single-run

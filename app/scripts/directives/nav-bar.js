@@ -4,22 +4,31 @@ angular.module('bulbsCmsApp')
   .directive('navBar', [
     'CmsConfig', 'PARTIALS_URL', 'CurrentUser',
     function (CmsConfig, PARTIALS_URL, CurrentUser) {
-      var defaultView = PARTIALS_URL + 'nav.html';
+      var defaultView;
+      try {
+        defaultView = CmsConfig.getToolbarTemplateUrl('nav');
+      } catch (e) {
+        console.warn(
+          'Unable to find site-specific "nav" template, using default. Config stacktrace follows:',
+          e.stack
+        );
+        defaultView = PARTIALS_URL + 'nav.html';
+      }
 
       return {
         controller: 'ContentworkflowCtrl',
         restrict: 'E',
         scope: false,
         templateUrl: function (tElement, tAttrs) {
-          var template = defaultView;
-          if ('view' in tAttrs) {
-            try {
-              template = CmsConfig.getToolbarTemplateUrl(tAttrs.view);
-            } catch (e) {
-              console.error(e);
-            }
+          var templateUrl;
+
+          if (tAttrs.view) {
+            templateUrl = CmsConfig.getToolbarTemplateUrl(tAttrs.view);
+          } else {
+            templateUrl = defaultView;
           }
-          return template;
+
+          return templateUrl;
         },
         link: function (scope) {
           scope.NAV_LOGO = CmsConfig.getLogoUrl();
