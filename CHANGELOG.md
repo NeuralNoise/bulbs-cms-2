@@ -2,6 +2,8 @@
 
 <!-- markdown-toc -->
 
+- [0.11.0](#0110)
+  * [Updated](#updated)
 - [0.6.1](#061)
   * [Fixes](#fixes)
 - [0.6.0](#060)
@@ -15,6 +17,13 @@
 <!-- markdown-toc-stop -->
 
 <sub>**Note**: update table of contents with `./scripts/update-changelog-toc`.</sub>
+
+## 0.11.0
+
+Logs a warning with a stacktrace if cms is using the default nav bar instead of a site-specific configured nav bar. Also, added a script `check-code-integrity` that can be used to run all other scripts that check the integrity of the code.
+
+### Updated
+1. Falls back to default nav bar and warns when site has not configured a `"nav"` toolbar template.
 
 ## 0.6.1
 
