@@ -1,17 +1,12 @@
-<div>
-  <div>
-    <label for="ac-{{ uuid }}">Section</label>
-  </div>
-  <div class="form-group">
-    <autocomplete-basic
-        class="form-control"
-        ng-if="!article.section || article.section.$resolved !== false"
-        ng-model="article.section"
-        item-display-formatter="item.name"
-        on-select="onSelect(selection); $parent.needsSave = true"
-        input-id="ac-{{ uuid }}"
-        input-placeholder="Search sections..."
-        search-function="searchSections">
-    </autocomplete-basic>
-  </div>
-</div>
+<label for="{{ uuid }}">Section</label>
+<autocomplete-basic
+    class="form-control"
+    ng-model="ngModel.$viewValue"
+    initial-value="initialValue"
+    item-display-formatter="itemDisplayFormatter(item)"
+    item-value-formatter="itemValueFormatter(item)"
+    on-select="onSelect({selection: selection});"
+    input-id="{{ uuid }}"
+    input-placeholder="Search sections..."
+    search-function="searchSections">
+</autocomplete-basic>
