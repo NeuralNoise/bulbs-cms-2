@@ -1,4 +1,5 @@
 'use strict';
+/*jshint -W030 */
 
 describe('Controller: ContentEdit', function () {
   // load the controller's module

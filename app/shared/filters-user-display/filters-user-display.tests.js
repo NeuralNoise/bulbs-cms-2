@@ -14,14 +14,14 @@ describe('Filter: userDisplay', function () {
 
   it('should return first and last name when present', function () {
     expect(user({
-      first_name: "First",
-      last_name: "Last"
-    })).to.equal("First Last");
+      first_name: 'First',
+      last_name: 'Last'
+    })).to.equal('First Last');
   });
 
   it('should return username when no first and last name', function () {
     expect(user({
-      username: "username"
-    })).to.equal("username");
+      username: 'username'
+    })).to.equal('username');
   });
 });
