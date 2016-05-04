@@ -1,7 +1,6 @@
 'use strict';
 
 describe('Controller: CmsNotificationsCtrl', function () {
-
   beforeEach(module('bulbsCmsApp'));
   beforeEach(module('bulbsCmsApp.mockApi'));
 
@@ -11,17 +10,13 @@ describe('Controller: CmsNotificationsCtrl', function () {
   var $scope;
 
   beforeEach(inject(function (_CurrentUser_, _$httpBackend_, $rootScope) {
-
     CurrentUser = _CurrentUser_;
     $httpBackend = _$httpBackend_;
     $scope = $rootScope.$new();
-
   }));
 
   describe('with editable notifications', function () {
-
     beforeEach(inject(function () {
-
       $httpBackend.expectGET('/api/me').respond({
         id: 0,
         username: 'admin',
@@ -31,7 +26,6 @@ describe('Controller: CmsNotificationsCtrl', function () {
         is_superuser: true
       });
       CurrentUser.$get();
-
     }));
 
     beforeEach(inject(function ($rootScope, $controller, CmsNotificationsApi, $window, CMS_NAMESPACE,
@@ -49,34 +43,26 @@ describe('Controller: CmsNotificationsCtrl', function () {
 
       $httpBackend.flush();
       $scope.$apply();
-
     }));
 
     it('should initialize with notifications from backend', function () {
-
-      expect($scope.notifications[0].title).toBe('We\'ve Made An Update!');
-
+      expect($scope.notifications[0].title).to.equal('We\'ve Made An Update!');
     });
 
     it('should provide a function to add new notifications to top of notifications list', function () {
-
       var prevLength = $scope.notifications.length;
-
       $scope.newNotification();
-
       var newLength = $scope.notifications.length;
       var newNotification = $scope.notifications[0];
 
-      expect(newLength).toBe(prevLength + 1);
+      expect(newLength).to.equal(prevLength + 1);
 
       // we only care about ensuring that there's no post / notify end date for new posts
-      expect(newNotification.post_date).toBe(null);
-      expect(newNotification.notify_end_date).toBe(null);
-
+      expect(newNotification.post_date).to.equal(null);
+      expect(newNotification.notify_end_date).to.equal(null);
     });
 
     it('should provide a function to save a notification', function () {
-
       var notificationToSave = $scope.newNotification();
       var newPostDate = moment('2014-09-25T16:00:00-0500');
       var newNotifyEndDate = moment('2014-09-28T16:00:00-0500');
@@ -96,10 +82,10 @@ describe('Controller: CmsNotificationsCtrl', function () {
       $httpBackend.flush();
       $scope.$apply();
 
-      expect(notificationSaved.getRestangularUrl).toBeDefined();
-      expect(notificationSaved.title).toBe(notificationToSave.title);
-      expect(notificationSaved.post_date.valueOf()).toBe(newPostDate.valueOf());
-      expect(notificationSaved.notify_end_date.valueOf()).toBe(newNotifyEndDate.valueOf());
+      expect(notificationSaved.getRestangularUrl).not.to.be.undefined;
+      expect(notificationSaved.title).to.equal(notificationToSave.title);
+      expect(notificationSaved.post_date.valueOf()).to.equal(newPostDate.valueOf());
+      expect(notificationSaved.notify_end_date.valueOf()).to.equal(newNotifyEndDate.valueOf());
 
       notificationSaved.title = 'Updated Title';
       notificationSaved.id = 0;
@@ -114,12 +100,10 @@ describe('Controller: CmsNotificationsCtrl', function () {
       $httpBackend.flush();
       $scope.$apply();
 
-      expect(notificationUpdated.title).toBe(notificationSaved.title);
-
+      expect(notificationUpdated.title).to.equal(notificationSaved.title);
     });
 
     it('should provide a function to remove a notification', function () {
-
       var notificationToDelete = $scope.notifications[0];
       var deleted = false;
       var oldLength = $scope.notifications.length;
@@ -133,17 +117,14 @@ describe('Controller: CmsNotificationsCtrl', function () {
       $httpBackend.flush();
       $scope.$apply();
 
-      expect(deleted).toBe(true);
-      expect($scope.notifications.length).toBe(oldLength - 1);
-
+      expect(deleted).to.equal(true);
+      expect($scope.notifications.length).to.equal(oldLength - 1);
     });
 
   });
 
   describe('without editable notifications', function () {
-
     beforeEach(inject(function () {
-
       $httpBackend.expectGET('/api/me').respond({
         id: 0,
         username: 'regularguy',
@@ -152,11 +133,9 @@ describe('Controller: CmsNotificationsCtrl', function () {
         last_name: 'Smath'
       });
       CurrentUser.$get();
-
     }));
 
     beforeEach(inject(function ($rootScope, $controller, CmsNotificationsApi, $window, CMS_NAMESPACE, moment, CurrentUser) {
-
       var today = moment();
       $httpBackend.expectGET('/cms/api/v1/notifications/').respond([
         {
@@ -181,12 +160,11 @@ describe('Controller: CmsNotificationsCtrl', function () {
 
       $httpBackend.flush();
       $scope.$apply();
-
     }));
 
     it('should not show notifications that aren\'t editable if their post date is in the future', function () {
-      expect($scope.notifications.length).toBe(1);
-      expect($scope.notifications[0].id).toBe(0);
+      expect($scope.notifications.length).to.equal(1);
+      expect($scope.notifications[0].id).to.equal(0);
     });
   });
 });

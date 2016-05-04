@@ -38,7 +38,7 @@ describe('Testing bettyeditable directive', function() {
     $httpBackend.flush();
 
     var imageContainer = elem.find('.image-edit-container');
-    expect(imageContainer.css('background-image')).toContain('//localimages.avclub.com/60/original/1200.jpg');
+    expect(imageContainer.css('background-image')).to.contain('//localimages.avclub.com/60/original/1200.jpg');
   });
 
   it('should allow an external image update', function () {
@@ -54,7 +54,7 @@ describe('Testing bettyeditable directive', function() {
     $httpBackend.flush();
 
     var imageContainer = elem.find('.image-edit-container');
-    expect(imageContainer.css('background-image')).toContain('//localimages.avclub.com/60/original/1200.jpg');
+    expect(imageContainer.css('background-image')).to.contain('//localimages.avclub.com/60/original/1200.jpg');
 
     scope.image = {
       id: 66,
@@ -63,7 +63,7 @@ describe('Testing bettyeditable directive', function() {
     };
     $httpBackend.flush();
     imageContainer = elem.find('.image-edit-container');
-    expect(imageContainer.css('background-image')).toContain('//localimages.avclub.com/66/original/1200.jpg');
+    expect(imageContainer.css('background-image')).to.contain('//localimages.avclub.com/66/original/1200.jpg');
   });
 
   it('should load without an image', function () {
@@ -72,7 +72,7 @@ describe('Testing bettyeditable directive', function() {
     scope.$digest();
 
     var imageContainer = elem.find('.image-edit-container');
-    expect(['', 'none']).toContain(imageContainer.css('background-image'));
+    expect(['', 'none']).to.contain(imageContainer.css('background-image'));
   });
 
   it('should update on upload', function () {
@@ -102,7 +102,7 @@ describe('Testing bettyeditable directive', function() {
     $httpBackend.flush();
 
     var imageContainer = elem.find('.image-edit-container');
-    expect(imageContainer.css('background-image')).toContain('//localimages.avclub.com/1234/5/original/1200.jpg');
+    expect(imageContainer.css('background-image')).to.contain('//localimages.avclub.com/1234/5/original/1200.jpg');
   });
 
 

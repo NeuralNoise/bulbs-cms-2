@@ -23,13 +23,13 @@
   "globals": {
     "ConfigError": true,
     "angular": false,
-    "jasmine": false,
+    // testing functions
+    "sinon": false,
     "describe": false,
     "afterEach": false,
     "beforeEach": false,
     "inject": false,
     "it": false,
-    "expect": false,
-    "spyOn": false
+    "expect": false
   }
 }

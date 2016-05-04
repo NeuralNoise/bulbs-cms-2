@@ -23,11 +23,11 @@ describe('Filter: backendApiHref', function () {
   it('should have a directive that adds an href property that is the full url', function () {
     var relUrl = '/something';
     var element = $compile('<a backend-api-href="' + relUrl + '"></a>')($scope.$new());
-    expect($(element).attr('href')).toBe(cmsRoot + relUrl);
+    expect($(element).attr('href')).to.equal(cmsRoot + relUrl);
   });
 
   it('should have a filter that can transform relative urls into full urls', function () {
     var relUrl = '/something';
-    expect($filter('backendApiHref')(relUrl)).toBe(cmsRoot + relUrl);
+    expect($filter('backendApiHref')(relUrl)).to.equal(cmsRoot + relUrl);
   });
 });

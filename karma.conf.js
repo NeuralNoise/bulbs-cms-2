@@ -18,7 +18,7 @@ module.exports = function(config) {
     basePath: '',
 
     // testing framework to use (jasmine/mocha/qunit/...)
-    frameworks: ['jasmine'],
+    frameworks: ['mocha', 'chai', 'sinon'],
 
     // list of files / patterns to load in the browser
     files: [
@@ -108,6 +108,13 @@ module.exports = function(config) {
 
     // set up reporters
     reporters: ['progress', 'coverage'],
+
+    client: {
+      mocha: {
+        reporter: 'html',
+        ui: 'bdd',
+      },
+    },
 
     ngHtml2JsPreprocessor: {
       // strip this from the file path
