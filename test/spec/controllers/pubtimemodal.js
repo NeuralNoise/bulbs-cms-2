@@ -77,18 +77,18 @@ describe('Controller: PubtimemodalCtrl', function () {
 
   describe('function: setPubTime', function () {
     it('should exist', function () {
-      expect(angular.isFunction(scope.setPubTime)).toBe(true);
+      expect(angular.isFunction(scope.setPubTime)).to.equal(true);
     });
 
     it('should close pubTime modal and open validation modal when you try to publish with no feature type', function () {
-      spyOn(modal, 'dismiss');
-      spyOn(modalService, 'open');
+      sinon.stub(modal, 'dismiss');
+      sinon.stub(modalService, 'open');
 
       scope.article = articleWithNoFeatureType;
       scope.setPubTime();
 
-      expect(modal.dismiss).toHaveBeenCalled();
-      expect(modalService.open).toHaveBeenCalled();
+      expect(modal.dismiss).to.have.been.called;
+      expect(modalService.open).to.have.been.called;
     });
 
     it('should make an http request to the publis endpoint', function () {
@@ -104,7 +104,7 @@ describe('Controller: PubtimemodalCtrl', function () {
 
   describe('function: setTimeShortcut', function () {
     it('should exist', function () {
-      expect(angular.isFunction(scope.setTimeShortcut)).toBe(true);
+      expect(angular.isFunction(scope.setTimeShortcut)).to.equal(true);
     });
 
     describe('with param "now"', function () {
@@ -112,8 +112,8 @@ describe('Controller: PubtimemodalCtrl', function () {
         scope.setTimeShortcut('now');
         scope.$apply();
 
-        expect(scope.timePickerValue.hour()).toBe(14);
-        expect(scope.timePickerValue.minute()).toBe(22);
+        expect(scope.timePickerValue.hour()).to.equal(14);
+        expect(scope.timePickerValue.minute()).to.equal(22);
       });
 
       it('should make setPubTime post the mocked date', function () {
@@ -135,8 +135,8 @@ describe('Controller: PubtimemodalCtrl', function () {
         scope.setTimeShortcut('midnight');
         scope.$apply();
 
-        expect(scope.timePickerValue.hour()).toBe(0);
-        expect(scope.timePickerValue.minute()).toBe(0);
+        expect(scope.timePickerValue.hour()).to.equal(0);
+        expect(scope.timePickerValue.minute()).to.equal(0);
       });
 
       it('should make setPubTime post the mocked date', function () {
@@ -184,8 +184,8 @@ describe('Controller: PubtimemodalCtrl', function () {
           scope.setTimeShortcut('now');
           scope.$apply();
 
-          expect(scope.timePickerValue.hour()).toBe(12);
-          expect(scope.timePickerValue.minute()).toBe(22);
+          expect(scope.timePickerValue.hour()).to.equal(12);
+          expect(scope.timePickerValue.minute()).to.equal(22);
         });
 
       });
@@ -195,8 +195,8 @@ describe('Controller: PubtimemodalCtrl', function () {
           scope.setTimeShortcut('midnight');
           scope.$apply();
 
-          expect(scope.timePickerValue.hour()).toBe(0);
-          expect(scope.timePickerValue.minute()).toBe(0);
+          expect(scope.timePickerValue.hour()).to.equal(0);
+          expect(scope.timePickerValue.minute()).to.equal(0);
         });
       });
 

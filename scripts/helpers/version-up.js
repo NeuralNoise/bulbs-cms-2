@@ -10,7 +10,7 @@
 var fs = require('fs');
 
 var ConsoleHelper = require('./console-helper');
-var Versioner = require('./versioner.js');
+var Versioner = require('./versioner');
 
 var jsonFile = process.argv[2];     // path to a JSON file
 var versionType = process.argv[3];  // 'major', 'minor', 'patch'

@@ -126,7 +126,8 @@ angular.module('listPage', [
         filterButtons: '&',
         modelFactory: '=',
         searchParameter: '@',
-        toolCopyContent: '@'
+        toolCopyContent: '@',
+        utilityButtons: '='
       },
       templateUrl: SHARED_URL + 'list-page/list-page.html'
     };

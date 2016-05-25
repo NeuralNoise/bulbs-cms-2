@@ -23,7 +23,9 @@
   "globals": {
     "ConfigError": true,
     "angular": false,
-    "jasmine": false,
+
+    // testing functions
+    "sinon": false,
     "describe": false,
     "afterEach": false,
     "beforeEach": false,
