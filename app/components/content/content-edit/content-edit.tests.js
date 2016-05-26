@@ -35,19 +35,19 @@ describe('Controller: ContentEdit', function () {
       }
     };
 
-    spyOn(VersionStorageApiMock, '$create');
+    sinon.stub(VersionStorageApiMock, '$create');
 
   }));
 
   describe('on instantiation', function () {
     it('should retrieve the current article from the API', function () {
-      spyOn(contentApi, 'one').andCallThrough();
+      sinon.spy(contentApi, 'one');
       ContentEdit = controller('ContentEdit', {
         $scope: scope,
         $routeParams: routeParams,
         ContentApi: contentApi
       });
-      expect(contentApi.one).toHaveBeenCalledWith('content', 1);
+      expect(contentApi.one).to.have.been.calledWith('content', 1);
     });
   });
 
@@ -69,33 +69,29 @@ describe('Controller: ContentEdit', function () {
       httpBackend.verifyNoOutstandingRequest ();
     });
 
-    it('should have string MEDIA_ITEM_PARTIALS_URL in scope', function () {
-      expect(typeof scope.MEDIA_ITEM_PARTIALS_URL).toBe('string');
-    });
-
     it('should have a saveArticle function in scope', function () {
-      expect(scope.saveArticle).toBeDefined();
+      expect(scope.saveArticle).not.to.be.undefined;
     });
 
     it('should set articleIsDirty to true when article is dirty', function () {
       scope.article.title = 'some random title that isn not the same as the original';
       scope.$digest();
-      expect(scope.articleIsDirty).toBe(true);
+      expect(scope.articleIsDirty).to.equal(true);
     });
 
     describe('function: saveArticleIfDirty', function () {
       it('should call saveArticle if article is dirty', function () {
         scope.articleIsDirty = true;
-        spyOn(scope, 'saveArticle');
+        sinon.stub(scope, 'saveArticle');
         scope.saveArticleIfDirty();
-        expect(scope.saveArticle).toHaveBeenCalled();
+        expect(scope.saveArticle).to.have.been.called;
       });
 
       it('should not call saveArticle if article is not dirty', function () {
         scope.articleIsDirty = false;
-        spyOn(scope, 'saveArticle');
+        sinon.stub(scope, 'saveArticle');
         scope.saveArticleIfDirty();
-        expect(scope.saveArticle).not.toHaveBeenCalled();
+        expect(scope.saveArticle).not.to.have.been.called;
       });
     });
 
@@ -105,31 +101,26 @@ describe('Controller: ContentEdit', function () {
         httpBackend.expect('GET', '/cms/api/v1/content/1/').respond(mockArticle);
         httpBackend.expect('PUT', '/cms/api/v1/content/1/').respond(mockArticle);
 
-        spyOn(scope, 'postValidationSaveArticle').andCallThrough();
+        sinon.spy(scope, 'postValidationSaveArticle');
 
         scope.saveArticle();
         httpBackend.flush();
 
-        expect(scope.postValidationSaveArticle).toHaveBeenCalled();
-        expect(VersionStorageApiMock.$create).toHaveBeenCalled();
+        expect(scope.postValidationSaveArticle).to.have.been.called;
+        expect(VersionStorageApiMock.$create).to.have.been.called;
       });
 
       it('should open a modal if there is a last modified conflict', function () {
         var newMockArticle = angular.copy(mockArticle);
         newMockArticle.last_modified = '2999-04-08T15:35:15.118Z'; //last_modified FAR in the future
         httpBackend.expect('GET', '/cms/api/v1/content/1/').respond(newMockArticle);
-        spyOn(scope, 'postValidationSaveArticle');
-        spyOn(modalService, 'open');
+        sinon.stub(scope, 'postValidationSaveArticle');
+        sinon.stub(modalService, 'open');
         scope.saveArticle();
         httpBackend.flush();
-        expect(modalService.open).toHaveBeenCalled();
-        expect(scope.postValidationSaveArticle).not.toHaveBeenCalled();
+        expect(modalService.open).to.have.been.called;
+        expect(scope.postValidationSaveArticle).not.to.have.been.called;
       });
-
     });
-
   });
-
-
-
 });

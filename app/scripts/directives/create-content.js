@@ -27,7 +27,8 @@ angular.module('bulbsCmsApp')
             IfExistsElse.ifExistsElse(
               ContentFactory.all('tag').getList({
                 ordering: 'name',
-                search: $scope.tag
+                search: $scope.tag,
+                types: 'core_section'
               }),
               {slug: $scope.tag},
               function (tag) { $scope.init.tags = [tag]; $scope.gotTags = true; },

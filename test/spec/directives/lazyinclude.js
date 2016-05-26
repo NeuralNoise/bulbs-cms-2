@@ -18,8 +18,8 @@ describe('Directive: lazyInclude', function () {
   }));
 
   it('should not call getTemplate if the element is not visible', function(){
-    spyOn(_Gettemplate, 'get');
+    sinon.stub(_Gettemplate, 'get');
     angular.element(_compile(html)(scope));
-    expect(_Gettemplate.get).not.toHaveBeenCalled();
+    expect(_Gettemplate.get).not.to.have.been.called;
   });
 });

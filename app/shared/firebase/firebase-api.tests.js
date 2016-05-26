@@ -12,6 +12,6 @@ describe('Factory: FirebaseApi', function () {
     });
 
     var $injector = angular.injector(['cms.firebase.api', 'ng']);
-    expect($injector.get.bind(null, 'FirebaseApi')).not.toThrow();
+    expect($injector.get.bind(null, 'FirebaseApi')).to.not.throw();
   });
 });

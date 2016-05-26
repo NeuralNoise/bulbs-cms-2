@@ -10,3 +10,4 @@ coverage
 .DS_Store
 npm-debug.log
 .editorconfig
+npm-debug.log
