@@ -1,0 +1,15 @@
+{
+  "name": "bulbs-cms-2-release",
+  "version": "0.12.0",
+  "description": "Bower and NPM installs for bulbs-cms-2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theonion/bulbs-cms-2-release.git"
+  },
+  "author": "Onion Webtech <webtech@theonion.com> (https://github.com/theonion)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/theonion/bulbs-cms-2/issues"
+  },
+  "homepage": "https://github.com/theonion/bulbs-cms-2#readme"
+}
