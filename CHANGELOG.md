@@ -2,6 +2,7 @@
 
 <!-- markdown-toc -->
 
+- [1.0.0](#100)
 - [0.12.0](#0120)
   * [Fixed](#fixed)
 - [0.11.0](#0110)
@@ -19,6 +20,10 @@
 <!-- markdown-toc-stop -->
 
 <sub>**Note**: update table of contents with `./scripts/update-changelog-toc`.</sub>
+
+## 1.0.0
+
+1. Merge in changes from bulbs-cms https://github.com/theonion/bulbs-cms-2/pull/25.
 
 ## 0.12.0
 
