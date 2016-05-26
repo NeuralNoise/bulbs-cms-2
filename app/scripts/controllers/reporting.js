@@ -4,7 +4,7 @@ angular.module('bulbsCmsApp')
   .controller('ReportingCtrl', function (
       $http, $scope, $modal, $window, $, $location, $filter, $interpolate, Login,
       CMS_NAMESPACE, moment, ContributionReportingService, ContentReportingService,
-      FreelancePayReportingService) {
+      FreelancePayReportingService, PARTIALS_URL) {
 
     $window.document.title = CMS_NAMESPACE + ' | Reporting';
 
@@ -256,7 +256,7 @@ angular.module('bulbsCmsApp')
 
     $scope.reportEmailModal = function () {
       return $modal.open({
-        templateUrl: routes.PARTIALS_URL + 'modals/report-email-modal.html',
+        templateUrl: PARTIALS_URL + 'modals/report-email-modal.html',
         controller: 'ReportemailmodalCtrl',
       });
     };
