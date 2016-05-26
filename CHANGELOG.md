@@ -25,7 +25,7 @@
 
 Merge in changes from bulbs-cms.
 
-https://github.com/theonion/bulbs-cms-2/pull/25.
+[#25](https://github.com/theonion/bulbs-cms-2/pull/25)
 
 ## 0.12.0
 
