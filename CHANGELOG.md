@@ -23,7 +23,9 @@
 
 ## 1.0.0
 
-1. Merge in changes from bulbs-cms https://github.com/theonion/bulbs-cms-2/pull/25.
+Merge in changes from bulbs-cms.
+
+https://github.com/theonion/bulbs-cms-2/pull/25.
 
 ## 0.12.0
 
