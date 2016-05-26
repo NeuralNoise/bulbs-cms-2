@@ -9,8 +9,9 @@
     + [Linting](#linting)
     + [Running all code checks](#running-all-code-checks)
     + [Test build](#test-build)
-  * [Creating a new release](#creating-a-new-release)
   * [Fetching changes from bulbs-cms](#fetching-changes-from-bulbs-cms)
+  * [Creating a new release](#creating-a-new-release)
+    + [Create a 'temp' release](#create-a--temp--release)
 
 <!-- markdown-toc-stop -->
 
@@ -51,20 +52,6 @@ To check that your changes build cleanly before you do a release:
 $ ./scripts/build
 ```
 
-### Creating a new release
-Releases are located in [bulbs-cms-2-release](https://github.com/theonion/bulbs-cms-2-release).
-
-To create a new release there, first ensure you're on the ```master``` branch, then:
-```bash
-$ ./scripts/release <versioning-type>
-```
-where ```versioning-type``` is one of ```major```, ```minor```, or ```patch```.
-See [semver](http://semver.org/) for an explanation of what each of these types
-of versionings mean.
-
-This will build, version up, push your changes to ```bulbs-cms-2-release```, then
-create a new release tag in that repo.
-
 ### Fetching changes from bulbs-cms
 This repo should be following the changes in [bulbs-cms/relocated-cms](https://github.com/theonion/bulbs-cms/tree/relocated-cms) until that branch is deleted.
 
@@ -100,4 +87,22 @@ Then push to your branch:
 $ git push
 ```
 
-Now, create a PR and get verification to merge into master.
+### Creating a new release
+To create a new release: stop any running build scripts and ensure you're on the ```master``` branch, then:
+```bash
+$ ./scripts/tag-and-release <versioning-type>
+```
+where ```versioning-type``` is one of ```major```, ```minor```, or ```patch```. See [semver](http://semver.org/) for an explanation of what each of these types of versionings mean.
+
+This will build, version up, and push the dist to a tag identified by the new version.
+
+#### Create a 'temp' release
+
+To create a tag not associated with any particular version run:
+```bash
+$ ./scripts/tag-and-release temp
+```
+
+This will build and push the dist to a tag identified by `temp-<last commit hash>-<current branch name>`.
+
+Use this in situations where you need to point someone else to a distribution for some analysis or testing.

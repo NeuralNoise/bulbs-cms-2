@@ -37,7 +37,7 @@ describe('Directive: hideIfForbidden', function () {
 
     httpBackend.flush();
 
-    expect(element.hasClass('hidden')).toBe(false);
+    expect(element.hasClass('hidden')).to.equal(false);
   }));
 
   it('should make a forbidden element invisible', inject(function ($compile) {
@@ -50,6 +50,6 @@ describe('Directive: hideIfForbidden', function () {
 
     httpBackend.flush();
 
-    expect(element.hasClass('hidden')).toBe(true);
+    expect(element.hasClass('hidden')).to.equal(true);
   }));
 });

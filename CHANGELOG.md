@@ -2,6 +2,8 @@
 
 <!-- markdown-toc -->
 
+- [0.12.0](#0120)
+  * [Fixed](#fixed)
 - [0.11.0](#0110)
   * [Updated](#updated)
 - [0.6.1](#061)
@@ -17,6 +19,13 @@
 <!-- markdown-toc-stop -->
 
 <sub>**Note**: update table of contents with `./scripts/update-changelog-toc`.</sub>
+
+## 0.12.0
+
+Autocomplete component usage changed with new `<campaign-autocomplete>`, didn't change `<content-edit-section>` to match.
+
+### Fixed
+1. `<content-edit-section>` uses new autocomplete spec
 
 ## 0.11.0
 

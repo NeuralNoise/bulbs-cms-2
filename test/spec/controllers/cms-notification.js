@@ -29,9 +29,9 @@ describe('Controller: CmsNotificationCtrl', function () {
       CmsNotificationsApi: CmsNotificationsApi
     });
 
-    spyOn($scope.notification, 'put').andCallThrough();
-    spyOn($scope.notification, 'remove').andCallThrough();
-    spyOn($scope.notifications, 'post').andCallThrough();
+    sinon.spy($scope.notification, 'put');
+    sinon.spy($scope.notification, 'remove');
+    sinon.spy($scope.notifications, 'post');
 
     $scope.notificationDirty = false;
 
@@ -41,7 +41,7 @@ describe('Controller: CmsNotificationCtrl', function () {
 
   it('should have a scope level variable to track if a notification is dirty', function () {
 
-    expect($scope.notificationDirty).toBe(false);
+    expect($scope.notificationDirty).to.equal(false);
 
     // start watch
     $scope.$apply();
@@ -50,7 +50,7 @@ describe('Controller: CmsNotificationCtrl', function () {
     // fire watch again, which should recognize the change now
     $scope.$apply();
 
-    expect($scope.notificationDirty).toBe(true);
+    expect($scope.notificationDirty).to.equal(true);
 
   });
 
@@ -71,8 +71,8 @@ describe('Controller: CmsNotificationCtrl', function () {
         return deletePromise;
       };
 
-      spyOn($scope.$parent, '$saveNotification').andCallThrough();
-      spyOn($scope.$parent, '$deleteNotification').andCallThrough();
+      sinon.spy($scope.$parent, '$saveNotification');
+      sinon.spy($scope.$parent, '$deleteNotification');
 
     }));
 
@@ -81,7 +81,7 @@ describe('Controller: CmsNotificationCtrl', function () {
       $scope.saveNotification();
       $scope.$apply();
 
-      expect($scope.$parent.$saveNotification).not.toHaveBeenCalled();
+      expect($scope.$parent.$saveNotification).not.to.have.been.called;
 
     });
 
@@ -92,8 +92,8 @@ describe('Controller: CmsNotificationCtrl', function () {
       $scope.saveNotification();
       $scope.$apply();
 
-      expect($scope.$parent.$saveNotification).toHaveBeenCalled();
-      expect($scope.notificationDirty).toBe(false);
+      expect($scope.$parent.$saveNotification).to.have.been.called;
+      expect($scope.notificationDirty).to.equal(false);
 
     });
 
@@ -101,7 +101,7 @@ describe('Controller: CmsNotificationCtrl', function () {
 
       $scope.deleteNotification();
 
-      expect($scope.$parent.$deleteNotification).toHaveBeenCalled();
+      expect($scope.$parent.$deleteNotification).to.have.been.called;
 
     });
 
@@ -117,8 +117,8 @@ describe('Controller: CmsNotificationCtrl', function () {
       $scope.deleteNotification();
       $scope.$apply();
 
-      expect($scope.$parent.$saveNotification).not.toHaveBeenCalled();
-      expect($scope.$parent.$deleteNotification).not.toHaveBeenCalled();
+      expect($scope.$parent.$saveNotification).not.to.have.been.called;
+      expect($scope.$parent.$deleteNotification).not.to.have.been.called;
 
     });
 
