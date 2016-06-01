@@ -2,6 +2,7 @@
 
 <!-- markdown-toc -->
 
+- [1.0.1](#101)
 - [1.0.0](#100)
 - [0.12.0](#0120)
   * [Fixed](#fixed)
@@ -20,6 +21,12 @@
 <!-- markdown-toc-stop -->
 
 <sub>**Note**: update table of contents with `./scripts/update-changelog-toc`.</sub>
+
+## 1.0.1
+
+Fix font-awesome font paths in compiled main.css.
+
+[#27](https://github.com/theonion/bulbs-cms-2/pull/27)
 
 ## 1.0.0
 
