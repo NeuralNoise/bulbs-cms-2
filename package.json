@@ -61,7 +61,6 @@
     "lolex": "^1.4.0",
     "markdown-toc": "^0.11.7",
     "mocha": "^2.4.5",
-    "onionsay": "github:theonion/onionsay",
     "requirejs": "~2.1.11",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0",
