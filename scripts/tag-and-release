@@ -1,109 +1,144 @@
 #!/usr/bin/env bash
 # tag-and-release
 # Summary: tag and release a build of this codebase. Can create a major, minor,
-#   patch, or temprorary release.
+# patch, or temprorary release.
 
-set -e
-
-BOWER_COMPONENTS="./bower_components"
-BRANCH_NAME_RELEASE="master"
+RED="\033[0;31m"
+GREEN="\033[0;32m"
+CEND="\033[0m"
+RELEASE_BRANCH="master"
+COMMIT_HASH="$(git rev-parse HEAD)"
+SHORT_HASH="$(echo "$COMMIT_HASH" | cut -c 1-7)"
+BRANCH_NAME="$(git symbolic-ref --short HEAD)"
 HELPERS_DIR="./scripts/helpers"
 LOG_PREFIX="[RELEASE]"
 NODE_MODULES="./node_modules"
-NODE_BIN="$NODE_MODULES/.bin"
-RELEASE_TYPE="$1"                     # major, minor, patch, temp
+NODE_BIN_PATH="$NODE_MODULES/.bin"
+BOWER_BIN="${NODE_BIN_PATH}/bower"
+RELEASE_TYPE="$1" # major, minor, patch, temp
 OLD_PKG_JSON="$(cat ./package.json)"
-IS_TEMP_RELEASE=false
+if [ "$RELEASE_TYPE" = "temp" ]; then
+  RELEASE_MESSAGE="Releasing a temporary dist for current branch '$BRANCH_NAME'"
+  NEW_VERSION="temp-${SHORT_HASH}-${BRANCH_NAME}"
+else
+  RELEASE_MESSAGE="On releasable branch '$RELEASE_BRANCH'"
+  NEW_VERSION="$(node $HELPERS_DIR/version-read ./package.json)"
+fi
 
-function secho {
-  echo "$LOG_PREFIX [$(date)] $1"
+log() {
+  local message
+  local color
+
+  if [ -n "$2" ]; then
+    color="$1"
+    message="$2"
+  else
+    color=""
+    message="$1"
+  fi
+
+  if [ "$color" = "red" ]; then
+    color="$RED"
+  fi
+
+  if [ "$color" = "green" ]; then
+    color="$GREEN"
+  fi
+
+  echo -e "${color}$LOG_PREFIX [$(date)] $message $CEND"
 }
 
-if [ -z "$RELEASE_TYPE" ]; then
-  secho "Must provide a relase type to this command ('major', 'minor', 'patch', 'temp'), exiting..."
-  exit 1
-elif [ "$RELEASE_TYPE" = "temp" ]; then
-  IS_TEMP_RELEASE=true
-fi
-
-secho "Starting release process..."
-BRANCH_NAME="$(git symbolic-ref --short HEAD)"
-if [ $IS_TEMP_RELEASE = true ]; then
-  secho "Releasing a temporary dist for current branch '$BRANCH_NAME'"
-elif [ "$BRANCH_NAME" = "$BRANCH_NAME_RELEASE" ]; then
-  secho "On releasable branch '$BRANCH_NAME_RELEASE'"
-else
-  secho "You are currently on branch '$BRANCH_NAME', please switch to '$BRANCH_NAME_RELEASE' before running this command, exiting..."
-  exit 1
-fi
-
-# trap errors/stops and undo changes this script made to this directory
-function cleanup_at_exit {
+# undo changes this script made to this directory
+cleanup() {
   if [ "$?" = "1" ]; then
     echo "$OLD_PKG_JSON" > ./package.json
   fi
-  secho "Resetting local checkout"
+  log "Resetting local checkout"
   git checkout "$BRANCH_NAME" --quiet
   rm -rf dist/ || true
 }
-trap cleanup_at_exit EXIT
 
-secho "Check that npm dependencies are in place"
-if [ ! -d "$NODE_MODULES" ]; then
+ensure_valid_release_type() {
+  if [ -z "$RELEASE_TYPE" ]; then
+    log "Must provide a relase type to this command ('major', 'minor', 'patch', 'temp'), exiting..." "red"
+    exit 1
+  fi
+}
+
+ensure_release_branch() {
+  if [ "$BRANCH_NAME" != "$RELEASE_BRANCH" ] && [ "$RELEASE_TYPE" != "temp" ]; then
+    log "You are currently on branch '$BRANCH_NAME', please switch to '$RELEASE_BRANCH' before running this command, exiting..." "red"
+    exit 1
+  else
+    log "$RELEASE_MESSAGE"
+  fi
+}
+
+install_npm_dependencies() {
+  npm prune
   npm install
-else
-  npm update
-fi
+}
 
-secho "Check that bower dependencies are in place"
-if [ -d "$BOWER_COMPONENTS" ]; then
-  "$NODE_BIN"/bower update
-else
-  "$NODE_BIN"/bower install
-fi
+install_bower_dependencies() {
+  "$BOWER_BIN" install
+}
 
-secho "Linting"
-if [ ! "$(npm run lint)" ]; then
-  secho "Please fix lint errors before releasing."
-  exit 1
-fi
+ensure_code_is_lint_free() {
+  log "Linting..."
+  ./scripts/lint-js
+}
 
-secho "Running tests"
-if [ ! "$(npm test)" ]; then
-  secho "Please fix tests before releasing."
-  exit 1
-fi
+ensure_tests_pass() {
+  log "Running tests..."
+  ./scripts/test
+}
 
-if [ $IS_TEMP_RELEASE = true ]; then
-  NEW_VERSION="temp-$(git rev-parse HEAD | cut -c 1-7)-$BRANCH_NAME"
-  secho "Releasing temporary tag @$NEW_VERSION"
-else
-  secho "Increasing $RELEASE_TYPE version"
-  node $HELPERS_DIR/version-up.js ./package.json "$RELEASE_TYPE"
-  NEW_VERSION="$(node $HELPERS_DIR/version-read ./package.json)"
+update_version() {
+  log "Releasing tag @$NEW_VERSION"
+  # If the release is temp, we don't need to version up
+  if [ "$RELEASE_TYPE" != "temp" ]; then
+    npm version "$RELEASE_TYPE"
+    log "Commiting updated version"
+    git add package.json
+    git commit -m "Update package version to $NEW_VERSION"
+  fi
+}
 
-  secho "Commiting updated version"
-  git add package.json
-  git commit -m "Update package version to $NEW_VERSION"
-fi
+checkout_detached_head() {
+  log "Checking out detached HEAD..."
+  git checkout "$COMMIT_HASH" --quiet
+}
 
-# put release into its own single commit detached from any other history
-secho "Checking out detached HEAD"
-git checkout "$(git rev-parse HEAD)" --quiet
+ensure_fresh_build() {
+  log "Running build..."
+  ./scripts/build
+}
 
-secho "Running build"
-if [ ! "$(npm run build)" ]; then
-  secho "Please fix build errors before releasing."
-  exit 1
-fi
+add_dist_to_repo() {
+  log "Adding dist to detached HEAD"
+  git add -f 'dist/*'
+  ls -alh
+  git commit --allow-empty --quiet -m "build for tag: $NEW_VERSION"
+}
 
-secho "Adding dist to detached HEAD"
-git add -f 'dist/*'
+create_tag() {
+  git tag "$NEW_VERSION"
+  git push origin "$NEW_VERSION" && git push origin --tags
+}
 
-secho "Tagging and Releasing"
-git commit --allow-empty --quiet -m "build for tag: $NEW_VERSION"
-git tag "$NEW_VERSION"
-git push origin "$NEW_VERSION" && git push origin --tags
-git checkout "$BRANCH_NAME" && git push origin "$BRANCH_NAME"
+tag_and_release() {
+  log "Starting release process..."
+  ensure_valid_release_type
+  ensure_release_branch
+  install_npm_dependencies
+  install_bower_dependencies
+  ensure_code_is_lint_free
+  # update_version
+  # checkout_detached_head
+  # ensure_fresh_build
+  # add_dist_to_repo
+  # create_tag
+  # "${NODE_BIN_PATH}/onionsay" "NEW VERSION: $NEW_VERSION"
+}
 
-node_modules/.bin/onionsay "NEW VERSION: $NEW_VERSION"
+tag_and_release
