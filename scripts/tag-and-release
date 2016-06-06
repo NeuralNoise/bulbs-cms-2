@@ -12,9 +12,7 @@ SHORT_HASH="$(echo "$COMMIT_HASH" | cut -c 1-7)"
 BRANCH_NAME="$(git symbolic-ref --short HEAD)"
 HELPERS_DIR="./scripts/helpers"
 LOG_PREFIX="[RELEASE]"
-NODE_MODULES="./node_modules"
-NODE_BIN_PATH="$NODE_MODULES/.bin"
-BOWER_BIN="${NODE_BIN_PATH}/bower"
+BOWER_BIN="./node_modules/.bin/bower"
 RELEASE_TYPE="$1" # major, minor, patch, temp
 OLD_PKG_JSON="$(cat ./package.json)"
 if [ "$RELEASE_TYPE" = "temp" ]; then
@@ -28,34 +26,48 @@ fi
 log() {
   local message
   local color
+  local TEXT_COLOR
 
+  # if there are 2 args, color is the first
   if [ -n "$2" ]; then
     color="$1"
     message="$2"
-  else
+  else # message is the first arguement
     color=""
     message="$1"
   fi
 
   if [ "$color" = "red" ]; then
-    color="$RED"
+    TEXT_COLOR="$RED"
   fi
 
   if [ "$color" = "green" ]; then
-    color="$GREEN"
+    TEXT_COLOR="$GREEN"
   fi
 
-  echo -e "${color}$LOG_PREFIX [$(date)] $message $CEND"
+  echo -e "${TEXT_COLOR}$LOG_PREFIX [$(date)] $message $CEND"
 }
 
-# undo changes this script made to this directory
-cleanup() {
-  if [ "$?" = "1" ]; then
-    echo "$OLD_PKG_JSON" > ./package.json
-  fi
+restore_package_json() {
+  echo "$OLD_PKG_JSON" > ./package.json
+}
+
+checkout_original_branch() {
   log "Resetting local checkout"
   git checkout "$BRANCH_NAME" --quiet
+}
+
+delete_dist_directory() {
   rm -rf dist/ || true
+}
+
+cleanup() {
+  # undo package version update if there were errors
+  if [ "$?" = "1" ]; then
+    restore_package_json
+  fi
+  checkout_original_branch
+  delete_dist_directory
 }
 
 ensure_valid_release_type() {
@@ -94,9 +106,9 @@ ensure_tests_pass() {
 }
 
 update_version() {
-  log "Releasing tag @$NEW_VERSION"
-  # If the release is temp, we don't need to version up
+  # If the release is temp, we don't need to update the version
   if [ "$RELEASE_TYPE" != "temp" ]; then
+    log "Releasing tag @$NEW_VERSION"
     npm version "$RELEASE_TYPE"
     log "Commiting updated version"
     git add package.json
