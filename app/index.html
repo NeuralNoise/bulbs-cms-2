@@ -62,7 +62,7 @@
     <script src="/es5-shim/es5-shim.js"></script>
     <script src="/json3/lib/json3.min.js"></script>
     <![endif]-->
-    <!-- build:js(app) scripts/vendor.js -->
+    <!-- build:js(..) scripts/vendor.js -->
     <!-- bower:js -->
     <script src="/jquery/dist/jquery.js"></script>
     <script src="/angular/angular.js"></script>
@@ -455,7 +455,7 @@
             ]);
           });
 
-        //huhhhhh
+        // huhhhhh
         $("body").on("click", "a", function(e){
           if($(this).attr("target") == "_blank") return true;
           $(this).attr("target", "_self");

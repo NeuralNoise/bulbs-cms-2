@@ -133,12 +133,14 @@ tag_and_release() {
   install_npm_dependencies
   install_bower_dependencies
   ensure_code_is_lint_free
-  # update_version
-  # checkout_detached_head
-  # ensure_fresh_build
-  # add_dist_to_repo
-  # create_tag
-  # "${NODE_BIN_PATH}/onionsay" "NEW VERSION: $NEW_VERSION"
+  ensure_tests_pass
+  update_version
+  checkout_detached_head
+  ensure_fresh_build
+  add_dist_to_repo
+  create_tag
+  git checkout "$BRANCH_NAME" && git push "$BRANCH_NAME"
+  "${NODE_BIN_PATH}/onionsay" "NEW VERSION: $NEW_VERSION"
 }
 
 tag_and_release
