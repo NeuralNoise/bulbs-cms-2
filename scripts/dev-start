@@ -2,4 +2,4 @@
 # Enable a continuous development environment. Will watch files for changes
 #   and rebuild.
 
-./node_modules/.bin/grunt serve
+npm run serve-dev

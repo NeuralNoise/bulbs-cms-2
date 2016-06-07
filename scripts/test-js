@@ -2,7 +2,7 @@
 # Run js tests.
 
 if [ "$1" == "--single-run" ] || [ "$1" == '-s' ]; then
-  ./node_modules/.bin/grunt test
+  npm test
 else
-  ./node_modules/.bin/grunt karma
+  npm run karma
 fi

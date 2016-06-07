@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 # Lint js.
 
-./node_modules/.bin/grunt lint
+npm run lint
