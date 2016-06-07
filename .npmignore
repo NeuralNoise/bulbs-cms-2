@@ -1,3 +1,5 @@
+# same as gitignore, but is allowed to include the dist directory
+
 .DS_Store
 .editorconfig
 .idea/
@@ -7,6 +9,5 @@ app/keys.js
 app/styles/**/*.css
 bower_components
 coverage
-dist
 node_modules
 npm-debug.log
