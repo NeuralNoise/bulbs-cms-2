@@ -17,10 +17,7 @@ module.exports = {
   plugins: [
     new ExtractTextPlugin('cms.css', { allChunks: true }),
     new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.js'),
-    new BowerWebpackPlugin(),
-    new CopyWebpackPlugin([{
-      from: './bower_components/bulbs-public-embed-instagram/dist/jquery.instagram-embed-processor.js'
-    }])
+    new BowerWebpackPlugin()
   ],
   resolve: {
     modulesDirectories: [

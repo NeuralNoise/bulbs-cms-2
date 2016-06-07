@@ -18,8 +18,8 @@
     "angularfire": "~0.8.2",
     "bootstrap": "~3.1.1",
     "bulbs-autocomplete": "~0.2.3",
-    "bulbs-public-embed-instagram": "https://github.com/theonion/bulbs-public-embed-instagram.git#~0.0.8",
-    "cms-components": "https://github.com/theonion/cms-components.git#0.7.0",
+    "bulbs-public-embed-instagram": "theonion/bulbs-public-embed-instagram#~2.0.0",
+    "cms-components": "theonion/cms-components#0.7.0",
     "es5-shim": "~2.1.0",
     "firebase": "1.0.21",
     "font-awesome": "~4.4.0",
@@ -30,7 +30,7 @@
     "lodash": "~3.1.0",
     "moment": "~2.6.0",
     "moment-timezone": "~0.2.4",
-    "onion-editor": "https://github.com/theonion/editor.git#~1.0.1",
+    "onion-editor": "theonion/editor#~1.0.1",
     "raven-js": "1.1.11",
     "restangular": "~1.4.0",
     "restmod-style-drf-paged": "~0.1.0",
@@ -63,6 +63,7 @@
     "dist/styles/vendor.css"
   ],
   "resolutions": {
+    "bulbs-public-embed-instagram": "~2.0.0",
     "lodash": "~3.1.0",
     "zeroclipboard": "~2.2.0",
     "angular": "1.4.9",
